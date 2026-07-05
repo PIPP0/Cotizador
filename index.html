@@ -928,6 +928,7 @@ tbody tr:hover .row-acts{opacity:1}
 
     <!-- ── FOOTER ACCIONES ── -->
     <div class="cfg-sec" id="cfg-footer-default">
+      <div id="cfg-storage-status" style="font-size:11px;padding:5px 8px;border-radius:6px;margin-bottom:6px;text-align:center;font-weight:600"></div>
       <button class="cfg-apply" id="cfg-apply-btn" onclick="saveCfgPanel()">Guardar y aplicar</button>
       <button class="cfg-reset" style="margin-top:6px;background:#e8f4f6;color:var(--teal);border-color:var(--bbr)" onclick="saveCfgPanel();setTimeout(downloadWithConfig,400)">💾 Guardar y descargar archivo</button>
       <button class="cfg-reset" onclick="resetConfig()">↺ Restaurar valores originales</button>
@@ -1918,12 +1919,30 @@ function liveUser(role, field, val) {
 function handleLogoUpload(input) {
   const file = input.files[0];
   if (!file) return;
+  // Comprimir si supera 200KB para caber en localStorage
+  if (file.size > 200000) {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const scale = Math.min(1, 300 / Math.max(img.width, img.height));
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      CONFIG.logoSrc = canvas.toDataURL('image/jpeg', 0.7);
+      URL.revokeObjectURL(url);
+      applyLogoToDOM(); updateCfgLogoPreview(); markCfgDirty(); saveConfigToStorage();
+    };
+    img.src = url;
+    return;
+  }
   const reader = new FileReader();
   reader.onload = function(e) {
     CONFIG.logoSrc = e.target.result;
     applyLogoToDOM();
     updateCfgLogoPreview();
     markCfgDirty();
+    saveConfigToStorage();
   };
   reader.readAsDataURL(file);
 }
@@ -1933,6 +1952,7 @@ function removeLogo() {
   updateCfgLogoPreview();
   document.getElementById('cfg-logo-file').value = '';
   markCfgDirty();
+  saveConfigToStorage();
 }
 function applyLogoToDOM() {
   const src = CONFIG.logoSrc;
@@ -2120,6 +2140,16 @@ function openCfgPanel() {
     panel.addEventListener('input', panel._dirtyHandler);
     panel.addEventListener('change', panel._dirtyHandler);
   }
+  // Mostrar estado de localStorage al abrir el panel
+  try {
+    const testKey = '_ls_test';
+    localStorage.setItem(testKey, '1');
+    localStorage.removeItem(testKey);
+    const hasSaved = !!localStorage.getItem(STORAGE_KEY);
+    _updateStorageStatus(true, hasSaved ? '✅ Datos guardados en este navegador' : '💡 Sin datos guardados aún');
+  } catch(e) {
+    _updateStorageStatus(false, '❌ localStorage bloqueado — usa "Descargar archivo"');
+  }
   ov.classList.add('open');
 }
 // ─── Services add / remove ───────────────────────────────────
@@ -2245,15 +2275,27 @@ function closeCfgPanel(e) {
 }
 // ─── Persistencia localStorage ───────────────────────────────────────
 const STORAGE_KEY = 'saas_platform_config';
+function _updateStorageStatus(ok, msg) {
+  const el = document.getElementById('cfg-storage-status');
+  if (!el) return;
+  el.style.background = ok ? '#e6f9f0' : '#fdecea';
+  el.style.color = ok ? '#1a7a4a' : '#c0392b';
+  el.textContent = msg;
+}
 function saveConfigToStorage() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(CONFIG));
+    _updateStorageStatus(true, '✅ Guardado correctamente');
   } catch(e) {
     // Si falla por logo muy grande, guardar sin logoSrc
     try {
       const slim = Object.assign({}, CONFIG, { logoSrc: null });
       localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
-    } catch(e2) { console.warn('localStorage unavailable:', e2); }
+      _updateStorageStatus(true, '✅ Guardado (logo excluido por tamaño)');
+    } catch(e2) {
+      _updateStorageStatus(false, '❌ Error: localStorage no disponible');
+      console.warn('localStorage unavailable:', e2);
+    }
   }
 }
 // Guardar también antes de cerrar la página
