@@ -2245,29 +2245,37 @@ function closeCfgPanel(e) {
 }
 // ─── Persistencia localStorage ───────────────────────────────────────
 const STORAGE_KEY = 'saas_platform_config';
-let _autoSaveTimer = null;
 function saveConfigToStorage() {
-  clearTimeout(_autoSaveTimer);
-  _autoSaveTimer = setTimeout(() => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(CONFIG));
+  } catch(e) {
+    // Si falla por logo muy grande, guardar sin logoSrc
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(CONFIG));
-    } catch(e) {
-      // Si falla (ej: logo muy grande), intentar sin logoSrc
-      try {
-        const slim = Object.assign({}, CONFIG, { logoSrc: null });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
-      } catch(e2) { console.warn('localStorage unavailable:', e2); }
-    }
-  }, 80);
+      const slim = Object.assign({}, CONFIG, { logoSrc: null });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
+    } catch(e2) { console.warn('localStorage unavailable:', e2); }
+  }
 }
+// Guardar también antes de cerrar la página
+window.addEventListener('beforeunload', saveConfigToStorage);
+
 function loadConfigFromStorage() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return false;
     const saved = JSON.parse(raw);
+    // Fusión profunda de colores para no perder claves
+    if (saved.colors) Object.assign(CONFIG.colors, saved.colors);
+    // Resto de claves en nivel raíz
     Object.assign(CONFIG, saved);
+    // Aplicar colores directamente a CSS vars, sin depender de applyConfig
+    if (CONFIG.colors) {
+      ['teal','orange','dark'].forEach(k => {
+        if (CONFIG.colors[k]) liveColor(k, CONFIG.colors[k]);
+      });
+    }
     return true;
-  } catch(e) { return false; }
+  } catch(e) { console.warn('loadConfigFromStorage error:', e); return false; }
 }
 
 function saveCfgPanel() {
