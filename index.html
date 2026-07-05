@@ -1808,6 +1808,30 @@ const DEFAULT_CONFIG = {
 // @@CONFIG-END
 let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 
+// ─── Restauración INMEDIATA de colores desde localStorage ───────────
+// Corre antes de cualquier evento (DOMContentLoaded / load), evita flash
+(function() {
+  try {
+    const raw = localStorage.getItem('saas_platform_config');
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (!saved || !saved.colors) return;
+    // Fusionar colores en CONFIG para que el resto del script los use
+    Object.assign(CONFIG.colors, saved.colors);
+    Object.assign(CONFIG, saved);
+    const t = (CONFIG.colors.teal   || '1e95a6').replace('#','');
+    const o = (CONFIG.colors.orange || 'd46e3a').replace('#','');
+    const d = (CONFIG.colors.dark   || '252530').replace('#','');
+    function _h2rgb(h){ return parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16); }
+    function _drk(h,p){ return [0,2,4].map(i=>Math.round(parseInt(h.substr(i,2),16)*(1-p)).toString(16).padStart(2,'0')).join(''); }
+    function _blnd(h,a){ return [0,2,4].map(i=>Math.round(255*(1-a)+parseInt(h.substr(i,2),16)*a).toString(16).padStart(2,'0')).join(''); }
+    const s = document.createElement('style');
+    s.id = '_dyn_colors';
+    s.textContent = ':root{--teal:#'+t+';--teal2:#'+_drk(t,0.14)+';--teal-rgb:'+_h2rgb(t)+';--orange:#'+o+';--dark:#'+d+';--bbg:#'+_blnd(t,0.09)+';--bbr:#'+_blnd(t,0.32)+';--abg:#'+_blnd(o,0.09)+';}';
+    document.head.appendChild(s);
+  } catch(e) {}
+})();
+
 // ─── Live helpers ───────────────────────────────────────────────────
 function liveText(id, val) {
   const el = document.getElementById(id);
@@ -2302,10 +2326,10 @@ function loadConfigFromStorage() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return false;
     const saved = JSON.parse(raw);
+    // CONFIG ya fue fusionado por el IIFE; sólo reforzar y re-aplicar
     if (saved.colors) Object.assign(CONFIG.colors, saved.colors);
     Object.assign(CONFIG, saved);
-    // Restaurar colores via style tag dinámico (más confiable que inline style)
-    _applyDynamicColors();
+    _applyDynamicColors(); // actualiza el <style> dinámico con valores finales
     return true;
   } catch(e) { console.warn('loadConfigFromStorage error:', e); return false; }
 }
