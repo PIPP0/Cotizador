@@ -928,9 +928,7 @@ tbody tr:hover .row-acts{opacity:1}
 
     <!-- ── FOOTER ACCIONES ── -->
     <div class="cfg-sec" id="cfg-footer-default">
-      <div id="cfg-storage-status" style="font-size:11px;padding:5px 8px;border-radius:6px;margin-bottom:6px;text-align:center;font-weight:600"></div>
       <button class="cfg-apply" id="cfg-apply-btn" onclick="saveCfgPanel()">Guardar y aplicar</button>
-      <button class="cfg-reset" style="margin-top:6px;background:#e8f4f6;color:var(--teal);border-color:var(--bbr)" onclick="saveCfgPanel();setTimeout(downloadWithConfig,400)">💾 Guardar y descargar archivo</button>
       <button class="cfg-reset" onclick="resetConfig()">↺ Restaurar valores originales</button>
     </div>
     <div class="cfg-sec cfg-success-sec" id="cfg-footer-success" style="display:none">
@@ -1890,22 +1888,20 @@ function blendWithWhite(h, alpha) {
   const {r,g,b}=hexToRgb(h);
   return [r,g,b].map(v=>Math.round(255*(1-alpha)+v*alpha).toString(16).padStart(2,'0')).join('');
 }
+function _applyDynamicColors() {
+  const t = CONFIG.colors.teal   || '1e95a6';
+  const o = CONFIG.colors.orange || 'd46e3a';
+  const d = CONFIG.colors.dark   || '252530';
+  const rgb = hexToRgb(t);
+  let el = document.getElementById('_dyn_colors');
+  if (!el) { el = document.createElement('style'); el.id = '_dyn_colors'; document.head.appendChild(el); }
+  el.textContent = `:root{--teal:#${t};--teal2:#${darkenHex(t,0.14)};--teal-rgb:${rgb.r},${rgb.g},${rgb.b};--orange:#${o};--dark:#${d};--bbg:#${blendWithWhite(t,0.09)};--bbr:#${blendWithWhite(t,0.32)};--abg:#${blendWithWhite(o,0.09)};}`;
+}
 function liveColor(varName, hex) {
-  const clean = hex.replace('#','');
+  const clean = hex.replace(/#+/g,'');
   if (/^[0-9A-Fa-f]{6}$/.test(clean)) {
-    const css = document.documentElement.style;
-    css.setProperty('--' + varName, '#' + clean);
     CONFIG.colors[varName] = clean;
-    if (varName === 'teal') {
-      const {r,g,b} = hexToRgb(clean);
-      css.setProperty('--teal2',  '#' + darkenHex(clean, 0.14));
-      css.setProperty('--teal-rgb', `${r},${g},${b}`);
-      css.setProperty('--bbg', '#' + blendWithWhite(clean, 0.09));
-      css.setProperty('--bbr', '#' + blendWithWhite(clean, 0.32));
-    }
-    if (varName === 'orange') {
-      css.setProperty('--abg', '#' + blendWithWhite(clean, 0.09));
-    }
+    _applyDynamicColors();
   }
 }
 function liveUser(role, field, val) {
@@ -2306,16 +2302,10 @@ function loadConfigFromStorage() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return false;
     const saved = JSON.parse(raw);
-    // Fusión profunda de colores para no perder claves
     if (saved.colors) Object.assign(CONFIG.colors, saved.colors);
-    // Resto de claves en nivel raíz
     Object.assign(CONFIG, saved);
-    // Aplicar colores directamente a CSS vars, sin depender de applyConfig
-    if (CONFIG.colors) {
-      ['teal','orange','dark'].forEach(k => {
-        if (CONFIG.colors[k]) liveColor(k, CONFIG.colors[k]);
-      });
-    }
+    // Restaurar colores via style tag dinámico (más confiable que inline style)
+    _applyDynamicColors();
     return true;
   } catch(e) { console.warn('loadConfigFromStorage error:', e); return false; }
 }
@@ -2347,8 +2337,9 @@ function saveCfgPanel() {
 }
 function resetConfig() {
   CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
-  ['teal','orange','dark'].forEach(c =>
-    document.documentElement.style.removeProperty('--'+c));
+  localStorage.removeItem(STORAGE_KEY);
+  const el = document.getElementById('_dyn_colors');
+  if (el) el.remove();
   applyConfig();
   renderSysRow();
   rebuildSvcList();
