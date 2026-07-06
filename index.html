@@ -2320,14 +2320,21 @@ function saveConfigToStorage() {
   try {
     // Logo en clave separada para no afectar el resto del config
     if (CONFIG.logoSrc) {
-      try { localStorage.setItem(STORAGE_KEY + '_logo', CONFIG.logoSrc); } catch(e) {}
+      try {
+        localStorage.setItem(STORAGE_KEY + '_logo', CONFIG.logoSrc);
+        console.log('[CFG] Logo guardado en localStorage, bytes:', CONFIG.logoSrc.length);
+      } catch(e) {
+        console.error('[CFG] ERROR al guardar logo:', e);
+      }
     } else {
-      try { localStorage.removeItem(STORAGE_KEY + '_logo'); } catch(e) {}
+      localStorage.removeItem(STORAGE_KEY + '_logo');
+      console.log('[CFG] Logo eliminado de localStorage');
     }
     const slim = Object.assign({}, CONFIG, { logoSrc: null });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
+    console.log('[CFG] Config guardado. logoSrc en CONFIG:', !!CONFIG.logoSrc);
   } catch(e) {
-    console.warn('localStorage unavailable:', e);
+    console.warn('[CFG] localStorage unavailable:', e);
   }
 }
 // Guardar también antes de cerrar la página
@@ -2343,9 +2350,10 @@ function loadConfigFromStorage() {
     // Cargar logo desde su clave separada
     const savedLogo = localStorage.getItem(STORAGE_KEY + '_logo');
     CONFIG.logoSrc = savedLogo || null;
+    console.log('[CFG] loadConfigFromStorage - logo encontrado:', !!savedLogo, savedLogo ? savedLogo.length+'bytes' : 'null');
     _applyDynamicColors();
     return true;
-  } catch(e) { console.warn('loadConfigFromStorage error:', e); return false; }
+  } catch(e) { console.warn('[CFG] loadConfigFromStorage error:', e); return false; }
 }
 
 function saveCfgPanel() {
