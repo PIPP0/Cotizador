@@ -321,9 +321,9 @@ tbody tr:hover .row-acts{opacity:1}
 .sgc-dbadge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px}
 
 /* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(37,37,48,.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(2px)}
+.modal-overlay{position:fixed;inset:0;background:rgba(37,37,48,.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .18s ease}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border-radius:var(--r);box-shadow:0 20px 60px rgba(0,0,0,.25);width:100%;max-width:640px;max-height:90vh;overflow-y:auto;transform:translateY(10px);transition:transform .2s}
+.modal{background:var(--surface);border-radius:var(--r);box-shadow:0 20px 60px rgba(0,0,0,.25);width:100%;max-width:640px;max-height:90vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;transform:translateY(18px);transition:transform .18s ease}
 .modal-overlay.open .modal{transform:translateY(0)}
 .modal-hdr{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
 .modal-title{font-size:15px;font-weight:800}
@@ -548,7 +548,8 @@ tbody tr:hover .row-acts{opacity:1}
 
   /* Modal → bottom sheet */
   .modal-overlay{padding:0;align-items:flex-end}
-  .modal{border-radius:var(--r) var(--r) 0 0;max-height:92vh;width:100%;max-width:100%}
+  .modal{border-radius:var(--r) var(--r) 0 0;max-height:92vh;width:100%;max-width:100%;transform:translateY(100%);transition:transform .22s ease}
+  .modal-overlay.open .modal{transform:translateY(0)}
   .modal-grid{grid-template-columns:1fr}
 
   /* Import → bottom sheet */
@@ -2131,6 +2132,7 @@ function openCfgPanel() {
     if (!ov) return;
     // Abrir primero — cualquier error posterior no bloquea la apertura
     ov.classList.add('open');
+    document.body.style.overflow = 'hidden';
     // MARCA
     ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => {
       try { const el = document.getElementById('cfg-'+k); if (el) el.value = CONFIG[k] || ''; } catch(e) {}
@@ -2290,6 +2292,7 @@ function resetApplyBtn() {
 function closeCfgPanel(e) {
   if (e && e.target !== document.getElementById('cfgOverlay')) return;
   document.getElementById('cfgOverlay').classList.remove('open');
+  document.body.style.overflow = '';
 }
 // ─── Persistencia localStorage ───────────────────────────────────────
 function saveConfigToStorage() {
@@ -2441,9 +2444,11 @@ function openProfile(e){
   document.getElementById('pf-headname').textContent=currentUser.name;
   document.getElementById('pf-headrole').textContent=currentUser.role;
   document.getElementById('profile-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 function closeProfile(){
   document.getElementById('profile-modal').classList.remove('open');
+  document.body.style.overflow = '';
 }
 function closeProfileIfBg(e){
   if(e.target===document.getElementById('profile-modal')) closeProfile();
@@ -2952,11 +2957,17 @@ function openModal(id){
       </button>
     </div>
   `;
-  document.getElementById('modalOverlay').classList.add('open');
+  const ov = document.getElementById('modalOverlay');
+  document.body.style.overflow = 'hidden';
+  // Double RAF: frame 1 = browser pinta el contenido, frame 2 = inicia animación
+  requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('open')));
 }
 function closeModal(e){
   if(e && e.target!==document.getElementById('modalOverlay')) return;
-  document.getElementById('modalOverlay').classList.remove('open');
+  const ov = document.getElementById('modalOverlay');
+  ov.classList.remove('open');
+  // Restaurar scroll solo cuando termina la transición, no antes
+  ov.addEventListener('transitionend', () => { document.body.style.overflow = ''; }, { once: true });
 }
 function changeStatusFromModal(id,val){
   const r=PIPELINE.find(x=>x.id===id);
@@ -3091,11 +3102,13 @@ function openImport(){
   const btn = document.getElementById('importConfirmBtn');
   btn.disabled = true; btn.style.opacity = '.5'; btn.style.cursor = 'not-allowed';
   document.getElementById('importOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 
 function closeImport(e){
   if(e && e.target !== document.getElementById('importOverlay')) return;
   document.getElementById('importOverlay').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 function handleDrop(e){
