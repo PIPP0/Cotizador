@@ -1816,9 +1816,12 @@ let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
     if (!raw) return;
     const saved = JSON.parse(raw);
     if (!saved || !saved.colors) return;
-    // Fusionar colores en CONFIG para que el resto del script los use
+    // Fusionar en CONFIG para que el resto del script los use
     Object.assign(CONFIG.colors, saved.colors);
     Object.assign(CONFIG, saved);
+    // Logo en clave separada
+    const logo = localStorage.getItem('saas_platform_config_logo');
+    if (logo) CONFIG.logoSrc = logo;
     const t = (CONFIG.colors.teal   || '1e95a6').replace('#','');
     const o = (CONFIG.colors.orange || 'd46e3a').replace('#','');
     const d = (CONFIG.colors.dark   || '252530').replace('#','');
@@ -2304,18 +2307,17 @@ function _updateStorageStatus(ok, msg) {
 }
 function saveConfigToStorage() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(CONFIG));
-    _updateStorageStatus(true, '✅ Guardado correctamente');
-  } catch(e) {
-    // Si falla por logo muy grande, guardar sin logoSrc
-    try {
-      const slim = Object.assign({}, CONFIG, { logoSrc: null });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
-      _updateStorageStatus(true, '✅ Guardado (logo excluido por tamaño)');
-    } catch(e2) {
-      _updateStorageStatus(false, '❌ Error: localStorage no disponible');
-      console.warn('localStorage unavailable:', e2);
+    // Logo en clave separada (nunca bloquea el guardado del resto)
+    if (CONFIG.logoSrc) {
+      try { localStorage.setItem(STORAGE_KEY + '_logo', CONFIG.logoSrc); } catch(e) {}
+    } else {
+      try { localStorage.removeItem(STORAGE_KEY + '_logo'); } catch(e) {}
     }
+    // Config sin logo (siempre cabe en localStorage)
+    const slim = Object.assign({}, CONFIG, { logoSrc: null });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
+  } catch(e) {
+    console.warn('localStorage unavailable:', e);
   }
 }
 // Guardar también antes de cerrar la página
@@ -2326,10 +2328,12 @@ function loadConfigFromStorage() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return false;
     const saved = JSON.parse(raw);
-    // CONFIG ya fue fusionado por el IIFE; sólo reforzar y re-aplicar
     if (saved.colors) Object.assign(CONFIG.colors, saved.colors);
     Object.assign(CONFIG, saved);
-    _applyDynamicColors(); // actualiza el <style> dinámico con valores finales
+    // Cargar logo desde su clave separada
+    const logo = localStorage.getItem(STORAGE_KEY + '_logo');
+    if (logo) CONFIG.logoSrc = logo;
+    _applyDynamicColors();
     return true;
   } catch(e) { console.warn('loadConfigFromStorage error:', e); return false; }
 }
@@ -2362,6 +2366,7 @@ function saveCfgPanel() {
 function resetConfig() {
   CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(STORAGE_KEY + '_logo');
   const el = document.getElementById('_dyn_colors');
   if (el) el.remove();
   applyConfig();
