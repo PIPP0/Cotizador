@@ -1962,7 +1962,7 @@ function handleLogoUpload(input) {
       canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
       CONFIG.logoSrc = canvas.toDataURL('image/jpeg', 0.7);
       URL.revokeObjectURL(url);
-      applyLogoToDOM(); updateCfgLogoPreview(); markCfgDirty(); saveConfigToStorage();
+      applyLogoToDOM(); updateCfgLogoPreview(); markCfgDirty();
     };
     img.src = url;
     return;
@@ -1973,7 +1973,6 @@ function handleLogoUpload(input) {
     applyLogoToDOM();
     updateCfgLogoPreview();
     markCfgDirty();
-    saveConfigToStorage();
   };
   reader.readAsDataURL(file);
 }
@@ -1983,7 +1982,6 @@ function removeLogo() {
   updateCfgLogoPreview();
   document.getElementById('cfg-logo-file').value = '';
   markCfgDirty();
-  saveConfigToStorage();
 }
 function applyLogoToDOM() {
   const src = CONFIG.logoSrc;
@@ -2356,8 +2354,9 @@ function saveCfgPanel() {
   CONFIG.email    = document.getElementById('cfg-email').value    || CONFIG.email;
   CONFIG.location = document.getElementById('cfg-location').value || CONFIG.location;
   CONFIG.since    = document.getElementById('cfg-since').value    || CONFIG.since;
-  // Guardar siempre, independiente de errores de render
+  // Guardar y aplicar logo siempre, antes del try
   saveConfigToStorage();
+  applyLogoToDOM();
   try {
     applyConfig();
     rebuildSvcList();
