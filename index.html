@@ -1057,15 +1057,18 @@ tbody tr:hover .row-acts{opacity:1}
   <div class="login-card">
     <div class="login-header">
       <div class="login-logo">
-        <svg width="22" height="20" viewBox="0 0 28 26" fill="none">
-          <defs>
-            <linearGradient id="lg1" x1="0" y1="0" x2="28" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1e95a6"/><stop offset="100%" stop-color="#8aaac5"/></linearGradient>
-            <linearGradient id="lg2" x1="28" y1="0" x2="8" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#d46e3a"/><stop offset="100%" stop-color="#e4b840"/></linearGradient>
-          </defs>
-          <path d="M0 0L12 13L0 26L7 26L14 18L21 26L28 26L16 13L28 0L21 0L14 8L7 0Z" fill="url(#lg1)"/>
-          <path d="M21 0L28 0L16 13L28 26L21 26L14 18L14 8Z" fill="url(#lg2)"/>
-        </svg>
-        <span class="login-logo-txt"><span id="login-logo-a">Nex</span><span id="login-logo-b" style="color:var(--orange)">Clima</span></span>
+        <img id="login-logo-img" class="login-logo-img" src="" alt="" style="display:none">
+        <span id="login-logo-default" style="display:flex;align-items:center;gap:8px">
+          <svg width="22" height="20" viewBox="0 0 28 26" fill="none">
+            <defs>
+              <linearGradient id="lg1" x1="0" y1="0" x2="28" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1e95a6"/><stop offset="100%" stop-color="#8aaac5"/></linearGradient>
+              <linearGradient id="lg2" x1="28" y1="0" x2="8" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#d46e3a"/><stop offset="100%" stop-color="#e4b840"/></linearGradient>
+            </defs>
+            <path d="M0 0L12 13L0 26L7 26L14 18L21 26L28 26L16 13L28 0L21 0L14 8L7 0Z" fill="url(#lg1)"/>
+            <path d="M21 0L28 0L16 13L28 26L21 26L14 18L14 8Z" fill="url(#lg2)"/>
+          </svg>
+          <span class="login-logo-txt"><span id="login-logo-a">Nex</span><span id="login-logo-b" style="color:var(--orange)">Clima</span></span>
+        </span>
       </div>
       <div class="login-bar"></div>
       <div class="login-sub" id="login-tagline">Plataforma IA · Comercial</div>
@@ -1982,11 +1985,13 @@ function applyLogoToDOM() {
   // Topbar
   const tbImg = document.getElementById('topbar-logo-img');
   const tbDef = document.getElementById('topbar-logo-default');
-  if (tbImg && tbDef) { tbImg.src = src||''; tbImg.style.display = src?'block':'none'; tbDef.style.display = src?'none':''; }
+  if (tbImg) { tbImg.src = src||''; tbImg.style.display = src?'block':'none'; }
+  if (tbDef) tbDef.style.display = src?'none':'flex';
   // Login
   const lgImg = document.getElementById('login-logo-img');
   const lgDef = document.getElementById('login-logo-default');
-  if (lgImg && lgDef) { lgImg.src = src||''; lgImg.style.display = src?'block':'none'; lgDef.style.display = src?'':'none'; }
+  if (lgImg) { lgImg.src = src||''; lgImg.style.display = src?'block':'none'; }
+  if (lgDef) lgDef.style.display = src?'none':'flex';
   // Text logo rows visibility
   const textRow = document.getElementById('cfg-text-logo-row');
   if (textRow) textRow.style.opacity = src ? '0.4' : '1';
