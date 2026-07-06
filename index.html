@@ -34,6 +34,11 @@ body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--
 .login-card{background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.12);width:100%;max-width:420px;overflow:hidden}
 .login-header{background:#252530;padding:32px;text-align:center}
 .login-logo{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px}
+/* Logo personalizado: oculta defaults, muestra imagen */
+body.has-logo #topbar-logo-default{display:none!important}
+body.has-logo #topbar-logo-img{display:block!important}
+body.has-logo #login-logo-default{display:none!important}
+body.has-logo #login-logo-img{display:block!important}
 .login-logo-txt{font-size:26px;font-weight:800;color:#1e95a6;letter-spacing:-.5px}
 .login-logo-txt span{color:#d46e3a}
 .login-bar{width:40px;height:3px;background:var(--teal);margin:10px auto 0;border-radius:2px}
@@ -1982,17 +1987,14 @@ function removeLogo() {
 }
 function applyLogoToDOM() {
   const src = CONFIG.logoSrc;
-  // Topbar
+  // Clase en body: CSS con !important garantiza visibilidad correcta
+  document.body.classList.toggle('has-logo', !!src);
+  // Setear src en topbar y login
   const tbImg = document.getElementById('topbar-logo-img');
-  const tbDef = document.getElementById('topbar-logo-default');
-  if (tbImg) { tbImg.src = src||''; tbImg.style.display = src?'block':'none'; }
-  if (tbDef) tbDef.style.display = src?'none':'flex';
-  // Login
+  if (tbImg) tbImg.src = src || '';
   const lgImg = document.getElementById('login-logo-img');
-  const lgDef = document.getElementById('login-logo-default');
-  if (lgImg) { lgImg.src = src||''; lgImg.style.display = src?'block':'none'; }
-  if (lgDef) lgDef.style.display = src?'none':'flex';
-  // Text logo rows visibility
+  if (lgImg) lgImg.src = src || '';
+  // Panel config opacity
   const textRow = document.getElementById('cfg-text-logo-row');
   if (textRow) textRow.style.opacity = src ? '0.4' : '1';
 }
