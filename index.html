@@ -1824,12 +1824,12 @@ let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
     if (!raw) return;
     const saved = JSON.parse(raw);
     if (!saved || !saved.colors) return;
-    // Fusionar en CONFIG para que el resto del script los use
+    // Fusionar en CONFIG
     Object.assign(CONFIG.colors, saved.colors);
     Object.assign(CONFIG, saved);
     // Logo en clave separada
     const logo = localStorage.getItem('saas_platform_config_logo');
-    if (logo) CONFIG.logoSrc = logo;
+    CONFIG.logoSrc = logo || null;
     const t = (CONFIG.colors.teal   || '1e95a6').replace('#','');
     const o = (CONFIG.colors.orange || 'd46e3a').replace('#','');
     const d = (CONFIG.colors.dark   || '252530').replace('#','');
@@ -1947,57 +1947,48 @@ function liveUser(role, field, val) {
 
 // ─── Apply full CONFIG to DOM ────────────────────────────────────────
 // ─── Logo upload / remove ────────────────────────────────────────────
+// _pendingLogo: undefined=sin cambio, null=quitar, string=nuevo logo
+let _pendingLogo = undefined;
+
 function handleLogoUpload(input) {
   const file = input.files[0];
   if (!file) return;
-  // Comprimir si supera 200KB para caber en localStorage
-  if (file.size > 200000) {
+  const compress = (src) => {
+    if (file.size <= 200000) { _pendingLogo = src; updateCfgLogoPreview(); markCfgDirty(); return; }
     const img = new Image();
-    const url = URL.createObjectURL(file);
     img.onload = function() {
-      const canvas = document.createElement('canvas');
-      const scale = Math.min(1, 300 / Math.max(img.width, img.height));
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      CONFIG.logoSrc = canvas.toDataURL('image/jpeg', 0.7);
-      URL.revokeObjectURL(url);
-      applyLogoToDOM(); updateCfgLogoPreview(); markCfgDirty();
+      const c = document.createElement('canvas');
+      const sc = Math.min(1, 300 / Math.max(img.width, img.height));
+      c.width = img.width*sc; c.height = img.height*sc;
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      _pendingLogo = c.toDataURL('image/jpeg', 0.7);
+      updateCfgLogoPreview(); markCfgDirty();
     };
-    img.src = url;
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    CONFIG.logoSrc = e.target.result;
-    applyLogoToDOM();
-    updateCfgLogoPreview();
-    markCfgDirty();
+    img.src = src;
   };
+  const reader = new FileReader();
+  reader.onload = e => compress(e.target.result);
   reader.readAsDataURL(file);
 }
 function removeLogo() {
-  CONFIG.logoSrc = null;
-  applyLogoToDOM();
-  updateCfgLogoPreview();
+  _pendingLogo = null;
   document.getElementById('cfg-logo-file').value = '';
+  updateCfgLogoPreview();
   markCfgDirty();
 }
 function applyLogoToDOM() {
   const src = CONFIG.logoSrc;
-  // Clase en body: CSS con !important garantiza visibilidad correcta
   document.body.classList.toggle('has-logo', !!src);
-  // Setear src en topbar y login
   const tbImg = document.getElementById('topbar-logo-img');
   if (tbImg) tbImg.src = src || '';
   const lgImg = document.getElementById('login-logo-img');
   if (lgImg) lgImg.src = src || '';
-  // Panel config opacity
   const textRow = document.getElementById('cfg-text-logo-row');
   if (textRow) textRow.style.opacity = src ? '0.4' : '1';
 }
 function updateCfgLogoPreview() {
-  const src = CONFIG.logoSrc;
+  // Muestra sólo el logo pendiente (subido en esta sesión del panel), nunca el guardado
+  const src = (_pendingLogo !== undefined) ? _pendingLogo : null;
   const prevImg = document.getElementById('cfg-logo-prev-img');
   const prevTxt = document.getElementById('cfg-logo-prev-txt');
   if (prevImg) { prevImg.src = src||''; prevImg.style.display = src?'block':'none'; }
@@ -2144,6 +2135,7 @@ function openCfgPanel() {
   document.getElementById('cfg-adm-pass').value  = CONFIG.users.admin.pass;
   document.getElementById('cfg-ejc-name').value  = CONFIG.users.ejecutivo.name;
   document.getElementById('cfg-ejc-pass').value  = CONFIG.users.ejecutivo.pass;
+  _pendingLogo = undefined; // panel siempre empieza sin logo pendiente
   updateCfgLogoPreview();
   resetApplyBtn();
   // Rebuild dynamic lists every open so they reflect current CONFIG
@@ -2312,13 +2304,12 @@ function _updateStorageStatus(ok, msg) {
 }
 function saveConfigToStorage() {
   try {
-    // Logo en clave separada (nunca bloquea el guardado del resto)
+    // Logo en clave separada para no afectar el resto del config
     if (CONFIG.logoSrc) {
       try { localStorage.setItem(STORAGE_KEY + '_logo', CONFIG.logoSrc); } catch(e) {}
     } else {
       try { localStorage.removeItem(STORAGE_KEY + '_logo'); } catch(e) {}
     }
-    // Config sin logo (siempre cabe en localStorage)
     const slim = Object.assign({}, CONFIG, { logoSrc: null });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
   } catch(e) {
@@ -2336,8 +2327,8 @@ function loadConfigFromStorage() {
     if (saved.colors) Object.assign(CONFIG.colors, saved.colors);
     Object.assign(CONFIG, saved);
     // Cargar logo desde su clave separada
-    const logo = localStorage.getItem(STORAGE_KEY + '_logo');
-    if (logo) CONFIG.logoSrc = logo;
+    const savedLogo = localStorage.getItem(STORAGE_KEY + '_logo');
+    CONFIG.logoSrc = savedLogo || null;
     _applyDynamicColors();
     return true;
   } catch(e) { console.warn('loadConfigFromStorage error:', e); return false; }
@@ -2354,9 +2345,10 @@ function saveCfgPanel() {
   CONFIG.email    = document.getElementById('cfg-email').value    || CONFIG.email;
   CONFIG.location = document.getElementById('cfg-location').value || CONFIG.location;
   CONFIG.since    = document.getElementById('cfg-since').value    || CONFIG.since;
-  // Guardar y aplicar logo siempre, antes del try
-  saveConfigToStorage();
+  // Confirmar logo pendiente si el usuario subió/quitó uno
+  if (_pendingLogo !== undefined) { CONFIG.logoSrc = _pendingLogo; _pendingLogo = undefined; }
   applyLogoToDOM();
+  saveConfigToStorage();
   try {
     applyConfig();
     rebuildSvcList();
