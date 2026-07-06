@@ -870,15 +870,15 @@ tbody tr:hover .row-acts{opacity:1}
         <button onclick="removeLogo()">✕ Quitar logo</button>
       </div>
       <div class="cfg-2col" id="cfg-text-logo-row">
-        <div class="cfg-row"><label>Texto A</label><input class="cfg-inp" id="cfg-nameA" placeholder="Nex" oninput="liveText('logo-a',this.value);liveText('login-logo-a',this.value);"></div>
-        <div class="cfg-row"><label>Texto B</label><input class="cfg-inp" id="cfg-nameB" placeholder="Clima" oninput="liveText('logo-b',this.value);liveText('login-logo-b',this.value);"></div>
+        <div class="cfg-row"><label>Texto A</label><input class="cfg-inp" id="cfg-nameA" placeholder="Nex" oninput="liveText('logo-a',this.value);liveText('login-logo-a',this.value);markCfgDirty()"></div>
+        <div class="cfg-row"><label>Texto B</label><input class="cfg-inp" id="cfg-nameB" placeholder="Clima" oninput="liveText('logo-b',this.value);liveText('login-logo-b',this.value);markCfgDirty()"></div>
       </div>
-      <div class="cfg-row"><label>Módulo / tagline topbar</label><input class="cfg-inp" id="cfg-module" placeholder="Dashboard IA · Comercial" oninput="liveText('topbar-module',this.value)"></div>
-      <div class="cfg-row"><label>Subtítulo login</label><input class="cfg-inp" id="cfg-tagline" placeholder="Plataforma IA · Comercial" oninput="liveText('login-tagline',this.value)"></div>
-      <div class="cfg-row"><label>Subtítulo dashboard</label><input class="cfg-inp" id="cfg-dashsub" placeholder="Métricas en tiempo real · Motor IA" oninput="liveText('dash-sub',this.value)"></div>
-      <div class="cfg-row"><label>Email empresa</label><input class="cfg-inp" id="cfg-email" placeholder="contacto@empresa.cl" oninput="liveText('sb-email',this.value)"></div>
-      <div class="cfg-row"><label>Ubicación</label><input class="cfg-inp" id="cfg-location" placeholder="Santiago, Chile" oninput="liveText('sb-location',this.value)"></div>
-      <div class="cfg-row"><label>Desde el año</label><input class="cfg-inp" id="cfg-since" placeholder="desde 2020" oninput="liveText('sb-since',this.value)"></div>
+      <div class="cfg-row"><label>Módulo / tagline topbar</label><input class="cfg-inp" id="cfg-module" placeholder="Dashboard IA · Comercial" oninput="liveText('topbar-module',this.value);markCfgDirty()"></div>
+      <div class="cfg-row"><label>Subtítulo login</label><input class="cfg-inp" id="cfg-tagline" placeholder="Plataforma IA · Comercial" oninput="liveText('login-tagline',this.value);markCfgDirty()"></div>
+      <div class="cfg-row"><label>Subtítulo dashboard</label><input class="cfg-inp" id="cfg-dashsub" placeholder="Métricas en tiempo real · Motor IA" oninput="liveText('dash-sub',this.value);markCfgDirty()"></div>
+      <div class="cfg-row"><label>Email empresa</label><input class="cfg-inp" id="cfg-email" placeholder="contacto@empresa.cl" oninput="liveText('sb-email',this.value);markCfgDirty()"></div>
+      <div class="cfg-row"><label>Ubicación</label><input class="cfg-inp" id="cfg-location" placeholder="Santiago, Chile" oninput="liveText('sb-location',this.value);markCfgDirty()"></div>
+      <div class="cfg-row"><label>Desde el año</label><input class="cfg-inp" id="cfg-since" placeholder="desde 2020" oninput="liveText('sb-since',this.value);markCfgDirty()"></div>
     </div>
 
     <!-- ── COLORES ── -->
