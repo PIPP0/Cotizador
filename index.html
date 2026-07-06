@@ -1816,30 +1816,37 @@ const DEFAULT_CONFIG = {
 // @@CONFIG-END
 let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 
-// ─── Restauración INMEDIATA de colores desde localStorage ───────────
+// ─── Restauración INMEDIATA de colores + logo desde localStorage ────
 // Corre antes de cualquier evento (DOMContentLoaded / load), evita flash
 (function() {
   try {
-    const raw = localStorage.getItem('saas_platform_config');
-    if (!raw) return;
-    const saved = JSON.parse(raw);
-    if (!saved || !saved.colors) return;
-    // Fusionar en CONFIG
-    Object.assign(CONFIG.colors, saved.colors);
-    Object.assign(CONFIG, saved);
-    // Logo en clave separada
+    // 1. Logo (independiente de colores)
     const logo = localStorage.getItem('saas_platform_config_logo');
-    CONFIG.logoSrc = logo || null;
-    const t = (CONFIG.colors.teal   || '1e95a6').replace('#','');
-    const o = (CONFIG.colors.orange || 'd46e3a').replace('#','');
-    const d = (CONFIG.colors.dark   || '252530').replace('#','');
-    function _h2rgb(h){ return parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16); }
-    function _drk(h,p){ return [0,2,4].map(i=>Math.round(parseInt(h.substr(i,2),16)*(1-p)).toString(16).padStart(2,'0')).join(''); }
-    function _blnd(h,a){ return [0,2,4].map(i=>Math.round(255*(1-a)+parseInt(h.substr(i,2),16)*a).toString(16).padStart(2,'0')).join(''); }
-    const s = document.createElement('style');
-    s.id = '_dyn_colors';
-    s.textContent = ':root{--teal:#'+t+';--teal2:#'+_drk(t,0.14)+';--teal-rgb:'+_h2rgb(t)+';--orange:#'+o+';--dark:#'+d+';--bbg:#'+_blnd(t,0.09)+';--bbr:#'+_blnd(t,0.32)+';--abg:#'+_blnd(o,0.09)+';}';
-    document.head.appendChild(s);
+    if (logo) CONFIG.logoSrc = logo;
+
+    // 2. Colores + resto de config
+    const raw = localStorage.getItem('saas_platform_config');
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (saved && saved.colors) {
+        Object.assign(CONFIG.colors, saved.colors);
+        Object.assign(CONFIG, saved);
+        CONFIG.logoSrc = logo || null; // Object.assign pisa logoSrc con null; restaurarlo
+        const t = (CONFIG.colors.teal   || '1e95a6').replace('#','');
+        const o = (CONFIG.colors.orange || 'd46e3a').replace('#','');
+        const d = (CONFIG.colors.dark   || '252530').replace('#','');
+        function _h2rgb(h){ return parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16); }
+        function _drk(h,p){ return [0,2,4].map(i=>Math.round(parseInt(h.substr(i,2),16)*(1-p)).toString(16).padStart(2,'0')).join(''); }
+        function _blnd(h,a){ return [0,2,4].map(i=>Math.round(255*(1-a)+parseInt(h.substr(i,2),16)*a).toString(16).padStart(2,'0')).join(''); }
+        const s = document.createElement('style');
+        s.id = '_dyn_colors';
+        s.textContent = ':root{--teal:#'+t+';--teal2:#'+_drk(t,0.14)+';--teal-rgb:'+_h2rgb(t)+';--orange:#'+o+';--dark:#'+d+';--bbg:#'+_blnd(t,0.09)+';--bbr:#'+_blnd(t,0.32)+';--abg:#'+_blnd(o,0.09)+';}';
+        document.head.appendChild(s);
+      }
+    }
+
+    // 3. Aplicar logo al DOM inmediatamente (applyLogoToDOM hoisted)
+    if (CONFIG.logoSrc) applyLogoToDOM();
   } catch(e) {}
 })();
 
@@ -1979,10 +1986,17 @@ function removeLogo() {
 function applyLogoToDOM() {
   const src = CONFIG.logoSrc;
   document.body.classList.toggle('has-logo', !!src);
+  // Topbar
   const tbImg = document.getElementById('topbar-logo-img');
-  if (tbImg) tbImg.src = src || '';
+  const tbDef = document.getElementById('topbar-logo-default');
+  if (tbImg) { tbImg.src = src || ''; tbImg.style.display = src ? 'block' : 'none'; }
+  if (tbDef) tbDef.style.display = src ? 'none' : '';
+  // Login
   const lgImg = document.getElementById('login-logo-img');
-  if (lgImg) lgImg.src = src || '';
+  const lgDef = document.getElementById('login-logo-default');
+  if (lgImg) { lgImg.src = src || ''; lgImg.style.display = src ? 'block' : 'none'; }
+  if (lgDef) lgDef.style.display = src ? 'none' : '';
+  // Config panel
   const textRow = document.getElementById('cfg-text-logo-row');
   if (textRow) textRow.style.opacity = src ? '0.4' : '1';
 }
