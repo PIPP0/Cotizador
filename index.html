@@ -852,7 +852,7 @@ tbody tr:hover .row-acts{opacity:1}
 <div class="cfg-panel" id="cfgPanel" onclick="event.stopPropagation()">
   <div class="cfg-ph">
     <div class="cfg-ph-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
-    <div><div class="cfg-ph-title">Configurar plataforma</div><div class="cfg-ph-sub">Cambios se aplican en tiempo real</div></div>
+    <div><div class="cfg-ph-title">Configurar plataforma</div><div class="cfg-ph-sub">Los cambios se aplican al presionar Guardar</div></div>
     <button class="cfg-close" onclick="closeCfgPanel(null)">✕</button>
   </div>
   <div class="cfg-body">
@@ -870,15 +870,15 @@ tbody tr:hover .row-acts{opacity:1}
         <button onclick="removeLogo()">✕ Quitar logo</button>
       </div>
       <div class="cfg-2col" id="cfg-text-logo-row">
-        <div class="cfg-row"><label>Texto A</label><input class="cfg-inp" id="cfg-nameA" placeholder="Nex" oninput="liveText('logo-a',this.value);liveText('login-logo-a',this.value);markCfgDirty()"></div>
-        <div class="cfg-row"><label>Texto B</label><input class="cfg-inp" id="cfg-nameB" placeholder="Clima" oninput="liveText('logo-b',this.value);liveText('login-logo-b',this.value);markCfgDirty()"></div>
+        <div class="cfg-row"><label>Texto A</label><input class="cfg-inp" id="cfg-nameA" placeholder="Nex" oninput="markCfgDirty()"></div>
+        <div class="cfg-row"><label>Texto B</label><input class="cfg-inp" id="cfg-nameB" placeholder="Clima" oninput="markCfgDirty()"></div>
       </div>
-      <div class="cfg-row"><label>Módulo / tagline topbar</label><input class="cfg-inp" id="cfg-module" placeholder="Dashboard IA · Comercial" oninput="liveText('topbar-module',this.value);markCfgDirty()"></div>
-      <div class="cfg-row"><label>Subtítulo login</label><input class="cfg-inp" id="cfg-tagline" placeholder="Plataforma IA · Comercial" oninput="liveText('login-tagline',this.value);markCfgDirty()"></div>
-      <div class="cfg-row"><label>Subtítulo dashboard</label><input class="cfg-inp" id="cfg-dashsub" placeholder="Métricas en tiempo real · Motor IA" oninput="liveText('dash-sub',this.value);markCfgDirty()"></div>
-      <div class="cfg-row"><label>Email empresa</label><input class="cfg-inp" id="cfg-email" placeholder="contacto@empresa.cl" oninput="liveText('sb-email',this.value);markCfgDirty()"></div>
-      <div class="cfg-row"><label>Ubicación</label><input class="cfg-inp" id="cfg-location" placeholder="Santiago, Chile" oninput="liveText('sb-location',this.value);markCfgDirty()"></div>
-      <div class="cfg-row"><label>Desde el año</label><input class="cfg-inp" id="cfg-since" placeholder="desde 2020" oninput="liveText('sb-since',this.value);markCfgDirty()"></div>
+      <div class="cfg-row"><label>Módulo / tagline topbar</label><input class="cfg-inp" id="cfg-module" placeholder="Dashboard IA · Comercial" oninput="markCfgDirty()"></div>
+      <div class="cfg-row"><label>Subtítulo login</label><input class="cfg-inp" id="cfg-tagline" placeholder="Plataforma IA · Comercial" oninput="markCfgDirty()"></div>
+      <div class="cfg-row"><label>Subtítulo dashboard</label><input class="cfg-inp" id="cfg-dashsub" placeholder="Métricas en tiempo real · Motor IA" oninput="markCfgDirty()"></div>
+      <div class="cfg-row"><label>Email empresa</label><input class="cfg-inp" id="cfg-email" placeholder="contacto@empresa.cl" oninput="markCfgDirty()"></div>
+      <div class="cfg-row"><label>Ubicación</label><input class="cfg-inp" id="cfg-location" placeholder="Santiago, Chile" oninput="markCfgDirty()"></div>
+      <div class="cfg-row"><label>Desde el año</label><input class="cfg-inp" id="cfg-since" placeholder="desde 2020" oninput="markCfgDirty()"></div>
     </div>
 
     <!-- ── COLORES ── -->
@@ -901,15 +901,15 @@ tbody tr:hover .row-acts{opacity:1}
     <!-- ── CREDENCIALES ── -->
     <div class="cfg-sec">
       <div class="cfg-sec-title"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>CREDENCIALES</div>
-      <div class="cfg-row"><label>Nombre Admin</label><input class="cfg-inp" id="cfg-adm-name" oninput="liveUser('admin','name',this.value);markCfgDirty()"></div>
+      <div class="cfg-row"><label>Nombre Admin</label><input class="cfg-inp" id="cfg-adm-name" oninput="markCfgDirty()"></div>
       <div class="cfg-2col">
         <div class="cfg-row"><label>Usuario Admin</label><input class="cfg-inp" value="admin" readonly style="background:#f8f9fb;color:#aaa;cursor:not-allowed"></div>
-        <div class="cfg-row"><label>Contraseña Admin</label><input class="cfg-inp" id="cfg-adm-pass" type="password" oninput="liveUser('admin','pass',this.value);markCfgDirty()"></div>
+        <div class="cfg-row"><label>Contraseña Admin</label><input class="cfg-inp" id="cfg-adm-pass" type="password" oninput="markCfgDirty()"></div>
       </div>
-      <div class="cfg-row" style="margin-top:10px"><label>Nombre Ejecutivo</label><input class="cfg-inp" id="cfg-ejc-name" oninput="liveUser('ejecutivo','name',this.value);markCfgDirty()"></div>
+      <div class="cfg-row" style="margin-top:10px"><label>Nombre Ejecutivo</label><input class="cfg-inp" id="cfg-ejc-name" oninput="markCfgDirty()"></div>
       <div class="cfg-2col">
         <div class="cfg-row"><label>Usuario Ejecutivo</label><input class="cfg-inp" value="ejecutivo" readonly style="background:#f8f9fb;color:#aaa;cursor:not-allowed"></div>
-        <div class="cfg-row"><label>Contraseña Ejec.</label><input class="cfg-inp" id="cfg-ejc-pass" type="password" oninput="liveUser('ejecutivo','pass',this.value);markCfgDirty()"></div>
+        <div class="cfg-row"><label>Contraseña Ejec.</label><input class="cfg-inp" id="cfg-ejc-pass" type="password" oninput="markCfgDirty()"></div>
       </div>
     </div>
 
@@ -1817,36 +1817,29 @@ const DEFAULT_CONFIG = {
 let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 
 // ─── Restauración INMEDIATA de colores + logo desde localStorage ────
-// Corre antes de cualquier evento (DOMContentLoaded / load), evita flash
 (function() {
   try {
-    // 1. Logo (independiente de colores)
-    const logo = localStorage.getItem('saas_platform_config_logo');
-    if (logo) CONFIG.logoSrc = logo;
-
-    // 2. Colores + resto de config
-    const raw = localStorage.getItem('saas_platform_config');
+    const raw = localStorage.getItem('spc');
     if (raw) {
-      const saved = JSON.parse(raw);
-      if (saved && saved.colors) {
-        Object.assign(CONFIG.colors, saved.colors);
-        Object.assign(CONFIG, saved);
-        CONFIG.logoSrc = logo || null; // Object.assign pisa logoSrc con null; restaurarlo
-        const t = (CONFIG.colors.teal   || '1e95a6').replace('#','');
-        const o = (CONFIG.colors.orange || 'd46e3a').replace('#','');
-        const d = (CONFIG.colors.dark   || '252530').replace('#','');
-        function _h2rgb(h){ return parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16); }
-        function _drk(h,p){ return [0,2,4].map(i=>Math.round(parseInt(h.substr(i,2),16)*(1-p)).toString(16).padStart(2,'0')).join(''); }
-        function _blnd(h,a){ return [0,2,4].map(i=>Math.round(255*(1-a)+parseInt(h.substr(i,2),16)*a).toString(16).padStart(2,'0')).join(''); }
-        const s = document.createElement('style');
-        s.id = '_dyn_colors';
-        s.textContent = ':root{--teal:#'+t+';--teal2:#'+_drk(t,0.14)+';--teal-rgb:'+_h2rgb(t)+';--orange:#'+o+';--dark:#'+d+';--bbg:#'+_blnd(t,0.09)+';--bbr:#'+_blnd(t,0.32)+';--abg:#'+_blnd(o,0.09)+';}';
-        document.head.appendChild(s);
-      }
+      const sv = JSON.parse(raw);
+      if (sv.colors) { CONFIG.colors.teal = sv.colors.teal || CONFIG.colors.teal; CONFIG.colors.orange = sv.colors.orange || CONFIG.colors.orange; CONFIG.colors.dark = sv.colors.dark || CONFIG.colors.dark; }
+      ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => { if (sv[k]) CONFIG[k] = sv[k]; });
+      if (sv.users) CONFIG.users = sv.users;
+      if (sv.services) CONFIG.services = sv.services;
+      if (sv.segments) CONFIG.segments = sv.segments;
+      if (sv.sidebarServices) CONFIG.sidebarServices = sv.sidebarServices;
     }
-
-    // 3. Aplicar logo al DOM inmediatamente (applyLogoToDOM hoisted)
-    if (CONFIG.logoSrc) applyLogoToDOM();
+    const logo = localStorage.getItem('spc_logo');
+    if (logo) { CONFIG.logoSrc = logo; applyLogoToDOM(); }
+    const t = CONFIG.colors.teal.replace('#','');
+    const o = CONFIG.colors.orange.replace('#','');
+    const d = CONFIG.colors.dark.replace('#','');
+    function _h2rgb(h){ return parseInt(h.substr(0,2),16)+','+parseInt(h.substr(2,2),16)+','+parseInt(h.substr(4,2),16); }
+    function _drk(h,p){ return [0,2,4].map(i=>Math.round(parseInt(h.substr(i,2),16)*(1-p)).toString(16).padStart(2,'0')).join(''); }
+    function _blnd(h,a){ return [0,2,4].map(i=>Math.round(255*(1-a)+parseInt(h.substr(i,2),16)*a).toString(16).padStart(2,'0')).join(''); }
+    const s = document.createElement('style'); s.id='_dyn_colors';
+    s.textContent=':root{--teal:#'+t+';--teal2:#'+_drk(t,0.14)+';--teal-rgb:'+_h2rgb(t)+';--orange:#'+o+';--dark:#'+d+';--bbg:#'+_blnd(t,0.09)+';--bbr:#'+_blnd(t,0.32)+';--abg:#'+_blnd(o,0.09)+';}';
+    document.head.appendChild(s);
   } catch(e) {}
 })();
 
@@ -1912,10 +1905,8 @@ function syncColor(varName, hex) {
   // 2. Actualizar hex field (sin #)
   const hx = document.getElementById('hex-' + varName);
   if (hx && hx !== document.activeElement) hx.value = clean;
-  // 3. Aplicar al DOM y CONFIG, y auto-guardar
-  liveColor(varName, clean);
+  // 3. Solo marcar cambio pendiente — no tocar CONFIG ni CSS hasta Guardar
   markCfgDirty();
-  saveConfigToStorage();
 }
 function hexToRgb(h) {
   const r=parseInt(h.substr(0,2),16), g=parseInt(h.substr(2,2),16), b=parseInt(h.substr(4,2),16);
@@ -2057,6 +2048,13 @@ function renderSbSvcs() {
     if (CONFIG.sidebarServices[i] !== undefined) liveText(id, CONFIG.sidebarServices[i]);
   });
 }
+function renderSysRow() {
+  const row = document.getElementById('sys-container');
+  if (!row) return;
+  row.innerHTML = (CONFIG.systemTypes || []).map((s,i) =>
+    `<div class="sys-pill${i===0?' on':''}" id="sys-${s.id}" onclick="setSys('${s.id}')">${s.name}</div>`
+  ).join('');
+}
 
 // ─── Card inline editors ─────────────────────────────────────────────
 function toggleCardEditor(edId, btnId) {
@@ -2128,63 +2126,49 @@ function renderClientFields(){
 
 // ─── Panel functions ─────────────────────────────────────────────────
 function openCfgPanel() {
-  const ov = document.getElementById('cfgOverlay');
-  // MARCA
-  ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => {
-    const el = document.getElementById('cfg-'+k);
-    if (el) el.value = CONFIG[k];
-  });
-  // COLORES — IDs: sw-teal / hex-teal etc.
-  ['teal','orange','dark'].forEach(c => {
-    const swDiv = document.getElementById('sw-'+c);
-    const swInp = swDiv ? swDiv.querySelector('input[type=color]') : null;
-    const hx    = document.getElementById('hex-'+c);
-    const hex6  = CONFIG.colors[c];
-    if (swDiv) swDiv.style.background = '#'+hex6;
-    if (swInp) swInp.value = '#'+hex6;
-    if (hx)    hx.value = hex6;
-  });
-  // CREDENCIALES
-  document.getElementById('cfg-adm-name').value  = CONFIG.users.admin.name;
-  document.getElementById('cfg-adm-pass').value  = CONFIG.users.admin.pass;
-  document.getElementById('cfg-ejc-name').value  = CONFIG.users.ejecutivo.name;
-  document.getElementById('cfg-ejc-pass').value  = CONFIG.users.ejecutivo.pass;
-  _pendingLogo = undefined; // panel siempre empieza sin logo pendiente
-  updateCfgLogoPreview();
-  resetApplyBtn();
-  // Rebuild dynamic lists every open so they reflect current CONFIG
-  rebuildSvcList();
-  rebuildSegList();
-  rebuildSbSvcList();
-  // Reset footer to default state
-  const fd = document.getElementById('cfg-footer-default');
-  const fs = document.getElementById('cfg-footer-success');
-  if (fd) fd.style.display = '';
-  if (fs) fs.style.display = 'none';
-  // Listen for any input/change inside the panel to enable save button
-  const panel = document.getElementById('cfgPanel');
-  if (panel) {
-    panel._dirtyHandler = panel._dirtyHandler || function(e) {
-      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT')) {
-        markCfgDirty();
-      }
-    };
-    panel.removeEventListener('input', panel._dirtyHandler);
-    panel.removeEventListener('change', panel._dirtyHandler);
-    panel.addEventListener('input', panel._dirtyHandler);
-    panel.addEventListener('change', panel._dirtyHandler);
-  }
-  // Mostrar estado de localStorage al abrir el panel
   try {
-    const testKey = '_ls_test';
-    localStorage.setItem(testKey, '1');
-    localStorage.removeItem(testKey);
-    const hasSaved = !!localStorage.getItem(STORAGE_KEY);
-    _updateStorageStatus(true, hasSaved ? '✅ Datos guardados en este navegador' : '💡 Sin datos guardados aún');
+    const ov = document.getElementById('cfgOverlay');
+    if (!ov) return;
+    // Abrir primero — cualquier error posterior no bloquea la apertura
+    ov.classList.add('open');
+    // MARCA
+    ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => {
+      try { const el = document.getElementById('cfg-'+k); if (el) el.value = CONFIG[k] || ''; } catch(e) {}
+    });
+    // COLORES
+    ['teal','orange','dark'].forEach(c => {
+      try {
+        const swDiv = document.getElementById('sw-'+c);
+        const swInp = swDiv ? swDiv.querySelector('input[type=color]') : null;
+        const hx = document.getElementById('hex-'+c);
+        const hex6 = CONFIG.colors[c] || '';
+        if (swDiv) swDiv.style.background = '#'+hex6;
+        if (swInp) swInp.value = '#'+hex6;
+        if (hx) hx.value = hex6;
+      } catch(e) {}
+    });
+    // CREDENCIALES
+    try {
+      const u = CONFIG.users || {};
+      const a = u.admin || {}; const ej = u.ejecutivo || {};
+      const an = document.getElementById('cfg-adm-name'); if(an) an.value = a.name || '';
+      const ap = document.getElementById('cfg-adm-pass'); if(ap) ap.value = a.pass || '';
+      const en = document.getElementById('cfg-ejc-name'); if(en) en.value = ej.name || '';
+      const ep = document.getElementById('cfg-ejc-pass'); if(ep) ep.value = ej.pass || '';
+    } catch(e) {}
+    _pendingLogo = undefined;
+    updateCfgLogoPreview();
+    resetApplyBtn();
+    try { rebuildSvcList(); rebuildSegList(); rebuildSbSvcList(); } catch(e) {}
+    const fd = document.getElementById('cfg-footer-default');
+    const fs = document.getElementById('cfg-footer-success');
+    if (fd) fd.style.display = '';
+    if (fs) fs.style.display = 'none';
   } catch(e) {
-    _updateStorageStatus(false, '❌ localStorage bloqueado — usa "Descargar archivo"');
+    console.error('openCfgPanel error:', e);
+    const ov = document.getElementById('cfgOverlay');
+    if (ov) ov.classList.add('open');
   }
-  ov.classList.add('open');
 }
 // ─── Services add / remove ───────────────────────────────────
 const SVC_SUGGESTIONS = ['Ventilación Industrial','Refrigeración Comercial','Automatización BMS','Monitoreo 24/7','Auditoría Energética','Certificación HVAC','Climatización Minera','Sala Limpia','Bombas de Calor'];
@@ -2256,7 +2240,7 @@ function removeSegment(i) {
 function rebuildSbSvcList() {
   document.getElementById('cfg-sb-svc-list').innerHTML = CONFIG.sidebarServices.map((s,i)=>
     `<div class="cfg-svc-pair">
-      <input class="cfg-inp" placeholder="Etiqueta sidebar" value="${s}" oninput="CONFIG.sidebarServices[${i}]=this.value;liveText('sb-svc-${i}',this.value);markCfgDirty()">
+      <input class="cfg-inp" placeholder="Etiqueta sidebar" value="${s}" oninput="markCfgDirty()">
     </div>`).join('');
 }
 
@@ -2308,70 +2292,64 @@ function closeCfgPanel(e) {
   document.getElementById('cfgOverlay').classList.remove('open');
 }
 // ─── Persistencia localStorage ───────────────────────────────────────
-const STORAGE_KEY = 'saas_platform_config';
-function _updateStorageStatus(ok, msg) {
-  const el = document.getElementById('cfg-storage-status');
-  if (!el) return;
-  el.style.background = ok ? '#e6f9f0' : '#fdecea';
-  el.style.color = ok ? '#1a7a4a' : '#c0392b';
-  el.textContent = msg;
-}
 function saveConfigToStorage() {
   try {
-    // Logo en clave separada para no afectar el resto del config
-    if (CONFIG.logoSrc) {
-      try {
-        localStorage.setItem(STORAGE_KEY + '_logo', CONFIG.logoSrc);
-        console.log('[CFG] Logo guardado en localStorage, bytes:', CONFIG.logoSrc.length);
-      } catch(e) {
-        console.error('[CFG] ERROR al guardar logo:', e);
-      }
-    } else {
-      localStorage.removeItem(STORAGE_KEY + '_logo');
-      console.log('[CFG] Logo eliminado de localStorage');
-    }
-    const slim = Object.assign({}, CONFIG, { logoSrc: null });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
-    console.log('[CFG] Config guardado. logoSrc en CONFIG:', !!CONFIG.logoSrc);
-  } catch(e) {
-    console.warn('[CFG] localStorage unavailable:', e);
-  }
+    if (CONFIG.logoSrc) { localStorage.setItem('spc_logo', CONFIG.logoSrc); }
+    else { localStorage.removeItem('spc_logo'); }
+    const slim = {
+      nameA: CONFIG.nameA, nameB: CONFIG.nameB, module: CONFIG.module,
+      tagline: CONFIG.tagline, dashsub: CONFIG.dashsub, email: CONFIG.email,
+      location: CONFIG.location, since: CONFIG.since,
+      colors: CONFIG.colors, users: CONFIG.users,
+      services: CONFIG.services, segments: CONFIG.segments,
+      sidebarServices: CONFIG.sidebarServices, systemTypes: CONFIG.systemTypes,
+      clientFields: CONFIG.clientFields
+    };
+    localStorage.setItem('spc', JSON.stringify(slim));
+  } catch(e) { console.warn('[CFG] save error:', e); }
 }
-// Guardar también antes de cerrar la página
 window.addEventListener('beforeunload', saveConfigToStorage);
 
 function loadConfigFromStorage() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem('spc');
     if (!raw) return false;
-    const saved = JSON.parse(raw);
-    if (saved.colors) Object.assign(CONFIG.colors, saved.colors);
-    Object.assign(CONFIG, saved);
-    // Cargar logo desde su clave separada
-    const savedLogo = localStorage.getItem(STORAGE_KEY + '_logo');
-    CONFIG.logoSrc = savedLogo || null;
-    console.log('[CFG] loadConfigFromStorage - logo encontrado:', !!savedLogo, savedLogo ? savedLogo.length+'bytes' : 'null');
+    const sv = JSON.parse(raw);
+    ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => { if (sv[k] !== undefined) CONFIG[k] = sv[k]; });
+    if (sv.colors) { CONFIG.colors.teal = sv.colors.teal || CONFIG.colors.teal; CONFIG.colors.orange = sv.colors.orange || CONFIG.colors.orange; CONFIG.colors.dark = sv.colors.dark || CONFIG.colors.dark; }
+    if (sv.users) CONFIG.users = sv.users;
+    if (sv.services) CONFIG.services = sv.services;
+    if (sv.segments) CONFIG.segments = sv.segments;
+    if (sv.sidebarServices) CONFIG.sidebarServices = sv.sidebarServices;
+    if (sv.systemTypes) CONFIG.systemTypes = sv.systemTypes;
+    if (sv.clientFields) CONFIG.clientFields = sv.clientFields;
+    CONFIG.logoSrc = localStorage.getItem('spc_logo') || null;
     _applyDynamicColors();
     return true;
-  } catch(e) { console.warn('[CFG] loadConfigFromStorage error:', e); return false; }
+  } catch(e) { console.warn('[CFG] load error:', e); return false; }
 }
 
 function saveCfgPanel() {
   if (!_cfgDirty) return;
-  // Leer valores del panel al CONFIG antes del try, para que siempre queden en CONFIG
-  CONFIG.nameA    = document.getElementById('cfg-nameA').value    || CONFIG.nameA;
-  CONFIG.nameB    = document.getElementById('cfg-nameB').value    || CONFIG.nameB;
-  CONFIG.module   = document.getElementById('cfg-module').value   || CONFIG.module;
-  CONFIG.tagline  = document.getElementById('cfg-tagline').value  || CONFIG.tagline;
-  CONFIG.dashsub  = document.getElementById('cfg-dashsub').value  || CONFIG.dashsub;
-  CONFIG.email    = document.getElementById('cfg-email').value    || CONFIG.email;
-  CONFIG.location = document.getElementById('cfg-location').value || CONFIG.location;
-  CONFIG.since    = document.getElementById('cfg-since').value    || CONFIG.since;
+  // Texto
+  ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => {
+    const el = document.getElementById('cfg-' + k);
+    if (el && el.value !== '') CONFIG[k] = el.value;
+  });
+  // Colores desde hex inputs
+  ['teal','orange','dark'].forEach(c => {
+    const hx = document.getElementById('hex-' + c);
+    if (hx && /^[0-9A-Fa-f]{6}$/.test(hx.value)) CONFIG.colors[c] = hx.value;
+  });
   // Credenciales
   const admName = document.getElementById('cfg-adm-name'); if (admName && admName.value) CONFIG.users.admin.name = admName.value;
   const admPass = document.getElementById('cfg-adm-pass'); if (admPass && admPass.value) CONFIG.users.admin.pass = admPass.value;
   const ejcName = document.getElementById('cfg-ejc-name'); if (ejcName && ejcName.value) CONFIG.users.ejecutivo.name = ejcName.value;
   const ejcPass = document.getElementById('cfg-ejc-pass'); if (ejcPass && ejcPass.value) CONFIG.users.ejecutivo.pass = ejcPass.value;
+  // Servicios sidebar
+  document.querySelectorAll('#cfg-sb-svc-list input.cfg-inp').forEach((inp, i) => {
+    if (inp.value && i < CONFIG.sidebarServices.length) CONFIG.sidebarServices[i] = inp.value;
+  });
   // Confirmar logo pendiente si el usuario subió/quitó uno
   if (_pendingLogo !== undefined) { CONFIG.logoSrc = _pendingLogo; _pendingLogo = undefined; }
   applyLogoToDOM();
@@ -2390,8 +2368,8 @@ function saveCfgPanel() {
 }
 function resetConfig() {
   CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
-  localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem(STORAGE_KEY + '_logo');
+  localStorage.removeItem('spc');
+  localStorage.removeItem('spc_logo');
   const el = document.getElementById('_dyn_colors');
   if (el) el.remove();
   applyConfig();
@@ -3084,13 +3062,13 @@ window.addEventListener('load',()=>{
     }
   } catch(e){}
 
-  renderAll();
-  loadConfigFromStorage();
-  applyConfig();
-  renderSysRow();
-  rebuildSvcList();
-  rebuildSegList();
-  rebuildSbSvcList();
+  try { renderAll(); } catch(e) { console.warn('[init] renderAll:', e); }
+  try { loadConfigFromStorage(); } catch(e) { console.warn('[init] loadConfig:', e); }
+  try { applyConfig(); } catch(e) { console.warn('[init] applyConfig:', e); }
+  try { renderSysRow(); } catch(e) { console.warn('[init] renderSysRow:', e); }
+  try { rebuildSvcList(); } catch(e) { console.warn('[init] rebuildSvcList:', e); }
+  try { rebuildSegList(); } catch(e) { console.warn('[init] rebuildSegList:', e); }
+  try { rebuildSbSvcList(); } catch(e) { console.warn('[init] rebuildSbSvcList:', e); }
 
   // redraw chart on resize
   let resizeTimer;
