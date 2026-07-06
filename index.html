@@ -901,15 +901,15 @@ tbody tr:hover .row-acts{opacity:1}
     <!-- ── CREDENCIALES ── -->
     <div class="cfg-sec">
       <div class="cfg-sec-title"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>CREDENCIALES</div>
-      <div class="cfg-row"><label>Nombre Admin</label><input class="cfg-inp" id="cfg-adm-name" oninput="liveUser('admin','name',this.value)"></div>
+      <div class="cfg-row"><label>Nombre Admin</label><input class="cfg-inp" id="cfg-adm-name" oninput="liveUser('admin','name',this.value);markCfgDirty()"></div>
       <div class="cfg-2col">
         <div class="cfg-row"><label>Usuario Admin</label><input class="cfg-inp" value="admin" readonly style="background:#f8f9fb;color:#aaa;cursor:not-allowed"></div>
-        <div class="cfg-row"><label>Contraseña Admin</label><input class="cfg-inp" id="cfg-adm-pass" type="password" oninput="liveUser('admin','pass',this.value)"></div>
+        <div class="cfg-row"><label>Contraseña Admin</label><input class="cfg-inp" id="cfg-adm-pass" type="password" oninput="liveUser('admin','pass',this.value);markCfgDirty()"></div>
       </div>
-      <div class="cfg-row" style="margin-top:10px"><label>Nombre Ejecutivo</label><input class="cfg-inp" id="cfg-ejc-name" oninput="liveUser('ejecutivo','name',this.value)"></div>
+      <div class="cfg-row" style="margin-top:10px"><label>Nombre Ejecutivo</label><input class="cfg-inp" id="cfg-ejc-name" oninput="liveUser('ejecutivo','name',this.value);markCfgDirty()"></div>
       <div class="cfg-2col">
         <div class="cfg-row"><label>Usuario Ejecutivo</label><input class="cfg-inp" value="ejecutivo" readonly style="background:#f8f9fb;color:#aaa;cursor:not-allowed"></div>
-        <div class="cfg-row"><label>Contraseña Ejec.</label><input class="cfg-inp" id="cfg-ejc-pass" type="password" oninput="liveUser('ejecutivo','pass',this.value)"></div>
+        <div class="cfg-row"><label>Contraseña Ejec.</label><input class="cfg-inp" id="cfg-ejc-pass" type="password" oninput="liveUser('ejecutivo','pass',this.value);markCfgDirty()"></div>
       </div>
     </div>
 
@@ -2256,7 +2256,7 @@ function removeSegment(i) {
 function rebuildSbSvcList() {
   document.getElementById('cfg-sb-svc-list').innerHTML = CONFIG.sidebarServices.map((s,i)=>
     `<div class="cfg-svc-pair">
-      <input class="cfg-inp" placeholder="Etiqueta sidebar" value="${s}" oninput="CONFIG.sidebarServices[${i}]=this.value;liveText('sb-svc-${i}',this.value)">
+      <input class="cfg-inp" placeholder="Etiqueta sidebar" value="${s}" oninput="CONFIG.sidebarServices[${i}]=this.value;liveText('sb-svc-${i}',this.value);markCfgDirty()">
     </div>`).join('');
 }
 
@@ -2367,6 +2367,11 @@ function saveCfgPanel() {
   CONFIG.email    = document.getElementById('cfg-email').value    || CONFIG.email;
   CONFIG.location = document.getElementById('cfg-location').value || CONFIG.location;
   CONFIG.since    = document.getElementById('cfg-since').value    || CONFIG.since;
+  // Credenciales
+  const admName = document.getElementById('cfg-adm-name'); if (admName && admName.value) CONFIG.users.admin.name = admName.value;
+  const admPass = document.getElementById('cfg-adm-pass'); if (admPass && admPass.value) CONFIG.users.admin.pass = admPass.value;
+  const ejcName = document.getElementById('cfg-ejc-name'); if (ejcName && ejcName.value) CONFIG.users.ejecutivo.name = ejcName.value;
+  const ejcPass = document.getElementById('cfg-ejc-pass'); if (ejcPass && ejcPass.value) CONFIG.users.ejecutivo.pass = ejcPass.value;
   // Confirmar logo pendiente si el usuario subió/quitó uno
   if (_pendingLogo !== undefined) { CONFIG.logoSrc = _pendingLogo; _pendingLogo = undefined; }
   applyLogoToDOM();
