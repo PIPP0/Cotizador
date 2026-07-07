@@ -2845,9 +2845,9 @@ function buildLiveChart() {
     }
   }
 
-  // Only use live chart if at least 2 buckets have data (otherwise too sparse to be useful)
+  // Use live chart if there's at least 1 bucket with data
   const nonZero = ia.filter(v => v > 0).length;
-  if (nonZero < 2) return null;
+  if (nonZero < 1) return null;
 
   const manual = ia.map(v => Math.max(0, Math.round(v * 0.6)));
   return {labels, ia, manual};
@@ -2858,71 +2858,87 @@ function renderChart(){
   const d=live||PERIODS[currentPeriod].chart;
   const lbl=document.getElementById('chart-labels');
   lbl.innerHTML=d.labels.map(l=>`<span>${l}</span>`).join('');
-  const sub=`${currentPeriod==='7d'?'Últimos 7 días (vista diaria)':currentPeriod==='30d'?'Últimos 30 días (vista semanal)':'Últimos 90 días (vista mensual)'} · <span class="ab-out">✦ IA</span>`;
+  const sub=live
+    ? `${currentPeriod==='7d'?'Últimos 7 días · datos reales':currentPeriod==='30d'?'Últimas 4 semanas · datos reales':'Últimos 3 meses · datos reales'} · <span class="ab-out">✦ IA</span>`
+    : `${currentPeriod==='7d'?'Últimos 7 días (vista diaria)':currentPeriod==='30d'?'Últimos 30 días (vista semanal)':'Últimos 90 días (vista mensual)'} · <span class="ab-out">✦ IA</span>`;
   document.getElementById('chart-sub').innerHTML=sub;
 
   const canvas=document.getElementById('lineChart');
   const wrap=canvas.parentElement;
   const W=wrap.offsetWidth||500;
-  const H=110;
+  const H=130;
   canvas.width=W*2; canvas.height=H*2; // retina
   canvas.style.width=W+'px'; canvas.style.height=H+'px';
   const ctx=canvas.getContext('2d');
   ctx.scale(2,2);
   const ia=d.ia, man=d.manual;
-  if (!ia || ia.length < 2) return; // not enough data to draw
+  if (!ia || ia.length < 2) return;
   const allV=[...ia,...man];
-  const maxV=Math.max(...allV)||1; // guard div/0
-  const pad={t:22,r:16,b:8,l:30}; // top space for point labels, left for Y labels
+  const maxV=Math.max(...allV)||1;
+  const pad={t:24,r:16,b:10,l:32};
   const aw=W-pad.l-pad.r, ah=H-pad.t-pad.b;
+  const colW=Math.max(6, Math.min(28, aw/ia.length*0.55));
   const xs=ia.map((_,i)=>pad.l+i*(aw/(ia.length-1)));
   const yf=v=>pad.t+ah-(v/maxV)*ah;
+  const baseline=pad.t+ah;
 
   ctx.clearRect(0,0,W,H);
 
   // grid + Y-axis labels
   ctx.font='bold 10px system-ui,sans-serif';
   ctx.textAlign='right';
-  ctx.strokeStyle='#edf0f4'; ctx.lineWidth=1;
-  // only show integer ticks that exist in the data range
-  const ticks=[...new Set([0,Math.round(maxV/2),maxV])];
+  const ticks=[...new Set([0,Math.round(maxV/2),maxV].filter(v=>v>=0))];
   ticks.forEach(val=>{
     const y=yf(val);
     ctx.strokeStyle='#edf0f4'; ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+aw,y); ctx.stroke();
-    ctx.fillStyle='#8888aa';
+    ctx.fillStyle='#9999bb';
     ctx.fillText(val, pad.l-5, y+3.5);
   });
-
   ctx.textAlign='left';
-  // manual dashed
-  ctx.strokeStyle='#d46e3a'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]); ctx.globalAlpha=.55;
+
+  // colored columns for IA data (behind lines)
+  ia.forEach((v,i)=>{
+    if(v===0) return;
+    const x=xs[i]-colW/2;
+    const y=yf(v);
+    const h=baseline-y;
+    // column fill
+    ctx.fillStyle='rgba(30,149,166,0.13)';
+    ctx.fillRect(x, y, colW, h);
+    // top border of column
+    ctx.fillStyle='rgba(30,149,166,0.55)';
+    ctx.fillRect(x, y, colW, 2);
+  });
+
+  // manual dashed line
+  ctx.strokeStyle='#d46e3a'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]); ctx.globalAlpha=.5;
   ctx.beginPath(); man.forEach((v,i)=>{i===0?ctx.moveTo(xs[i],yf(v)):ctx.lineTo(xs[i],yf(v))}); ctx.stroke();
   ctx.setLineDash([]); ctx.globalAlpha=1;
 
-  // ia fill
-  const grd=ctx.createLinearGradient(0,pad.t,0,H);
-  grd.addColorStop(0,'rgba(var(--teal-rgb),.14)'); grd.addColorStop(1,'rgba(var(--teal-rgb),0)');
-  ctx.fillStyle=grd; ctx.beginPath();
-  ia.forEach((v,i)=>{i===0?ctx.moveTo(xs[i],yf(v)):ctx.lineTo(xs[i],yf(v))});
-  ctx.lineTo(xs[xs.length-1],H); ctx.lineTo(xs[0],H); ctx.closePath(); ctx.fill();
-
   // ia line
-  ctx.strokeStyle='#1e95a6'; ctx.lineWidth=2.5; ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.strokeStyle='#1e95a6'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.lineJoin='round';
   ctx.beginPath(); ia.forEach((v,i)=>{i===0?ctx.moveTo(xs[i],yf(v)):ctx.lineTo(xs[i],yf(v))}); ctx.stroke();
 
-  // dots + value labels on each point
+  // dots + value labels
   ctx.font='bold 10px system-ui,sans-serif';
   ctx.textAlign='center';
   ia.forEach((v,i)=>{
-    const r=i===ia.length-1?5:3.5;
-    ctx.beginPath(); ctx.arc(xs[i],yf(v),r,0,Math.PI*2);
-    ctx.fillStyle=i===ia.length-1?'#1e95a6':'white';
+    const dotR = v>0 ? 5 : 3;
+    ctx.beginPath(); ctx.arc(xs[i], yf(v), dotR, 0, Math.PI*2);
+    ctx.fillStyle = v>0 ? '#1e95a6' : 'white';
     ctx.strokeStyle='#1e95a6'; ctx.lineWidth=2; ctx.fill(); ctx.stroke();
-    // value label above dot
     if(v>0){
-      ctx.fillStyle='#252530';
-      ctx.fillText(v, xs[i], yf(v)-8);
+      // pill background for value label
+      const lbl=String(v);
+      const tw=ctx.measureText(lbl).width+8;
+      const ty=Math.max(12, yf(v)-14);
+      ctx.fillStyle='#1e95a6';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(xs[i]-tw/2, ty-8, tw, 14, 4) : ctx.rect(xs[i]-tw/2, ty-8, tw, 14);
+      ctx.fill();
+      ctx.fillStyle='white';
+      ctx.fillText(lbl, xs[i], ty+2);
     }
   });
 
