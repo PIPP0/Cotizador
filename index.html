@@ -1290,9 +1290,9 @@ tbody tr:hover .row-acts{opacity:1}
           <div class="chart-tooltip" id="chartTip"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t4);margin-top:4px" id="chart-labels"></div>
-        <div class="chart-legend" style="margin-top:10px">
+        <div class="chart-legend" style="margin-top:10px" id="chart-legend">
           <div class="cl-item"><div class="cl-line" style="background:var(--teal)"></div>Con IA</div>
-          <div class="cl-item"><div class="cl-dash" style="border-color:var(--orange)"></div>Sin IA (estimado)</div>
+          <div class="cl-item" id="legend-sin-ia"><div class="cl-dash" style="border-color:var(--orange)"></div>Sin IA (estimado)</div>
         </div>
       </div>
     </div>
@@ -2911,10 +2911,12 @@ function renderChart(){
     ctx.fillRect(x, y, colW, 2);
   });
 
-  // manual dashed line
-  ctx.strokeStyle='#d46e3a'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]); ctx.globalAlpha=.5;
-  ctx.beginPath(); man.forEach((v,i)=>{i===0?ctx.moveTo(xs[i],yf(v)):ctx.lineTo(xs[i],yf(v))}); ctx.stroke();
-  ctx.setLineDash([]); ctx.globalAlpha=1;
+  // manual dashed line — only show for static/demo data, not for real pipeline data
+  if(!live){
+    ctx.strokeStyle='#d46e3a'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]); ctx.globalAlpha=.5;
+    ctx.beginPath(); man.forEach((v,i)=>{i===0?ctx.moveTo(xs[i],yf(v)):ctx.lineTo(xs[i],yf(v))}); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha=1;
+  }
 
   // ia line
   ctx.strokeStyle='#1e95a6'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.lineJoin='round';
@@ -2942,6 +2944,10 @@ function renderChart(){
     }
   });
 
+  // show/hide "Sin IA" legend item
+  const legendSinIA = document.getElementById('legend-sin-ia');
+  if(legendSinIA) legendSinIA.style.display = live ? 'none' : '';
+
   // tooltip on hover
   canvas.onmousemove=e=>{
     const rect=canvas.getBoundingClientRect();
@@ -2952,7 +2958,9 @@ function renderChart(){
     if(dist<30 && nearest>=0){
       const lbl2=d.labels[nearest];
       const iaV=ia[nearest]; const manV=man[nearest];
-      tip.innerHTML=`<strong>${lbl2}</strong><br>Con IA: <strong>${iaV}</strong> cotizaciones<br>Sin IA (est.): <strong>${manV}</strong>`;
+      tip.innerHTML=live
+        ? `<strong>${lbl2}</strong><br>Con IA: <strong>${iaV}</strong> cotizaciones`
+        : `<strong>${lbl2}</strong><br>Con IA: <strong>${iaV}</strong> cotizaciones<br>Sin IA (est.): <strong>${manV}</strong>`;
       const tipX=xs[nearest]/W*100;
       tip.style.left=(tipX<60?xs[nearest]+12:xs[nearest]-150)+'px';
       tip.style.top=(yf(ia[nearest])-10)+'px';
