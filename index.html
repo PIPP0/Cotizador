@@ -3655,7 +3655,8 @@ function go4(){
       const rawTotal=(document.getElementById('tt')?.textContent||'0').replace(/[^0-9]/g,'');
       const monto=parseInt(rawTotal)||0;
       const venceDate=new Date(); venceDate.setDate(venceDate.getDate()+30);
-      const venceStr=venceDate.toLocaleDateString('es-CL',{day:'2-digit',month:'short'}).replace('.','');
+      const _months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      const venceStr=String(venceDate.getDate()).padStart(2,'0')+' '+_months[venceDate.getMonth()];
       const newRow={
         id: qId,
         cliente: d.toName,
