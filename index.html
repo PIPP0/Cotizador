@@ -2585,7 +2585,7 @@ const PIPELINE_DEMO = [
 let PIPELINE = [...PIPELINE_DEMO.map(r=>({...r}))];
 
 function savePipelineToStorage() {
-  savePipelineToStorage();
+  try { localStorage.setItem('nexclima_pipeline', JSON.stringify(PIPELINE)); } catch(e){}
   if (_fbDb) {
     _fbDb.ref('pipeline').set(PIPELINE).catch(e => console.warn('[Firebase] pipeline save error:', e));
   }
@@ -2696,6 +2696,67 @@ document.querySelectorAll('.dtab').forEach(el=>{
 });
 
 // ══════════════════════════════════════════════════
+//  LIVE KPI COMPUTATION FROM PIPELINE
+// ══════════════════════════════════════════════════
+function buildLiveData() {
+  if (!PIPELINE || PIPELINE.length === 0) return null;
+
+  // Filter by period using 'created' timestamp when available
+  const now = Date.now();
+  const periodMs = { '7d': 7*86400000, '30d': 30*86400000, '90d': 90*86400000 };
+  const cutoff = now - (periodMs[currentPeriod] || periodMs['30d']);
+  const rows = PIPELINE.filter(r => !r.created || r.created >= cutoff);
+  // Fallback: if no rows have timestamps, use all rows
+  const data = rows.length > 0 ? rows : PIPELINE;
+
+  const active = data.filter(r => r.estado !== 'Perdida');
+  const ganadas = data.filter(r => r.estado === 'Ganada');
+  const pipTotal = active.reduce((s, r) => s + (r.monto || 0), 0);
+  const avgProb = active.length
+    ? Math.round(active.reduce((s, r) => s + (r.prob || 0), 0) / active.length)
+    : 0;
+  const clientes = new Set(data.map(r => r.cliente)).size;
+
+  const fmtMoney = v => v >= 1e9 ? '$' + (v/1e9).toFixed(1) + 'B'
+                      : v >= 1e6 ? '$' + (v/1e6).toFixed(1) + 'M'
+                      : '$' + v.toLocaleString('es-CL');
+
+  // Services
+  const SVC_COLORS = {
+    'Mantenimiento de Clima':'#1e95a6','Instalaciones de Clima':'#8aaac5',
+    'Eficiencia Energética':'#e4b840','Calidad del Aire':'#d46e3a',
+    'Ingeniería de Proyectos':'#aaaabc','Mantenimiento Virtual':'#c5d0d9'
+  };
+  const svcMap = {};
+  data.forEach(r => {
+    const k = r.svc || 'Otros';
+    if (!svcMap[k]) svcMap[k] = { n:k, c:0, color: SVC_COLORS[k]||'#9999aa' };
+    svcMap[k].c++;
+  });
+  const servicios = Object.values(svcMap).sort((a,b) => b.c - a.c);
+
+  // Segments
+  const segMap = {};
+  data.forEach(r => {
+    const k = r.seg || 'Otros';
+    if (!segMap[k]) segMap[k] = { s:k, monto:0 };
+    segMap[k].monto += (r.monto || 0);
+  });
+  const segsArr = Object.values(segMap).sort((a,b) => b.monto - a.monto);
+  const maxM = segsArr[0]?.monto || 1;
+  const segmentos = segsArr.map(s => ({
+    s: s.s, v: fmtMoney(s.monto), pct: Math.round(s.monto / maxM * 100)
+  }));
+
+  return {
+    kpis: { cot: data.length, pip: fmtMoney(pipTotal), conv: avgProb+'%', time:'8 min', cli: clientes },
+    kd:   { cot:'datos reales', pip:'datos reales', conv:'datos reales', time:'− IA', cli:'datos reales' },
+    servicios,
+    segmentos
+  };
+}
+
+// ══════════════════════════════════════════════════
 //  RENDER ALL
 // ══════════════════════════════════════════════════
 function renderAll(){
@@ -2710,8 +2771,9 @@ function renderAll(){
 //  KPIs
 // ══════════════════════════════════════════════════
 function renderKPIs(){
+  const live=buildLiveData();
   const d=PERIODS[currentPeriod];
-  const k=d.kpis, kd=d.kd;
+  const k=live?live.kpis:d.kpis, kd=live?live.kd:d.kd;
   document.getElementById('tb-pipeline').textContent=k.pip;
   document.getElementById('tb-conv').textContent=k.conv;
   const icons={
@@ -2727,15 +2789,17 @@ function renderKPIs(){
     {key:'pip',cls:'or',ic:'ki-o',vc:'kv-o',label:'Ingreso proyectado (CLP)'},
     {key:'conv',cls:'gd',ic:'ki-g',vc:'kv-g',label:'Tasa de conversión IA'},
     {key:'time',cls:'gr',ic:'ki-gr',vc:'kv-gr',label:'Tiempo prom. cotización'},
-    {key:'cli',cls:'bg',ic:'ki-bg',vc:'kv-bg',label:'Clientes nuevos'},
+    {key:'cli',cls:'bg',ic:'ki-bg',vc:'kv-bg',label:'Clientes únicos'},
   ].map(c=>{
     const delta=kd[c.key];
-    const isUp=delta.startsWith('+');
-    const isEq=delta==='=';
-    const dcls=isEq?'kd-neu':isUp?'kd-up':'kd-dn';
-    const arr=isEq?'':(isUp?'<svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>':'<svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>');
+    const isReal=delta==='datos reales'||delta==='− IA';
+    const isUp=!isReal&&delta.startsWith('+');
+    const isEq=!isReal&&delta==='=';
+    const dcls=isReal?'kd-neu':isEq?'kd-neu':isUp?'kd-up':'kd-dn';
+    const arr=isReal||isEq?'':(isUp?'<svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>':'<svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>');
     const extra=aiExtra[c.key]||'';
-    return `<div class="kpi-card ${c.cls}"><div class="kpi-icon ${c.ic}">${icons[c.key]}</div><div class="kpi-val ${c.vc}" id="kv-${c.key}">${k[c.key]}</div><div class="kpi-lbl">${c.label}${extra}</div><div class="kpi-delta ${dcls}">${arr}${delta} vs. mes anterior</div></div>`;
+    const suffix=isReal?' · pipeline real':' vs. mes anterior';
+    return `<div class="kpi-card ${c.cls}"><div class="kpi-icon ${c.ic}">${icons[c.key]}</div><div class="kpi-val ${c.vc}" id="kv-${c.key}">${k[c.key]}</div><div class="kpi-lbl">${c.label}${extra}</div><div class="kpi-delta ${dcls}">${arr}${delta}${suffix}</div></div>`;
   }).join('');
   document.getElementById('kpi-row').innerHTML=html;
 }
@@ -2820,7 +2884,8 @@ function renderChart(){
 //  DONUT
 // ══════════════════════════════════════════════════
 function renderDonut(){
-  const svcs=PERIODS[currentPeriod].servicios;
+  const live=buildLiveData();
+  const svcs=(live&&live.servicios&&live.servicios.length)?live.servicios:PERIODS[currentPeriod].servicios;
   const total=svcs.reduce((a,s)=>a+s.c,0);
   document.getElementById('donut-sub').textContent=total+' cotizaciones';
   document.getElementById('donut-center-val').textContent=total;
@@ -2854,7 +2919,8 @@ function renderDonut(){
 // ══════════════════════════════════════════════════
 const SEG_COLORS=['#1e95a6','#8aaac5','#e4b840','#d46e3a','#aaaabc','#c5d0d9'];
 function renderSegBars(targetId='seg-bars'){
-  const segs=PERIODS[currentPeriod].segmentos;
+  const live=buildLiveData();
+  const segs=(live&&live.segmentos&&live.segmentos.length)?live.segmentos:PERIODS[currentPeriod].segmentos;
   const html=segs.map((s,i)=>`<div class="bar-row"><div class="bar-lbl">${s.s}</div><div class="bar-track" title="${s.v}"><div class="bar-fill" style="width:0%;background:${SEG_COLORS[i]}"></div></div><div class="bar-v">${s.v}</div></div>`).join('');
   document.getElementById(targetId).innerHTML=html;
   // animate after paint
@@ -3667,7 +3733,8 @@ function go4(){
         prob: _cotConvProb,
         estado: 'Enviada',
         vence: venceStr,
-        tip: d.tipText
+        tip: d.tipText,
+        created: Date.now()
       };
       PIPELINE.unshift(newRow);
       savePipelineToStorage();
