@@ -2812,15 +2812,16 @@ function renderKPIs(){
 let chartTooltipVisible=false;
 function buildLiveChart() {
   const withTs = PIPELINE.filter(r => r.created);
-  if (withTs.length === 0) return null; // no timestamps → use static data
+  if (withTs.length === 0) return null;
 
   const now = Date.now();
   const _dayMs = 86400000;
   const _wkMs  = 7 * _dayMs;
   const _mo    = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 
+  let labels=[], ia=[];
+
   if (currentPeriod === '7d') {
-    const labels=[]; const ia=[];
     for(let i=6;i>=0;i--){
       const d=new Date(now - i*_dayMs);
       labels.push(['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][d.getDay()]);
@@ -2828,19 +2829,13 @@ function buildLiveChart() {
       const dayEnd=dayStart+_dayMs;
       ia.push(withTs.filter(r=>r.created>=dayStart&&r.created<dayEnd).length);
     }
-    const manual=ia.map(v=>Math.max(0,Math.round(v*0.6)));
-    return {labels, ia, manual};
   } else if (currentPeriod === '30d') {
-    const labels=[]; const ia=[];
     for(let i=3;i>=0;i--){
       const wStart=now-(i+1)*_wkMs, wEnd=now-i*_wkMs;
       labels.push('Sem '+(4-i));
       ia.push(withTs.filter(r=>r.created>=wStart&&r.created<wEnd).length);
     }
-    const manual=ia.map(v=>Math.max(0,Math.round(v*0.6)));
-    return {labels, ia, manual};
   } else {
-    const labels=[]; const ia=[];
     for(let i=2;i>=0;i--){
       const d=new Date(now); d.setMonth(d.getMonth()-i);
       labels.push(_mo[d.getMonth()]+' (Mes '+(3-i)+')');
@@ -2848,9 +2843,14 @@ function buildLiveChart() {
       const mEnd=new Date(d.getFullYear(),d.getMonth()+1,1).getTime();
       ia.push(withTs.filter(r=>r.created>=mStart&&r.created<mEnd).length);
     }
-    const manual=ia.map(v=>Math.max(0,Math.round(v*0.6)));
-    return {labels, ia, manual};
   }
+
+  // Only use live chart if at least 2 buckets have data (otherwise too sparse to be useful)
+  const nonZero = ia.filter(v => v > 0).length;
+  if (nonZero < 2) return null;
+
+  const manual = ia.map(v => Math.max(0, Math.round(v * 0.6)));
+  return {labels, ia, manual};
 }
 
 function renderChart(){
@@ -2858,7 +2858,7 @@ function renderChart(){
   const d=live||PERIODS[currentPeriod].chart;
   const lbl=document.getElementById('chart-labels');
   lbl.innerHTML=d.labels.map(l=>`<span>${l}</span>`).join('');
-  const sub=live?`${currentPeriod==='7d'?'Últimos 7 días (datos reales)':currentPeriod==='30d'?'Últimas 4 semanas (datos reales)':'Últimos 3 meses (datos reales)'} · <span class="ab-out">✦ IA</span>`:`${currentPeriod==='7d'?'Últimos 7 días (vista diaria)':currentPeriod==='30d'?'Últimos 30 días (vista semanal)':'Últimos 90 días (vista mensual)'} · <span class="ab-out">✦ IA</span>`;
+  const sub=`${currentPeriod==='7d'?'Últimos 7 días (vista diaria)':currentPeriod==='30d'?'Últimos 30 días (vista semanal)':'Últimos 90 días (vista mensual)'} · <span class="ab-out">✦ IA</span>`;
   document.getElementById('chart-sub').innerHTML=sub;
 
   const canvas=document.getElementById('lineChart');
@@ -2873,16 +2873,25 @@ function renderChart(){
   if (!ia || ia.length < 2) return; // not enough data to draw
   const allV=[...ia,...man];
   const maxV=Math.max(...allV)||1; // guard div/0
-  const pad={t:12,r:16,b:8,l:8};
+  const pad={t:12,r:16,b:8,l:30}; // left space for Y labels
   const aw=W-pad.l-pad.r, ah=H-pad.t-pad.b;
   const xs=ia.map((_,i)=>pad.l+i*(aw/(ia.length-1)));
   const yf=v=>pad.t+ah-(v/maxV)*ah;
 
   ctx.clearRect(0,0,W,H);
-  // grid
+  // grid + Y-axis labels
+  ctx.font='9px system-ui,sans-serif';
+  ctx.textAlign='right';
   ctx.strokeStyle='#edf0f4'; ctx.lineWidth=1;
-  [0,.33,.66,1].forEach(f=>{ctx.beginPath();const y=pad.t+ah*(1-f);ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+aw,y);ctx.stroke()});
+  [0,.33,.66,1].forEach(f=>{
+    const y=pad.t+ah*(1-f);
+    const val=Math.round(maxV*f);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+aw,y); ctx.stroke();
+    ctx.fillStyle='#aaaabc';
+    ctx.fillText(val, pad.l-4, y+3.5);
+  });
 
+  ctx.textAlign='left'; // reset after Y labels
   // manual dashed
   ctx.strokeStyle='#d46e3a'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]); ctx.globalAlpha=.55;
   ctx.beginPath(); man.forEach((v,i)=>{i===0?ctx.moveTo(xs[i],yf(v)):ctx.lineTo(xs[i],yf(v))}); ctx.stroke();
@@ -2989,9 +2998,11 @@ const COLS=[
   {k:'monto',l:'Monto',w:''},
   {k:'prob',l:'Prob. Conversión IA',w:''},
   {k:'estado',l:'Estado',w:''},
+  {k:'created',l:'F. Envío',w:''},
   {k:'vence',l:'Vence',w:''},
   {k:'_act',l:'',w:'80px'},
 ];
+function _fmtShort(ts){ if(!ts) return '—'; const d=new Date(ts); const mo=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']; return String(d.getDate()).padStart(2,'0')+' '+mo[d.getMonth()]; }
 
 function filteredRows(){
   return PIPELINE.filter(r=>{
@@ -3045,6 +3056,7 @@ function renderTableInto(tableId, rows){
           </div>
         </td>
         <td><span class="badge ${STATUS_BADGE[r.estado]||'bg-gray'}" onclick="event.stopPropagation();cycleStatus('${r.id}')">${r.estado}</span></td>
+        <td style="color:var(--t3);font-size:12px">${_fmtShort(r.created)}</td>
         <td style="color:var(--t3);font-size:12px">${r.vence}</td>
         <td><div class="row-acts" onclick="event.stopPropagation()">
           <button class="row-btn" onclick="openModal('${r.id}')">Ver</button>
