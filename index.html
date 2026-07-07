@@ -872,6 +872,10 @@ tbody tr:hover .row-acts{opacity:1}
         <label for="cfg-logo-file">↑ Subir imagen</label>
         <button onclick="removeLogo()">✕ Quitar logo</button>
       </div>
+      <div class="cfg-row" style="margin-top:6px">
+        <label style="font-size:11px">URL logo (correos)</label>
+        <input class="cfg-inp" id="cfg-logoUrl" placeholder="https://..." oninput="markCfgDirty()" style="font-size:11px">
+      </div>
       <div class="cfg-2col" id="cfg-text-logo-row">
         <div class="cfg-row"><label>Texto A</label><input class="cfg-inp" id="cfg-nameA" placeholder="Nex" oninput="markCfgDirty()"></div>
         <div class="cfg-row"><label>Texto B</label><input class="cfg-inp" id="cfg-nameB" placeholder="Clima" oninput="markCfgDirty()"></div>
@@ -1770,6 +1774,7 @@ const _selfScript = document.currentScript;
 // @@CONFIG-START
 const DEFAULT_CONFIG = {
   logoSrc:  null,
+  logoUrl:  null,
   nameA:    'Nex',
   nameB:    'Clima',
   module:   'Dashboard IA · Comercial',
@@ -2139,6 +2144,7 @@ function openCfgPanel() {
     ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => {
       try { const el = document.getElementById('cfg-'+k); if (el) el.value = CONFIG[k] || ''; } catch(e) {}
     });
+    try { const lu = document.getElementById('cfg-logoUrl'); if (lu) lu.value = CONFIG.logoUrl || ''; } catch(e) {}
     // COLORES
     ['teal','orange','dark'].forEach(c => {
       try {
@@ -2330,7 +2336,8 @@ function saveConfigToStorage() {
       services: CONFIG.services, segments: CONFIG.segments,
       sidebarServices: CONFIG.sidebarServices, systemTypes: CONFIG.systemTypes,
       clientFields: CONFIG.clientFields,
-      logoSrc: CONFIG.logoSrc || null
+      logoSrc: CONFIG.logoSrc || null,
+      logoUrl: CONFIG.logoUrl || null
     };
     localStorage.setItem('spc', JSON.stringify(slim));
     // Guardar en Firebase (sincroniza con todos los dispositivos)
@@ -2360,6 +2367,7 @@ function _syncFromFirebase() {
       if (r.logoSrc) localStorage.setItem('spc_logo', r.logoSrc);
       else localStorage.removeItem('spc_logo');
     }
+    if (r.logoUrl !== undefined) CONFIG.logoUrl = r.logoUrl;
     // Actualizar localStorage con la versión de Firebase
     localStorage.setItem('spc', JSON.stringify(r));
     _applyDynamicColors();
@@ -2395,6 +2403,9 @@ function saveCfgPanel() {
     const el = document.getElementById('cfg-' + k);
     if (el && el.value !== '') CONFIG[k] = el.value;
   });
+  // URL logo para correos
+  const luEl = document.getElementById('cfg-logoUrl');
+  if (luEl) CONFIG.logoUrl = luEl.value.trim() || null;
   // Colores desde hex inputs
   ['teal','orange','dark'].forEach(c => {
     const hx = document.getElementById('hex-' + c);
@@ -2573,11 +2584,32 @@ const PIPELINE_DEMO = [
 
 let PIPELINE = [...PIPELINE_DEMO.map(r=>({...r}))];
 
+function savePipelineToStorage() {
+  savePipelineToStorage();
+  if (_fbDb) {
+    _fbDb.ref('pipeline').set(PIPELINE).catch(e => console.warn('[Firebase] pipeline save error:', e));
+  }
+}
+
+function _syncPipelineFromFirebase() {
+  if (!_fbDb) return;
+  _fbDb.ref('pipeline').once('value').then(snapshot => {
+    const r = snapshot.val();
+    if (!r || !Array.isArray(r) || r.length === 0) return;
+    PIPELINE.length = 0;
+    r.forEach(row => PIPELINE.push(row));
+    localStorage.setItem('nexclima_pipeline', JSON.stringify(PIPELINE));
+    renderAll();
+    console.log('[Firebase] pipeline sincronizado:', r.length, 'filas');
+  }).catch(e => console.warn('[Firebase] pipeline sync error:', e));
+}
+
 function resetDemoData(){
   if(!confirm('¿Restablecer los datos de ejemplo? Se perderán los datos importados.')) return;
   localStorage.removeItem('nexclima_pipeline');
   PIPELINE.length = 0;
   PIPELINE_DEMO.forEach(r => PIPELINE.push({...r}));
+  savePipelineToStorage();
   renderTable();
   if(typeof renderTable2 === 'function') renderTable2();
   toast('Datos de ejemplo restablecidos', 'blue');
@@ -2953,13 +2985,14 @@ function cycleStatus(id){
   if(!r) return;
   const idx=STATUSES.indexOf(r.estado);
   r.estado=STATUSES[(idx+1)%STATUSES.length];
-  try { localStorage.setItem('nexclima_pipeline', JSON.stringify(PIPELINE)); } catch(e){}
+  savePipelineToStorage();
   renderTable(); renderTable2();
   toast(`${r.id} → ${r.estado}`,'blue');
 }
 function deleteRow(id){
   if(!confirm('¿Eliminar cotización '+id+'?')) return;
   PIPELINE=PIPELINE.filter(x=>x.id!==id);
+  savePipelineToStorage();
   renderTable(); renderTable2();
   toast('Cotización eliminada','warn');
 }
@@ -3134,6 +3167,7 @@ window.addEventListener('load',()=>{
   try { loadConfigFromStorage(); } catch(e) { console.warn('[init] loadConfig:', e); }
   try { applyConfig(); } catch(e) { console.warn('[init] applyConfig:', e); }
   try { _syncFromFirebase(); } catch(e) { console.warn('[init] fbSync:', e); }
+  try { _syncPipelineFromFirebase(); } catch(e) { console.warn('[init] pipelineSync:', e); }
   try { renderSysRow(); } catch(e) { console.warn('[init] renderSysRow:', e); }
   try { rebuildSvcList(); } catch(e) { console.warn('[init] rebuildSvcList:', e); }
   try { rebuildSegList(); } catch(e) { console.warn('[init] rebuildSegList:', e); }
@@ -3330,7 +3364,7 @@ function confirmImport(){
   newPipeline.forEach(r => PIPELINE.push(r));
 
   // Guardar en localStorage para persistir entre recargas
-  try { localStorage.setItem('nexclima_pipeline', JSON.stringify(PIPELINE)); } catch(e){}
+  savePipelineToStorage();
 
   renderTable();
   if(typeof renderTable2 === 'function') renderTable2();
@@ -3600,7 +3634,8 @@ function go4(){
     company_location:CONFIG.location || '',
     company_since:   CONFIG.since    || '',
     company_tagline: CONFIG.tagline  || '',
-    company_logo:    CONFIG.logoSrc  || '',
+    company_logo:    CONFIG.logoUrl  || '',
+    company_dark:    '#' + (CONFIG.colors.dark || '252530'),
     email:           CONFIG.email    || ''
   }).then(()=>{
     // KPIs dinámicos en screen 4
@@ -3610,6 +3645,34 @@ function go4(){
     document.getElementById('kv-conv').textContent=_cotConvProb+'%';
     setNav(3,'done'); setNav(4,'active'); cShow(4);
     btn.disabled=false; btn.textContent='Enviar al cliente →';
+
+    // ── Agregar al pipeline ──────────────────────────────
+    try {
+      const sysLabel={split:'Split/Compactos',vrv:'VRV/VRF',chiller:'Chiller',uma:'UMA/Manejadora',vinvex:'VIN/VEX',solar:'Paneles Solares',cal:'Calefacción'};
+      const segShort={hotel:'Hotelería y Gast.',edu:'Ctros. Formación',of:'Oficinas',ret:'Retail',con:'Construcción y Arq.',pub:'Mercado Público'};
+      const neq=parseInt(document.getElementById('ne')?.value)||1;
+      const sysName=sysLabel[sys]||sys;
+      const rawTotal=(document.getElementById('tt')?.textContent||'0').replace(/[^0-9]/g,'');
+      const monto=parseInt(rawTotal)||0;
+      const venceDate=new Date(); venceDate.setDate(venceDate.getDate()+30);
+      const venceStr=venceDate.toLocaleDateString('es-CL',{day:'2-digit',month:'short'}).replace('.','');
+      const newRow={
+        id: qId,
+        cliente: d.toName,
+        seg: segShort[seg]||seg,
+        svc: d.servicio,
+        sys: neq+'× '+sysName,
+        monto: monto,
+        prob: _cotConvProb,
+        estado: 'Enviada',
+        vence: venceStr,
+        tip: d.tipText
+      };
+      PIPELINE.unshift(newRow);
+      savePipelineToStorage();
+      if(typeof renderTable==='function') renderTable();
+      if(typeof renderTable2==='function') renderTable2();
+    } catch(pe){ console.warn('[pipeline] error al guardar cotización:', pe); }
   }).catch(err=>{
     console.error('EmailJS error:',err);
     toast('Error al enviar. Verifica el email ingresado.','red');
