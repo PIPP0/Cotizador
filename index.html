@@ -1285,8 +1285,8 @@ tbody tr:hover .row-acts{opacity:1}
         <div class="card-act" onclick="switchView('cotizaciones')">Ver todas →</div>
       </div>
       <div class="card-body" style="padding-bottom:10px">
-        <div class="chart-canvas-wrap" style="height:110px">
-          <canvas id="lineChart" height="110"></canvas>
+        <div class="chart-canvas-wrap" style="height:155px">
+          <canvas id="lineChart" height="155"></canvas>
           <div class="chart-tooltip" id="chartTip"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t4);margin-top:4px" id="chart-labels"></div>
@@ -2866,7 +2866,7 @@ function renderChart(){
   const canvas=document.getElementById('lineChart');
   const wrap=canvas.parentElement;
   const W=wrap.offsetWidth||500;
-  const H=130;
+  const H=155;
   canvas.width=W*2; canvas.height=H*2; // retina
   canvas.style.width=W+'px'; canvas.style.height=H+'px';
   const ctx=canvas.getContext('2d');
@@ -2875,7 +2875,7 @@ function renderChart(){
   if (!ia || ia.length < 2) return;
   const allV=[...ia,...man];
   const maxV=Math.max(...allV)||1;
-  const pad={t:24,r:16,b:10,l:32};
+  const pad={t:24,r:16,b:32,l:32};
   const aw=W-pad.l-pad.r, ah=H-pad.t-pad.b;
   const colW=Math.max(6, Math.min(28, aw/ia.length*0.55));
   const xs=ia.map((_,i)=>pad.l+i*(aw/(ia.length-1)));
@@ -2943,6 +2943,16 @@ function renderChart(){
       ctx.fillText(lbl, xs[i], ty+2);
     }
   });
+
+  // X-axis labels drawn on canvas (below baseline, aligned to data points)
+  ctx.font='10px system-ui,sans-serif';
+  ctx.fillStyle='#9999bb';
+  ctx.textAlign='center';
+  d.labels.forEach((lbl2, i) => {
+    ctx.fillText(lbl2, xs[i], baseline + 16);
+  });
+  // hide HTML labels div (now drawn on canvas)
+  lbl.style.display = 'none';
 
   // show/hide "Sin IA" legend item
   const legendSinIA = document.getElementById('legend-sin-ia');
