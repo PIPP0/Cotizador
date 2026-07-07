@@ -2873,25 +2873,28 @@ function renderChart(){
   if (!ia || ia.length < 2) return; // not enough data to draw
   const allV=[...ia,...man];
   const maxV=Math.max(...allV)||1; // guard div/0
-  const pad={t:12,r:16,b:8,l:30}; // left space for Y labels
+  const pad={t:22,r:16,b:8,l:30}; // top space for point labels, left for Y labels
   const aw=W-pad.l-pad.r, ah=H-pad.t-pad.b;
   const xs=ia.map((_,i)=>pad.l+i*(aw/(ia.length-1)));
   const yf=v=>pad.t+ah-(v/maxV)*ah;
 
   ctx.clearRect(0,0,W,H);
+
   // grid + Y-axis labels
-  ctx.font='9px system-ui,sans-serif';
+  ctx.font='bold 10px system-ui,sans-serif';
   ctx.textAlign='right';
   ctx.strokeStyle='#edf0f4'; ctx.lineWidth=1;
-  [0,.33,.66,1].forEach(f=>{
-    const y=pad.t+ah*(1-f);
-    const val=Math.round(maxV*f);
+  // only show integer ticks that exist in the data range
+  const ticks=[...new Set([0,Math.round(maxV/2),maxV])];
+  ticks.forEach(val=>{
+    const y=yf(val);
+    ctx.strokeStyle='#edf0f4'; ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(pad.l+aw,y); ctx.stroke();
-    ctx.fillStyle='#aaaabc';
-    ctx.fillText(val, pad.l-4, y+3.5);
+    ctx.fillStyle='#8888aa';
+    ctx.fillText(val, pad.l-5, y+3.5);
   });
 
-  ctx.textAlign='left'; // reset after Y labels
+  ctx.textAlign='left';
   // manual dashed
   ctx.strokeStyle='#d46e3a'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]); ctx.globalAlpha=.55;
   ctx.beginPath(); man.forEach((v,i)=>{i===0?ctx.moveTo(xs[i],yf(v)):ctx.lineTo(xs[i],yf(v))}); ctx.stroke();
@@ -2908,11 +2911,19 @@ function renderChart(){
   ctx.strokeStyle='#1e95a6'; ctx.lineWidth=2.5; ctx.lineCap='round'; ctx.lineJoin='round';
   ctx.beginPath(); ia.forEach((v,i)=>{i===0?ctx.moveTo(xs[i],yf(v)):ctx.lineTo(xs[i],yf(v))}); ctx.stroke();
 
-  // dots
+  // dots + value labels on each point
+  ctx.font='bold 10px system-ui,sans-serif';
+  ctx.textAlign='center';
   ia.forEach((v,i)=>{
-    ctx.beginPath(); ctx.arc(xs[i],yf(v),i===ia.length-1?5:3.5,0,Math.PI*2);
+    const r=i===ia.length-1?5:3.5;
+    ctx.beginPath(); ctx.arc(xs[i],yf(v),r,0,Math.PI*2);
     ctx.fillStyle=i===ia.length-1?'#1e95a6':'white';
     ctx.strokeStyle='#1e95a6'; ctx.lineWidth=2; ctx.fill(); ctx.stroke();
+    // value label above dot
+    if(v>0){
+      ctx.fillStyle='#252530';
+      ctx.fillText(v, xs[i], yf(v)-8);
+    }
   });
 
   // tooltip on hover
@@ -3112,14 +3123,14 @@ function cycleStatus(id){
   const idx=STATUSES.indexOf(r.estado);
   r.estado=STATUSES[(idx+1)%STATUSES.length];
   savePipelineToStorage();
-  renderTable(); renderTable2();
+  renderAll(); renderTable2();
   toast(`${r.id} → ${r.estado}`,'blue');
 }
 function deleteRow(id){
   if(!confirm('¿Eliminar cotización '+id+'?')) return;
   PIPELINE=PIPELINE.filter(x=>x.id!==id);
   savePipelineToStorage();
-  renderTable(); renderTable2();
+  renderAll(); renderTable2();
   toast('Cotización eliminada','warn');
 }
 
@@ -3194,7 +3205,7 @@ function closeModal(e){
 }
 function changeStatusFromModal(id,val){
   const r=PIPELINE.find(x=>x.id===id);
-  if(r){ r.estado=val; renderTable(); renderTable2(); toast(`${id} → ${val}`,'blue'); }
+  if(r){ r.estado=val; savePipelineToStorage(); renderAll(); renderTable2(); toast(`${id} → ${val}`,'blue'); }
 }
 
 // ══════════════════════════════════════════════════
