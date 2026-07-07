@@ -7,6 +7,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 :root{
   --dark:#252530;--teal:#1e95a6;--teal2:#187f8e;--teal-rgb:30,149,166;--orange:#d46e3a;
@@ -1711,7 +1713,7 @@ tbody tr:hover .row-acts{opacity:1}
         <div class="insight">
           <span class="ins-ic">⚡</span>
           <div>
-            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--amber);margin-bottom:3px;">✦ Recomendación IA · NexClima</div>
+            <div id="cot-rec-label" style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--amber);margin-bottom:3px;">✦ Recomendación IA · NexClima</div>
             <span id="tip">—</span>
           </div>
         </div>
@@ -2295,6 +2297,27 @@ function closeCfgPanel(e) {
   document.body.style.overflow = '';
 }
 // ─── Persistencia localStorage ───────────────────────────────────────
+// ─── FIREBASE ────────────────────────────────────────────────────────────────
+// Reemplaza estos valores con los de tu proyecto en console.firebase.google.com
+const FIREBASE_CFG = {
+  apiKey:            "AIzaSyCRDMyF4mQarVxW0DVbyoWo_cPgj0vcuLk",
+  authDomain:        "cotizador-e6a9a.firebaseapp.com",
+  databaseURL:       "https://cotizador-e6a9a-default-rtdb.firebaseio.com",
+  projectId:         "cotizador-e6a9a",
+  storageBucket:     "cotizador-e6a9a.firebasestorage.app",
+  messagingSenderId: "1094882801270",
+  appId:             "1:1094882801270:web:48b2d19b69373d3bc89157"
+};
+let _fbDb = null;
+function initFirebase() {
+  try {
+    firebase.initializeApp(FIREBASE_CFG);
+    _fbDb = firebase.database();
+    console.log('[Firebase] conectado');
+  } catch(e) { console.warn('[Firebase] init error:', e); }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function saveConfigToStorage() {
   try {
     if (CONFIG.logoSrc) { localStorage.setItem('spc_logo', CONFIG.logoSrc); }
@@ -2306,12 +2329,45 @@ function saveConfigToStorage() {
       colors: CONFIG.colors, users: CONFIG.users,
       services: CONFIG.services, segments: CONFIG.segments,
       sidebarServices: CONFIG.sidebarServices, systemTypes: CONFIG.systemTypes,
-      clientFields: CONFIG.clientFields
+      clientFields: CONFIG.clientFields,
+      logoSrc: CONFIG.logoSrc || null
     };
     localStorage.setItem('spc', JSON.stringify(slim));
+    // Guardar en Firebase (sincroniza con todos los dispositivos)
+    if (_fbDb) {
+      _fbDb.ref('config').set(slim).catch(e => console.warn('[Firebase] save error:', e));
+    }
   } catch(e) { console.warn('[CFG] save error:', e); }
 }
 window.addEventListener('beforeunload', saveConfigToStorage);
+
+// Carga config desde Firebase y la aplica (async, después del load inicial)
+function _syncFromFirebase() {
+  if (!_fbDb) return;
+  _fbDb.ref('config').once('value').then(snapshot => {
+    const r = snapshot.val();
+    if (!r) return;
+    ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => { if (r[k] !== undefined) CONFIG[k] = r[k]; });
+    if (r.colors) { CONFIG.colors.teal = r.colors.teal || CONFIG.colors.teal; CONFIG.colors.orange = r.colors.orange || CONFIG.colors.orange; CONFIG.colors.dark = r.colors.dark || CONFIG.colors.dark; }
+    if (r.users) CONFIG.users = r.users;
+    if (r.services) CONFIG.services = r.services;
+    if (r.segments) CONFIG.segments = r.segments;
+    if (r.sidebarServices) CONFIG.sidebarServices = r.sidebarServices;
+    if (r.systemTypes) CONFIG.systemTypes = r.systemTypes;
+    if (r.clientFields) CONFIG.clientFields = r.clientFields;
+    if (r.logoSrc !== undefined) {
+      CONFIG.logoSrc = r.logoSrc;
+      if (r.logoSrc) localStorage.setItem('spc_logo', r.logoSrc);
+      else localStorage.removeItem('spc_logo');
+    }
+    // Actualizar localStorage con la versión de Firebase
+    localStorage.setItem('spc', JSON.stringify(r));
+    _applyDynamicColors();
+    try { applyConfig(); } catch(e) {}
+    try { applyLogoToDOM(); } catch(e) {}
+    console.log('[Firebase] config sincronizada');
+  }).catch(e => console.warn('[Firebase] sync error:', e));
+}
 
 function loadConfigFromStorage() {
   try {
@@ -2943,7 +2999,7 @@ function openModal(id){
     </div>
     <div class="modal-section">
       <div class="modal-sec-title"><span class="ab">✦ IA</span> Recomendación del motor</div>
-      <div class="ia-rec-box"><div class="ia-rec-lbl">✦ Insight IA · NexClima</div><div style="font-size:12.5px;color:var(--t2);line-height:1.55">${r.tip}</div></div>
+      <div class="ia-rec-box"><div class="ia-rec-lbl">✦ Insight IA · ${(CONFIG.nameA||'Nex')+(CONFIG.nameB||'Clima')}</div><div style="font-size:12.5px;color:var(--t2);line-height:1.55">${r.tip}</div></div>
     </div>
     <div class="modal-actions">
       <button class="btn-sm btn-o" onclick="toast('Cotización duplicada','blue')">Duplicar</button>
@@ -3073,9 +3129,11 @@ window.addEventListener('load',()=>{
     }
   } catch(e){}
 
+  try { initFirebase(); } catch(e) { console.warn('[init] firebase:', e); }
   try { renderAll(); } catch(e) { console.warn('[init] renderAll:', e); }
   try { loadConfigFromStorage(); } catch(e) { console.warn('[init] loadConfig:', e); }
   try { applyConfig(); } catch(e) { console.warn('[init] applyConfig:', e); }
+  try { _syncFromFirebase(); } catch(e) { console.warn('[init] fbSync:', e); }
   try { renderSysRow(); } catch(e) { console.warn('[init] renderSysRow:', e); }
   try { rebuildSvcList(); } catch(e) { console.warn('[init] rebuildSvcList:', e); }
   try { rebuildSegList(); } catch(e) { console.warn('[init] rebuildSegList:', e); }
@@ -3380,6 +3438,14 @@ function buildQ(){
   document.getElementById('qc').textContent=name;
   document.getElementById('qe').textContent=email;
   document.getElementById('qd').textContent=today;
+  // Actualizar nombre empresa y logo desde CONFIG
+  const companyFull=(CONFIG.nameA||'Nex')+(CONFIG.nameB||'Clima');
+  const recLabel=document.getElementById('cot-rec-label');
+  if(recLabel) recLabel.textContent='✦ Recomendación IA · '+companyFull;
+  // Logo en banner cotización
+  let cotLogo=document.getElementById('cot-banner-logo');
+  if(!cotLogo){ cotLogo=document.createElement('img'); cotLogo.id='cot-banner-logo'; cotLogo.style.cssText='height:32px;object-fit:contain;margin-bottom:6px;display:block'; document.querySelector('.quote-banner').prepend(cotLogo); }
+  if(CONFIG.logoSrc){ cotLogo.src=CONFIG.logoSrc; cotLogo.style.display='block'; } else { cotLogo.style.display='none'; }
   const sn={mant:'Mantenimiento de Clima',inst:'Instalaciones de Clima',ing:'Ingeniería de Proyectos',virt:'Mantenimiento Virtual',ener:'Eficiencia Energética · SGClima',aire:'Calidad del Aire'};
   const sgn={hotel:'Hotelería y Gastronomía',edu:'Centros de Formación',of:'Oficinas',ret:'Retail',con:'Construcción y Arquitectura',pub:'Mercado Público'};
   const sysLabel={split:'Split/Compactos',vrv:'VRV/VRF',chiller:'Chiller',uma:'UMA/Manejadora',vinvex:'VIN/VEX',solar:'Paneles Solares',cal:'Calefacción'};
@@ -3515,20 +3581,27 @@ function go4(){
   if(!d.toEmail){ toast('Ingresa un email de contacto válido','red'); return; }
   const btn=document.querySelector('#screen3 .btn-primary');
   btn.disabled=true; btn.textContent='Enviando...';
+  const company=(CONFIG.nameA||'Nex')+(CONFIG.nameB||'Clima');
   emailjs.send('service_oa9hbgk','template_1hljlkf',{
-    to_email:  d.toEmail,
-    to_name:   d.toName,
-    cot_id:    qId,
-    servicio:  d.servicio,
-    segmento:  d.segmento,
-    fecha:     today,
-    items_rows:d.itemsRows,
-    subtotal:  d.sub,
-    iva:       d.iva,
-    total:     d.total,
-    tip:       d.tipText,
-    name:      'NexClima',
-    email:     'futuroiadesarrollo@gmail.com'
+    to_email:        d.toEmail,
+    to_name:         d.toName,
+    cot_id:          qId,
+    servicio:        d.servicio,
+    segmento:        d.segmento,
+    fecha:           today,
+    items_rows:      d.itemsRows,
+    subtotal:        d.sub,
+    iva:             d.iva,
+    total:           d.total,
+    tip:             d.tipText,
+    name:            company,
+    company_name:    company,
+    company_email:   CONFIG.email    || '',
+    company_location:CONFIG.location || '',
+    company_since:   CONFIG.since    || '',
+    company_tagline: CONFIG.tagline  || '',
+    company_logo:    CONFIG.logoSrc  || '',
+    email:           CONFIG.email    || ''
   }).then(()=>{
     // KPIs dinámicos en screen 4
     const elapsed=_cotStartTime?Math.round((Date.now()-_cotStartTime)/1000):null;
@@ -3551,28 +3624,43 @@ function downloadPDF(){
   const W=210; const M=18; const CW=W-M*2;
   let y=0;
 
+  // Leer colores desde CONFIG
+  function _h(hex){ return [parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)]; }
+  const teal=_h(CONFIG.colors.teal); const orange=_h(CONFIG.colors.orange); const dark=_h(CONFIG.colors.dark);
+  const nameA=CONFIG.nameA||'Nex'; const nameB=CONFIG.nameB||'Clima';
+  const companyFull=nameA+nameB;
+
   // Header bar
-  pdf.setFillColor(37,37,48);
+  pdf.setFillColor(...dark);
   pdf.rect(0,0,W,28,'F');
-  pdf.setFillColor(30,149,166);
+  pdf.setFillColor(...teal);
   pdf.rect(0,28,W,3,'F');
-  pdf.setTextColor(30,149,166);
-  pdf.setFontSize(18); pdf.setFont('helvetica','bold');
-  pdf.text('Nex',M,18);
-  const nw=pdf.getTextWidth('Nex');
-  pdf.setTextColor(212,110,58);
-  pdf.text('Clima',M+nw,18);
-  pdf.setTextColor(180,180,200);
-  pdf.setFontSize(9); pdf.setFont('helvetica','normal');
-  pdf.text('Plataforma IA · Cotización Profesional',M+nw+pdf.getTextWidth('Clima')+6,18);
+
+  // Logo imagen o texto
+  if(CONFIG.logoSrc){
+    try{ pdf.addImage(CONFIG.logoSrc,'PNG',M,6,18,14,'','FAST'); } catch(e){
+      pdf.setTextColor(...teal); pdf.setFontSize(18); pdf.setFont('helvetica','bold');
+      pdf.text(nameA,M,18);
+      pdf.setTextColor(...orange); pdf.text(nameB,M+pdf.getTextWidth(nameA),18);
+    }
+    pdf.setTextColor(180,180,200); pdf.setFontSize(9); pdf.setFont('helvetica','normal');
+    pdf.text('Plataforma IA · Cotización Profesional',M+22,18);
+  } else {
+    pdf.setTextColor(...teal); pdf.setFontSize(18); pdf.setFont('helvetica','bold');
+    pdf.text(nameA,M,18);
+    const nw=pdf.getTextWidth(nameA);
+    pdf.setTextColor(...orange); pdf.text(nameB,M+nw,18);
+    pdf.setTextColor(180,180,200); pdf.setFontSize(9); pdf.setFont('helvetica','normal');
+    pdf.text('Plataforma IA · Cotización Profesional',M+nw+pdf.getTextWidth(nameB)+6,18);
+  }
   y=38;
 
   // Quote ID banner
   pdf.setFillColor(230,246,248);
   pdf.roundedRect(M,y,CW,18,3,3,'F');
-  pdf.setDrawColor(30,149,166); pdf.setLineWidth(.6);
+  pdf.setDrawColor(...teal); pdf.setLineWidth(.6);
   pdf.line(M,y,M,y+18);
-  pdf.setTextColor(30,149,166);
+  pdf.setTextColor(...teal);
   pdf.setFontSize(14); pdf.setFont('helvetica','bold');
   pdf.text(qId,M+5,y+7);
   pdf.setTextColor(115,115,128);
@@ -3654,10 +3742,10 @@ function downloadPDF(){
   if(y>245) { pdf.addPage(); y=20; }
   pdf.setFillColor(253,241,234);
   pdf.roundedRect(M,y,CW,30,2,2,'F');
-  pdf.setDrawColor(212,110,58); pdf.setLineWidth(.8);
+  pdf.setDrawColor(...orange); pdf.setLineWidth(.8);
   pdf.line(M,y,M,y+30);
-  pdf.setTextColor(212,110,58); pdf.setFontSize(7.5); pdf.setFont('helvetica','bold');
-  pdf.text('✦ RECOMENDACIÓN IA · NEXCLIMA',M+5,y+6);
+  pdf.setTextColor(...orange); pdf.setFontSize(7.5); pdf.setFont('helvetica','bold');
+  pdf.text('✦ RECOMENDACIÓN IA · '+companyFull.toUpperCase(),M+5,y+6);
   pdf.setTextColor(37,37,48); pdf.setFontSize(8.5); pdf.setFont('helvetica','normal');
   const tipLines=pdf.splitTextToSize(d.tipText,CW-10);
   pdf.text(tipLines.slice(0,3),M+5,y+12);
@@ -3669,17 +3757,17 @@ function downloadPDF(){
   pdf.setTextColor(115,115,128); pdf.setFontSize(8); pdf.setFont('helvetica','normal');
   pdf.text('Condiciones: Validez 30 días  ·  Pago 30 días factura  ·  Ejecución 5 días hábiles',M,y);
   y+=5;
-  pdf.text('Esta cotización fue generada por el Motor IA NexClima · www.nexclima.com',M,y);
+  pdf.text('Esta cotización fue generada por el Motor IA '+companyFull+' · '+CONFIG.email,M,y);
 
   // Footer
-  pdf.setFillColor(37,37,48);
+  pdf.setFillColor(...dark);
   pdf.rect(0,285,W,12,'F');
   pdf.setTextColor(100,120,140); pdf.setFontSize(8); pdf.setFont('helvetica','normal');
-  pdf.text('NexClima · Confort Térmico · Eficiencia Energética · Calidad del Aire',W/2,291,{align:'center'});
-  pdf.setTextColor(30,149,166);
-  pdf.text('www.nexclima.com',W/2,296,{align:'center'});
+  pdf.text(companyFull+' · '+CONFIG.since,W/2,291,{align:'center'});
+  pdf.setTextColor(...teal);
+  pdf.text(CONFIG.email||'',W/2,296,{align:'center'});
 
-  pdf.save(`${qId}-NexClima.pdf`);
+  pdf.save(`${qId}-${companyFull}.pdf`);
   toast('PDF descargado','green');
 }
 function back1(){ setNav(3,null); setNav(2,null); setNav(1,'active'); cShow(1); }
