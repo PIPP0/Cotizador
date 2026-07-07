@@ -2571,15 +2571,16 @@ const STATUS_BADGE = {
   'Borrador':'bg-gray','Ganada':'bg-green','Perdida':'bg-red'
 };
 
+const _D=Date.now(), _DAY=86400000;
 const PIPELINE_DEMO = [
-  {id:'COT-NX-582',cliente:'Hotel Plaza Bosque',seg:'Hotelería y Gast.',svc:'Calidad del Aire',sys:'Estación MyInBiot + HEPA H14',monto:18400000,prob:88,estado:'En revisión',vence:'05 jul',tip:'Cliente hotelería con alta demanda calidad aire. Incluir informe normativo Minsal + variables CO₂/HR/PM como diferenciador.'},
-  {id:'COT-NX-581',cliente:'INACAP Santiago',seg:'Ctros. Formación',svc:'Mantenimiento de Clima',sys:'12× Daikin Split · SGClima integrado',monto:3200000,prob:81,estado:'Enviada',vence:'28 jul',tip:'Recurrencia histórica 2.3 contratos/año. Proponer contrato anual con 8% descuento para asegurar ingresos recurrentes.'},
-  {id:'COT-NX-579',cliente:'CBRE Chile',seg:'Oficinas',svc:'Eficiencia Energética',sys:'SGClima + Cool Automation IoC',monto:42600000,prob:80,estado:'Negociando',vence:'12 jul',tip:'Ahorro estimado 18–24% garantizado por SGClima. Incluir informe ROI 3 años para presentación a directorio.'},
-  {id:'COT-NX-577',cliente:'Porsche Centro',seg:'Retail',svc:'Mantenimiento de Clima',sys:'2× Chiller Carrier · análisis vibración',monto:8900000,prob:72,estado:'Enviada',vence:'18 jul',tip:'Incluir protocolo de análisis vibración predictivo como valor agregado. Certificación ASHRAE relevante para el sector.'},
-  {id:'COT-NX-575',cliente:'Tavelli S.A.',seg:'Construcción y Arq.',svc:'Ingeniería de Proyectos',sys:'Cálculo térmico ASHRAE + LEED',monto:21300000,prob:80,estado:'En proceso',vence:'02 jul',tip:'Propuesta con ingeniería de detalle + supervisión de obras tiene 35% mayor tasa de cierre en Construcción y Arquitectura.'},
-  {id:'COT-NX-573',cliente:'Municipalidad Rancagua',seg:'Mercado Público',svc:'Mantenimiento Virtual',sys:'SGClima + ROBOTBAS RoomControl',monto:12100000,prob:73,estado:'Borrador',vence:'15 jul',tip:'Segmento Mercado Público: destacar eficiencia presupuestaria y cumplimiento normativo. Mantenimiento Virtual reduce visitas en 60%.'},
-  {id:'COT-NX-571',cliente:'Castro y Asociados',seg:'Construcción y Arq.',svc:'Instalaciones de Clima',sys:'VRV/VRF Daikin + Paneles Solares',monto:34200000,prob:84,estado:'Ganada',vence:'Cerrada',tip:'Ganada. Proyecto LEED completado. Historial positivo — proponer mantención anual y upsell SGClima en próxima reunión.'},
-  {id:'COT-NX-569',cliente:'Mall Costanera',seg:'Retail',svc:'Instalaciones de Clima',sys:'VRV Daikin 48HP × 2',monto:55800000,prob:58,estado:'Perdida',vence:'Cerrada',tip:'Perdida por precio. Revisar estructura de costos en segmento Retail. Considerar propuesta escalonada en próxima licitación.'},
+  {id:'COT-NX-582',cliente:'Hotel Plaza Bosque',seg:'Hotelería y Gast.',svc:'Calidad del Aire',sys:'Estación MyInBiot + HEPA H14',monto:18400000,prob:88,estado:'En revisión',vence:'05 jul',tip:'Cliente hotelería con alta demanda calidad aire. Incluir informe normativo Minsal + variables CO₂/HR/PM como diferenciador.',created:_D-5*_DAY},
+  {id:'COT-NX-581',cliente:'INACAP Santiago',seg:'Ctros. Formación',svc:'Mantenimiento de Clima',sys:'12× Daikin Split · SGClima integrado',monto:3200000,prob:81,estado:'Enviada',vence:'28 jul',tip:'Recurrencia histórica 2.3 contratos/año. Proponer contrato anual con 8% descuento para asegurar ingresos recurrentes.',created:_D-7*_DAY},
+  {id:'COT-NX-579',cliente:'CBRE Chile',seg:'Oficinas',svc:'Eficiencia Energética',sys:'SGClima + Cool Automation IoC',monto:42600000,prob:80,estado:'Negociando',vence:'12 jul',tip:'Ahorro estimado 18–24% garantizado por SGClima. Incluir informe ROI 3 años para presentación a directorio.',created:_D-10*_DAY},
+  {id:'COT-NX-577',cliente:'Porsche Centro',seg:'Retail',svc:'Mantenimiento de Clima',sys:'2× Chiller Carrier · análisis vibración',monto:8900000,prob:72,estado:'Enviada',vence:'18 jul',tip:'Incluir protocolo de análisis vibración predictivo como valor agregado. Certificación ASHRAE relevante para el sector.',created:_D-14*_DAY},
+  {id:'COT-NX-575',cliente:'Tavelli S.A.',seg:'Construcción y Arq.',svc:'Ingeniería de Proyectos',sys:'Cálculo térmico ASHRAE + LEED',monto:21300000,prob:80,estado:'En proceso',vence:'02 jul',tip:'Propuesta con ingeniería de detalle + supervisión de obras tiene 35% mayor tasa de cierre en Construcción y Arquitectura.',created:_D-18*_DAY},
+  {id:'COT-NX-573',cliente:'Municipalidad Rancagua',seg:'Mercado Público',svc:'Mantenimiento Virtual',sys:'SGClima + ROBOTBAS RoomControl',monto:12100000,prob:73,estado:'Borrador',vence:'15 jul',tip:'Segmento Mercado Público: destacar eficiencia presupuestaria y cumplimiento normativo. Mantenimiento Virtual reduce visitas en 60%.',created:_D-21*_DAY},
+  {id:'COT-NX-571',cliente:'Castro y Asociados',seg:'Construcción y Arq.',svc:'Instalaciones de Clima',sys:'VRV/VRF Daikin + Paneles Solares',monto:34200000,prob:84,estado:'Ganada',vence:'Cerrada',tip:'Ganada. Proyecto LEED completado. Historial positivo — proponer mantención anual y upsell SGClima en próxima reunión.',created:_D-28*_DAY},
+  {id:'COT-NX-569',cliente:'Mall Costanera',seg:'Retail',svc:'Instalaciones de Clima',sys:'VRV Daikin 48HP × 2',monto:55800000,prob:58,estado:'Perdida',vence:'Cerrada',tip:'Perdida por precio. Revisar estructura de costos en segmento Retail. Considerar propuesta escalonada en próxima licitación.',created:_D-35*_DAY},
 ];
 
 let PIPELINE = [...PIPELINE_DEMO.map(r=>({...r}))];
@@ -2677,6 +2678,7 @@ function switchView(v){
   document.querySelectorAll('.mn-item[data-view]').forEach(el=>el.classList.toggle('on',el.dataset.view===v));
   document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
+  if(v==='dashboard') renderAll();
   if(v==='cotizaciones') renderTable2();
   if(v==='clientes') renderClients();
   if(v==='cotizador'){ [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
@@ -3112,6 +3114,12 @@ function deleteRow(id){
 // ══════════════════════════════════════════════════
 //  MODAL
 // ══════════════════════════════════════════════════
+function _fmtDate(ts){
+  if(!ts) return '—';
+  const d=new Date(ts);
+  const mo=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return String(d.getDate()).padStart(2,'0')+' '+mo[d.getMonth()]+' '+d.getFullYear();
+}
 function openModal(id){
   const r=PIPELINE.find(x=>x.id===id);
   if(!r) return;
@@ -3119,6 +3127,7 @@ function openModal(id){
   document.getElementById('modal-sub').textContent=`${r.cliente} · ${r.svc}`;
   const statusOpts=STATUSES.map(s=>`<option${s===r.estado?' selected':''}>${s}</option>`).join('');
   const ivaAmt=Math.round(r.monto*.19);
+  const fechaEmision=r.created?_fmtDate(r.created):(r.fecha||'—');
   document.getElementById('modal-body').innerHTML=`
     <div class="modal-section">
       <div class="modal-sec-title">Cliente y proyecto</div>
@@ -3127,6 +3136,7 @@ function openModal(id){
         <div class="modal-field"><div class="modal-field-label">Segmento</div><div class="modal-field-value">${r.seg}</div></div>
         <div class="modal-field"><div class="modal-field-label">Servicio</div><div class="modal-field-value">${r.svc}</div></div>
         <div class="modal-field"><div class="modal-field-label">Sistema</div><div class="modal-field-value">${r.sys}</div></div>
+        <div class="modal-field"><div class="modal-field-label">Fecha de emisión</div><div class="modal-field-value">${fechaEmision}</div></div>
         <div class="modal-field"><div class="modal-field-label">Vencimiento</div><div class="modal-field-value">${r.vence}</div></div>
         <div class="modal-field"><div class="modal-field-label">Estado actual</div>
           <select class="status-select" id="modal-status-sel" onchange="changeStatusFromModal('${r.id}',this.value)">${statusOpts}</select>
