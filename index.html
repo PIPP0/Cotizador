@@ -977,43 +977,6 @@ tbody tr:hover .row-acts{opacity:1}
       <div id="cfg-segments-list"></div>
     </div>
 
-    <!-- ── SIDEBAR SERVICIOS ── -->
-    <div class="cfg-sec">
-      <div class="cfg-sec-title"><svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>ETIQUETAS SIDEBAR</div>
-      <div id="cfg-sb-svc-list"></div>
-    </div>
-
-    <!-- ── COTIZACIÓN ── -->
-    <div class="cfg-sec">
-      <div class="cfg-sec-title"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>PARÁMETROS COTIZACIÓN</div>
-      <div class="cfg-2col">
-        <div class="cfg-row"><label>IVA (%)</label><input class="cfg-inp" id="cfg-cot-iva" type="number" min="0" max="30" step="1" placeholder="19" oninput="markCfgDirty()"></div>
-        <div class="cfg-row"><label>Validez (días)</label><input class="cfg-inp" id="cfg-cot-validez" type="number" min="1" max="90" step="1" placeholder="30" oninput="markCfgDirty()"></div>
-      </div>
-      <div class="cfg-2col">
-        <div class="cfg-row"><label>Prob. conversión (%)</label><input class="cfg-inp" id="cfg-cot-prob" type="number" min="1" max="99" step="1" placeholder="75" oninput="markCfgDirty()"></div>
-      </div>
-      <div class="cfg-row"><label>Condiciones de pago</label><input class="cfg-inp" id="cfg-cot-cond" placeholder="Validez 30 días · Pago 30 días…" oninput="markCfgDirty()"></div>
-    </div>
-
-    <!-- ── MOTOR IA ── -->
-    <div class="cfg-sec">
-      <div class="cfg-sec-title"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>PASOS MOTOR IA</div>
-      <div id="cfg-ia-steps"></div>
-    </div>
-
-    <!-- ── PRECIOS EQUIPOS ── -->
-    <div class="cfg-sec">
-      <div class="cfg-sec-title"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>PRECIOS EQUIPOS Y SERVICIOS</div>
-      <div style="font-size:10.5px;color:var(--t4);margin-bottom:8px">Valores en CLP sin IVA. Se usan al generar cotizaciones.</div>
-      <div id="cfg-precios-list"></div>
-      <div class="cfg-price-add" id="cfg-price-add-row">
-        <input class="cfg-inp" id="cfg-price-new-label" placeholder="Descripción del ítem…" oninput="markCfgDirty()">
-        <input class="cfg-price-val" id="cfg-price-new-valor" type="number" min="0" step="1000" placeholder="0">
-        <button class="cfg-add-btn" onclick="addPrecio()">+ Agregar</button>
-      </div>
-    </div>
-
     <!-- ── FOOTER ACCIONES ── -->
     <div class="cfg-sec" id="cfg-footer-default">
       <button class="cfg-apply" id="cfg-apply-btn" onclick="saveCfgPanel()">Guardar y aplicar</button>
