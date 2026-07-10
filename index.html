@@ -443,12 +443,18 @@ tbody tr:hover .row-acts{opacity:1}
   display:none;position:fixed;bottom:0;left:0;right:0;z-index:297;
   background:rgba(25,25,35,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-top:1px solid rgba(255,255,255,.07);
-  padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));
-  justify-content:space-around;align-items:center;
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));
+  overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  align-items:center;
 }
+.mobile-nav::-webkit-scrollbar{display:none}
+.mn-inner{display:flex;align-items:center;min-width:max-content;padding:0 4px;gap:0}
 .mn-item{
   display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:7px 8px;border-radius:10px;cursor:pointer;flex:1;min-width:0;
+  padding:7px 10px;border-radius:10px;cursor:pointer;flex-shrink:0;
+  min-width:64px;
   color:rgba(255,255,255,.38);transition:all .18s;user-select:none;
 }
 .mn-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .18s}
@@ -566,6 +572,30 @@ tbody tr:hover .row-acts{opacity:1}
   .toast{font-size:11px;justify-content:center;white-space:normal;text-align:center}
 
   .section-sep{height:10px}
+
+  /* Edición Valores — grids colapsar */
+  .ev-3col{grid-template-columns:1fr 1fr}
+  .ev-2col{grid-template-columns:1fr}
+
+  /* ev-add-row — wrap en mobile */
+  .ev-add-row{flex-wrap:wrap}
+  .ev-add-row input:first-child{flex:1 1 100%}
+  .ev-add-row .ev-price-input{flex:1}
+  .ev-add-row .ev-add-btn{flex-shrink:0}
+
+  /* Cotizador stepper — compactar */
+  .cot-stepper{padding:10px 12px;gap:4px}
+  .cot-step-txt{display:none}
+  .cot-connector{margin:0 4px}
+
+  /* Segmentos — 3 columnas en mobile */
+  .seg-row{grid-template-columns:repeat(3,1fr)}
+
+  /* Chat FAB — subir sobre bottom nav */
+  #chat-fab{bottom:calc(66px + env(safe-area-inset-bottom,0px) + 12px) !important;right:16px !important}
+
+  /* Chat panel — ajustar posición en mobile */
+  #chat-panel{bottom:calc(66px + env(safe-area-inset-bottom,0px) + 72px) !important;right:8px !important;left:8px !important;width:auto !important;max-height:60vh}
 }
 
 /* ═══════════════════════════════════════════ COTIZADOR IA ═══ */
@@ -606,6 +636,7 @@ tbody tr:hover .row-acts{opacity:1}
 #view-cotizador input:focus,#view-cotizador select:focus,#view-cotizador textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(var(--teal-rgb),.1)}
 #view-cotizador input::placeholder{color:var(--t4)}
 #view-cotizador input.field-error{border-color:#e74c3c!important;box-shadow:0 0 0 3px rgba(231,76,60,.12)!important;animation:field-shake .3s ease}
+input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow:0 0 0 3px rgba(231,76,60,.12)!important;animation:field-shake .3s ease}
 @keyframes field-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 #view-cotizador textarea{resize:vertical;min-height:76px}
 
@@ -1276,6 +1307,7 @@ tbody tr:hover .row-acts{opacity:1}
 
 <!-- MOBILE BOTTOM NAV -->
 <nav class="mobile-nav" id="mobileNav">
+  <div class="mn-inner">
   <div class="mn-item on" data-view="dashboard" onclick="switchView('dashboard')">
     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
     <span>Inicio</span>
@@ -1302,7 +1334,8 @@ tbody tr:hover .row-acts{opacity:1}
   </div>
   <div class="mn-item" data-view="edicion" onclick="switchView('edicion')">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    <span>Edición Valores</span>
+    <span>Edición</span>
+  </div>
   </div>
 </nav>
 
@@ -2521,6 +2554,11 @@ async function analyzePipeline() {
   const card = document.getElementById('ia-pipeline-card');
   const result = document.getElementById('ia-pipeline-result');
   if (!btn || !result) return;
+  if (!PIPELINE || PIPELINE.length === 0) {
+    if (card) card.style.display = 'block';
+    result.innerHTML = '<span style="color:var(--t3)">Sin cotizaciones en el pipeline — agrega datos para analizar.</span>';
+    return;
+  }
   btn.disabled = true; btn.style.opacity = '.6';
   if (card) card.style.display = 'block';
   result.innerHTML = '<span style="color:var(--teal);opacity:.7">✦ Analizando pipeline…</span>';
@@ -2558,7 +2596,11 @@ async function testLlmKey() {
   if(el) {
     if(result && result.includes('OK')) { el.textContent = '✓ Conexión exitosa'; el.style.color='var(--green)'; }
     else if(result) { el.textContent = '✓ Conectado'; el.style.color='var(--green)'; }
-    else { el.textContent = '✗ Error — revisa tu API key'; el.style.color='var(--red)'; }
+    else {
+      const k2 = document.getElementById('ev-llm-key');
+      el.textContent = (k2 && k2.value.trim()) ? '✗ API key inválida o sin créditos' : '✗ Ingresa una API key primero';
+      el.style.color='var(--red)';
+    }
   }
 }
 
@@ -2645,12 +2687,18 @@ function addServiceByName(el, name) {
 function addServiceCustom() {
   const inp = document.getElementById('cfg-new-svc');
   const name = inp.value.trim();
-  if (!name) { inp.focus(); return; }
+  if (!name) {
+    inp.classList.add('field-error');
+    inp.focus();
+    inp.addEventListener('input', () => inp.classList.remove('field-error'), { once: true });
+    toast('Escribe un nombre para el servicio', 'warn');
+    return;
+  }
   CONFIG.services.push({ id:'svc'+Date.now(), name, desc:'', icon:'<circle cx="12" cy="12" r="10"/>' });
   inp.value = ''; rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
 }
 function removeService(i) {
-  if (CONFIG.services.length <= 1) return;
+  if (CONFIG.services.length <= 1) { toast('Debe existir al menos un servicio', 'warn'); return; }
   CONFIG.services.splice(i, 1);
   rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
 }
@@ -2743,12 +2791,18 @@ function addSegmentByName(name) {
 function addSegmentCustom() {
   const inp = document.getElementById('cfg-new-seg');
   const name = inp.value.trim();
-  if (!name) { inp.focus(); return; }
+  if (!name) {
+    inp.classList.add('field-error');
+    inp.focus();
+    inp.addEventListener('input', () => inp.classList.remove('field-error'), { once: true });
+    toast('Escribe un nombre para el segmento', 'warn');
+    return;
+  }
   CONFIG.segments.push({ id:'seg'+Date.now(), name });
   inp.value = ''; rebuildSegList(); renderSegRow(); markCfgDirty(); saveConfigToStorage();
 }
 function removeSegment(i) {
-  if (CONFIG.segments.length <= 1) return;
+  if (CONFIG.segments.length <= 1) { toast('Debe existir al menos un segmento', 'warn'); return; }
   CONFIG.segments.splice(i, 1);
   rebuildSegList(); renderSegRow(); markCfgDirty(); saveConfigToStorage();
 }
@@ -2850,7 +2904,13 @@ function saveConfigToStorage() {
       precios: CONFIG.precios,
       llm: CONFIG.llm
     };
-    localStorage.setItem('spc', JSON.stringify(slim));
+    try {
+      localStorage.setItem('spc', JSON.stringify(slim));
+    } catch(qe) {
+      if (qe.name === 'QuotaExceededError' || qe.code === 22) {
+        toast('Almacenamiento lleno — algunos cambios no se guardaron localmente', 'warn');
+      } else { throw qe; }
+    }
     // Guardar en Firebase (sincroniza con todos los dispositivos)
     if (_fbDb) {
       _fbDb.ref('config').set(slim).catch(e => console.warn('[Firebase] save error:', e));
@@ -2926,10 +2986,19 @@ function saveCfgPanel() {
   const luEl = document.getElementById('cfg-logoUrl');
   if (luEl) CONFIG.logoUrl = luEl.value.trim() || null;
   // Colores desde hex inputs
+  const _badHex = [];
   ['teal','orange','dark'].forEach(c => {
     const hx = document.getElementById('hex-' + c);
-    if (hx && /^[0-9A-Fa-f]{6}$/.test(hx.value)) CONFIG.colors[c] = hx.value;
+    if (!hx) return;
+    if (/^[0-9A-Fa-f]{6}$/.test(hx.value)) {
+      CONFIG.colors[c] = hx.value;
+    } else if (hx.value.trim() !== '') {
+      _badHex.push(c);
+      hx.classList.add('field-error');
+      hx.addEventListener('input', () => hx.classList.remove('field-error'), { once: true });
+    }
   });
+  if (_badHex.length) { toast(`Color inválido en: ${_badHex.join(', ')} — usa 6 caracteres hex (ej: 1e95a6)`, 'warn'); }
   // Credenciales
   const admName = document.getElementById('cfg-adm-name'); if (admName && admName.value) CONFIG.users.admin.name = admName.value;
   const admPass = document.getElementById('cfg-adm-pass'); if (admPass && admPass.value) CONFIG.users.admin.pass = admPass.value;
@@ -2964,17 +3033,24 @@ function saveCfgPanel() {
   setTimeout(showSaveConfirm, 200);
 }
 function resetConfig() {
-  CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
-  localStorage.removeItem('spc');
-  localStorage.removeItem('spc_logo');
-  const el = document.getElementById('_dyn_colors');
-  if (el) el.remove();
-  applyConfig();
-  renderSysRow();
-  rebuildSvcList();
-  rebuildSegList();
-  rebuildSbSvcList();
-  document.getElementById('cfgOverlay').classList.remove('open');
+  _confirm(
+    'Se borrarán todos los cambios de marca, colores, servicios y usuarios. La plataforma volverá a los valores de fábrica.',
+    () => {
+      CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+      localStorage.removeItem('spc');
+      localStorage.removeItem('spc_logo');
+      const el = document.getElementById('_dyn_colors');
+      if (el) el.remove();
+      applyConfig();
+      renderSysRow();
+      rebuildSvcList();
+      rebuildSegList();
+      rebuildSbSvcList();
+      document.getElementById('cfgOverlay').classList.remove('open');
+      toast('Configuración restaurada a valores originales', 'blue');
+    },
+    { title: 'Restaurar configuración', okLabel: 'Restaurar todo' }
+  );
 }
 
 try { emailjs.init('mKCi3_p-zz1f9qwO_'); } catch(e) {}
@@ -3812,6 +3888,7 @@ function dismissAlert(id){
 //  EXPORT CSV
 // ══════════════════════════════════════════════════
 function exportCSV(){
+  if(!PIPELINE || PIPELINE.length === 0){ toast('No hay cotizaciones para exportar', 'warn'); return; }
   const headers=['ID','Cliente','Segmento','Servicio','Sistema','Monto','Prob. Conversión','Estado','Vence'];
   const rows=PIPELINE.map(r=>[r.id,r.cliente,r.seg,r.svc,r.sys,r.monto,r.prob+'%',r.estado,r.vence]);
   const csv=[headers,...rows].map(r=>r.join(',')).join('\n');
@@ -4799,7 +4876,7 @@ function newQ(){ _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active'
 
 <!-- ✦ CHAT IA FLOTANTE -->
 <button id="chat-fab" onclick="toggleChat()" title="Chat IA" id2="chat-fab-title"
-  style="position:fixed;bottom:24px;right:24px;z-index:8000;width:52px;height:52px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(30,149,166,.45);transition:all .2s"
+  style="position:fixed;bottom:24px;right:24px;z-index:8000;width:52px;height:52px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(30,149,166,.45);transition:bottom .2s,transform .2s"
   onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
   <svg id="chat-fab-icon" viewBox="0 0 24 24" width="22" height="22" stroke="#fff" stroke-width="2" fill="none">
     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
@@ -4874,7 +4951,14 @@ function _restoreChatHistory(){
     sep.style.cssText = 'text-align:center;font-size:10.5px;color:var(--t4);padding:4px 0 8px;border-top:1px solid var(--border);margin-top:4px';
     sep.textContent = '— sesión anterior restaurada —';
     msgs.insertBefore(sep, msgs.lastChild);
-  }catch(e){}
+  }catch(e){
+    // Historial corrupto — limpiar y avisar sutilmente en el chat
+    try{ localStorage.removeItem(_chatKey()); }catch(_){}
+    const warn = document.createElement('div');
+    warn.style.cssText = 'font-size:11px;color:var(--t4);text-align:center;padding:4px 0 8px';
+    warn.textContent = '⚠ El historial anterior no pudo restaurarse';
+    msgs.appendChild(warn);
+  }
 }
 
 // Limpiar historial
