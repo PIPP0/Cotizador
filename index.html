@@ -834,7 +834,8 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 .cfg-row{margin-bottom:10px}
 .cfg-row:last-child{margin-bottom:0}
 .cfg-row label{display:block;font-size:10.5px;font-weight:700;color:#737380;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
-.cfg-inp{width:100%;padding:8px 11px;border:1.5px solid #dde4ea;border-radius:7px;font-size:12.5px;font-family:inherit;color:#252530;outline:none;transition:border .15s;background:#fff}
+.cfg-inp{width:100%;padding:8px 11px;border:1.5px solid #dde4ea;border-radius:7px;font-size:12.5px;font-family:inherit;color:#111111;outline:none;transition:border .15s;background:#fff}
+.cfg-inp::placeholder{color:#b0b8c4}
 .cfg-inp:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(var(--teal-rgb),.08)}
 .cfg-2col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .cfg-color-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
@@ -1004,8 +1005,8 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
         <input class="cfg-inp" id="cfg-logoUrl" placeholder="https://..." oninput="markCfgDirty()" style="font-size:11px">
       </div>
       <div class="cfg-2col" id="cfg-text-logo-row">
-        <div class="cfg-row"><label>Texto A</label><input class="cfg-inp" id="cfg-nameA" placeholder="Nex" oninput="markCfgDirty()"></div>
-        <div class="cfg-row"><label>Texto B</label><input class="cfg-inp" id="cfg-nameB" placeholder="Clima" oninput="markCfgDirty()"></div>
+        <div class="cfg-row"><label>Texto A</label><input class="cfg-inp" id="cfg-nameA" placeholder="Ingresa nombre" oninput="markCfgDirty()"></div>
+        <div class="cfg-row"><label>Texto B</label><input class="cfg-inp" id="cfg-nameB" placeholder="Ingresa nombre" oninput="markCfgDirty()"></div>
       </div>
       <div class="cfg-row"><label>Módulo / tagline topbar</label><input class="cfg-inp" id="cfg-module" placeholder="Dashboard IA · Comercial" oninput="markCfgDirty()"></div>
       <div class="cfg-row"><label>Subtítulo login</label><input class="cfg-inp" id="cfg-tagline" placeholder="Plataforma IA · Comercial" oninput="markCfgDirty()"></div>
@@ -1228,17 +1229,18 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
       <div class="login-err" id="login-err">Usuario o contraseña incorrectos</div>
       <div class="login-field">
         <label>Usuario</label>
-        <input type="text" id="login-user" value="admin" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+        <input type="text" id="login-user" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <div class="login-field">
         <label>Contraseña</label>
-        <input type="password" id="login-pass" value="1234" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        <div style="position:relative">
+          <input type="password" id="login-pass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding-right:40px;box-sizing:border-box">
+          <button type="button" onclick="(function(){var i=document.getElementById('login-pass');var b=document.getElementById('pass-eye');i.type=i.type==='password'?'text':'password';b.innerHTML=i.type==='password'?'<path d=\'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24\'/><line x1=\'1\' y1=\'1\' x2=\'23\' y2=\'23\'/>':'<path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'/><circle cx=\'12\' cy=\'12\' r=\'3\'/>'})()" id="pass-eye-btn" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:#9590a8;display:flex;align-items:center">
+            <svg id="pass-eye" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8'/><circle cx='12' cy='12' r='3'/></svg>
+          </button>
+        </div>
       </div>
       <button class="login-btn" onclick="doLogin()">Ingresar →</button>
-      <div class="login-roles">
-        <div class="login-role-hint"><strong>Admin</strong>usuario: admin<br>clave: 1234</div>
-        <div class="login-role-hint"><strong>Ejecutivo</strong>usuario: ejecutivo<br>clave: 1234</div>
-      </div>
     </div>
   </div>
 </div>
@@ -1978,8 +1980,8 @@ const DEFAULT_CONFIG = {
   since:    'Empresa · desde 2000',
   colors: { teal:'1E95A6', orange:'D46E3A', dark:'252530' },
   users: {
-    admin:    { pass:'1234', name:'Administrador' },
-    ejecutivo:{ pass:'1234', name:'Ejecutivo'    }
+    admin:    { pass:'Lisit', name:'Administrador' },
+    ejecutivo:{ pass:'Lisit2',name:'Ejecutivo'    }
   },
   services: [
     { id:'ing',  name:'Ingeniería de Proyectos',   desc:'Diseño y cálculo térmico',            icon:'<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' },
@@ -2061,7 +2063,12 @@ let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
       const sv = JSON.parse(raw);
       if (sv.colors) { CONFIG.colors.teal = sv.colors.teal || CONFIG.colors.teal; CONFIG.colors.orange = sv.colors.orange || CONFIG.colors.orange; CONFIG.colors.dark = sv.colors.dark || CONFIG.colors.dark; }
       ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => { if (sv[k]) CONFIG[k] = sv[k]; });
-      if (sv.users) CONFIG.users = sv.users;
+      if (sv.users) {
+        CONFIG.users = sv.users;
+        // Migrar claves viejas al nuevo default
+        if (!CONFIG.users.admin.pass    || CONFIG.users.admin.pass    === '1234') CONFIG.users.admin.pass    = 'Lisit';
+        if (!CONFIG.users.ejecutivo.pass|| CONFIG.users.ejecutivo.pass === '1234') CONFIG.users.ejecutivo.pass= 'Lisit2';
+      }
       if (sv.services) CONFIG.services = sv.services;
       if (sv.segments) CONFIG.segments = sv.segments;
       if (sv.sidebarServices) CONFIG.sidebarServices = sv.sidebarServices;
@@ -2474,8 +2481,8 @@ function renderEdicion() {
       </div>
     </div>
 
-    <!-- LLM / IA -->
-    <div class="ev-card" style="margin-top:20px">
+    <!-- LLM / IA — solo Admin -->
+    <div class="ev-card" style="margin-top:20px;${(currentUser&&currentUser.id==='admin')?'':'display:none'}">
       <div class="ev-card-title">
         <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         Integración IA — OpenAI GPT-4o mini
@@ -3008,7 +3015,12 @@ function loadConfigFromStorage() {
     const sv = JSON.parse(raw);
     ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => { if (sv[k] !== undefined) CONFIG[k] = sv[k]; });
     if (sv.colors) { CONFIG.colors.teal = sv.colors.teal || CONFIG.colors.teal; CONFIG.colors.orange = sv.colors.orange || CONFIG.colors.orange; CONFIG.colors.dark = sv.colors.dark || CONFIG.colors.dark; }
-    if (sv.users) CONFIG.users = sv.users;
+    if (sv.users) {
+      CONFIG.users = sv.users;
+      // Migrar claves viejas al nuevo default
+      if (!CONFIG.users.admin.pass    || CONFIG.users.admin.pass    === '1234') CONFIG.users.admin.pass    = 'Lisit';
+      if (!CONFIG.users.ejecutivo.pass|| CONFIG.users.ejecutivo.pass === '1234') CONFIG.users.ejecutivo.pass= 'Lisit2';
+    }
     if (sv.services) CONFIG.services = sv.services;
     if (sv.segments) CONFIG.segments = sv.segments;
     if (sv.sidebarServices) CONFIG.sidebarServices = sv.sidebarServices;
@@ -3029,7 +3041,8 @@ function saveCfgPanel() {
   // Texto
   ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => {
     const el = document.getElementById('cfg-' + k);
-    if (el && el.value !== '') CONFIG[k] = el.value;
+    // nameB puede quedar vacío intencionalmente
+    if (el && (el.value !== '' || k === 'nameB')) CONFIG[k] = el.value;
   });
   // URL logo para correos
   const luEl = document.getElementById('cfg-logoUrl');
@@ -3107,8 +3120,8 @@ try { emailjs.init('mKCi3_p-zz1f9qwO_'); } catch(e) {}
 //  AUTH
 // ══════════════════════════════════════════════════
 const USERS={
-  admin:    {pass:'1234',role:'Admin',    name:'Administrador', cls:'adm'},
-  ejecutivo:{pass:'1234',role:'Ejecutivo',name:'Ejecutivo',     cls:'ejc'}
+  admin:    {pass:'Lisit', role:'Admin',    name:'Administrador', cls:'adm'},
+  ejecutivo:{pass:'Lisit2',role:'Ejecutivo',name:'Ejecutivo',     cls:'ejc'}
 };
 let currentUser=null;
 
@@ -3121,17 +3134,22 @@ function _refreshChip(){
   document.getElementById('ud-name').textContent=currentUser.name;
   document.getElementById('ud-role').textContent=currentUser.role;
 }
+// Credenciales fijas (no afectadas por localStorage/CONFIG)
+const _AUTH={admin:'Lisit',ejecutivo:'Lisit2'};
 function doLogin(){
   const u=(document.getElementById('login-user').value||'').trim().toLowerCase();
   const p=document.getElementById('login-pass').value||'';
   const err=document.getElementById('login-err');
-  if(USERS[u]&&USERS[u].pass===p){
+  if(_AUTH[u]!==undefined && _AUTH[u]===p && USERS[u]){
     err.style.display='none';
     currentUser={id:u,...USERS[u]};
     _refreshChip();
     document.getElementById('user-chip').style.display='flex';
     document.getElementById('login-screen').style.display='none';
     document.getElementById('login-pass').value='';
+    // Mostrar ⚙️ solo para admin
+    const cfgBtn=document.querySelector('.cfg-btn');
+    if(cfgBtn) cfgBtn.style.display=(u==='admin')?'flex':'none';
   } else {
     err.style.display='block';
     document.getElementById('login-pass').value='';
