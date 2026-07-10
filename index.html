@@ -2720,9 +2720,9 @@ function openCfgPanel() {
       const u = CONFIG.users || {};
       const a = u.admin || {}; const ej = u.ejecutivo || {};
       const an = document.getElementById('cfg-adm-name'); if(an) an.value = a.name || '';
-      const ap = document.getElementById('cfg-adm-pass'); if(ap) ap.value = a.pass || '';
+      const ap = document.getElementById('cfg-adm-pass'); if(ap) ap.value = _AUTH.admin || '';
       const en = document.getElementById('cfg-ejc-name'); if(en) en.value = ej.name || '';
-      const ep = document.getElementById('cfg-ejc-pass'); if(ep) ep.value = ej.pass || '';
+      const ep = document.getElementById('cfg-ejc-pass'); if(ep) ep.value = _AUTH.ejecutivo || '';
     } catch(e) {}
     _pendingLogo = undefined;
     updateCfgLogoPreview();
@@ -3092,10 +3092,14 @@ function saveCfgPanel() {
   });
   if (_badHex.length) { toast(`Color inválido en: ${_badHex.join(', ')} — usa 6 caracteres hex (ej: 1e95a6)`, 'warn'); }
   // Credenciales
-  const admName = document.getElementById('cfg-adm-name'); if (admName && admName.value) CONFIG.users.admin.name = admName.value;
-  const admPass = document.getElementById('cfg-adm-pass'); if (admPass && admPass.value) CONFIG.users.admin.pass = admPass.value;
-  const ejcName = document.getElementById('cfg-ejc-name'); if (ejcName && ejcName.value) CONFIG.users.ejecutivo.name = ejcName.value;
-  const ejcPass = document.getElementById('cfg-ejc-pass'); if (ejcPass && ejcPass.value) CONFIG.users.ejecutivo.pass = ejcPass.value;
+  const admName = document.getElementById('cfg-adm-name');
+  if (admName && admName.value) { CONFIG.users.admin.name = admName.value; USERS.admin.name = admName.value; }
+  const admPass = document.getElementById('cfg-adm-pass');
+  if (admPass && admPass.value) { _AUTH.admin = admPass.value; CONFIG.users.admin.pass = admPass.value; USERS.admin.pass = admPass.value; }
+  const ejcName = document.getElementById('cfg-ejc-name');
+  if (ejcName && ejcName.value) { CONFIG.users.ejecutivo.name = ejcName.value; USERS.ejecutivo.name = ejcName.value; }
+  const ejcPass = document.getElementById('cfg-ejc-pass');
+  if (ejcPass && ejcPass.value) { _AUTH.ejecutivo = ejcPass.value; CONFIG.users.ejecutivo.pass = ejcPass.value; USERS.ejecutivo.pass = ejcPass.value; }
   // Servicios sidebar
   document.querySelectorAll('#cfg-sb-svc-list input.cfg-inp').forEach((inp, i) => {
     if (inp.value && i < CONFIG.sidebarServices.length) CONFIG.sidebarServices[i] = inp.value;
