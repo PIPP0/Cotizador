@@ -596,6 +596,40 @@ tbody tr:hover .row-acts{opacity:1}
 
   /* Chat panel — ajustar posición en mobile */
   #chat-panel{bottom:calc(66px + env(safe-area-inset-bottom,0px) + 72px) !important;right:8px !important;left:8px !important;width:auto !important;max-height:60vh}
+
+  /* ── Cotizador mobile ── */
+
+  /* NL autofill card — ocultar descripción secundaria */
+  #nl-autofill-card > div:first-child > span:last-child{display:none}
+  #nl-autofill-card > div:first-child{flex-wrap:wrap;gap:6px}
+
+  /* NL textarea + botón: apilar verticalmente */
+  #nl-autofill-card > div:nth-child(2){flex-direction:column;gap:8px}
+  #nl-autofill-card > div:nth-child(2) > textarea{width:100%!important;min-height:80px;flex:unset}
+  #nl-autofill-card > div:nth-child(2) > button{width:100%!important;justify-content:center;padding:12px 16px;flex-shrink:unset}
+
+  /* Cotizador card — reducir padding */
+  #view-cotizador .card{padding:14px 14px}
+  #view-cotizador .card-head{margin-bottom:12px;padding-bottom:10px}
+
+  /* Segmentos — compactos */
+  .seg{padding:8px 4px;font-size:11px}
+
+  /* System pills — más compactas en mobile */
+  .sys-pill{padding:5px 10px;font-size:11px}
+
+  /* Quote items table — scroll horizontal */
+  #view-cotizador .items-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  #view-cotizador table.items-tbl{min-width:480px}
+
+  /* btn-row en cotizador — botón full width */
+  .btn-row .btn-primary{width:100%;justify-content:center}
+
+  /* svc-grid: 2 col entre 500-680px (ya es 1col en <500px) */
+  .svc-grid{grid-template-columns:1fr 1fr}
+
+  /* detail-row: 2 col en 500-680px */
+  .detail-row{grid-template-columns:1fr 1fr}
 }
 
 /* ═══════════════════════════════════════════ COTIZADOR IA ═══ */
