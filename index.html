@@ -977,6 +977,32 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
+<!-- SKELETON LOGIN: visible desde el primer pixel, reemplaza al preloader -->
+<div id="preloader" style="position:fixed;inset:0;z-index:99998;background:#f0f3f6;display:flex;align-items:center;justify-content:center;padding:20px">
+  <style>
+    @keyframes sk-shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+    .sk{background:#e8e8ee;border-radius:8px;background-image:linear-gradient(90deg,#e8e8ee 25%,#f2f2f7 50%,#e8e8ee 75%);background-size:800px 100%;animation:sk-shimmer 1.4s infinite linear}
+  </style>
+  <div style="background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.1);width:100%;max-width:420px;overflow:hidden">
+    <!-- header skeleton -->
+    <div style="background:#252530;padding:32px;display:flex;flex-direction:column;align-items:center;gap:12px">
+      <div class="sk" style="width:72px;height:72px;border-radius:50%;opacity:.35"></div>
+      <div class="sk" style="width:120px;height:10px;opacity:.25;margin-top:4px"></div>
+    </div>
+    <!-- body skeleton -->
+    <div style="padding:32px;display:flex;flex-direction:column;gap:18px">
+      <div>
+        <div class="sk" style="width:70px;height:9px;margin-bottom:8px"></div>
+        <div class="sk" style="width:100%;height:42px;border-radius:8px"></div>
+      </div>
+      <div>
+        <div class="sk" style="width:90px;height:9px;margin-bottom:8px"></div>
+        <div class="sk" style="width:100%;height:42px;border-radius:8px"></div>
+      </div>
+      <div class="sk" style="width:100%;height:46px;border-radius:8px;margin-top:4px;opacity:.7"></div>
+    </div>
+  </div>
+</div>
 
 <!-- CONFIG OVERLAY + PANEL -->
 <div class="cfg-overlay" id="cfgOverlay" onclick="closeCfgPanel(event)">
@@ -1205,21 +1231,13 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 <div class="sb-backdrop" id="sbBackdrop" onclick="closeSidebar()"></div>
 
 <!-- LOGIN SCREEN -->
-<div id="login-screen">
+<div id="login-screen" style="position:fixed;inset:0;z-index:99999;background:#f0f3f6;display:flex;align-items:center;justify-content:center;padding:20px">
   <div class="login-card">
     <div class="login-header">
       <div class="login-logo">
         <img id="login-logo-img" class="login-logo-img" src="" alt="" style="display:none">
         <span id="login-logo-default" style="display:flex;align-items:center;gap:8px">
-          <svg width="22" height="20" viewBox="0 0 28 26" fill="none">
-            <defs>
-              <linearGradient id="lg1" x1="0" y1="0" x2="28" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1e95a6"/><stop offset="100%" stop-color="#8aaac5"/></linearGradient>
-              <linearGradient id="lg2" x1="28" y1="0" x2="8" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#d46e3a"/><stop offset="100%" stop-color="#e4b840"/></linearGradient>
-            </defs>
-            <path d="M0 0L12 13L0 26L7 26L14 18L21 26L28 26L16 13L28 0L21 0L14 8L7 0Z" fill="url(#lg1)"/>
-            <path d="M21 0L28 0L16 13L28 26L21 26L14 18L14 8Z" fill="url(#lg2)"/>
-          </svg>
-          <span class="login-logo-txt"><span id="login-logo-a">Nex</span><span id="login-logo-b" style="color:var(--orange)">Clima</span></span>
+          <span class="login-logo-txt"><span id="login-logo-a">Lisit</span><span id="login-logo-b" style="color:var(--orange)"></span></span>
         </span>
       </div>
       <div class="login-bar"></div>
@@ -1970,15 +1988,15 @@ const _selfScript = document.currentScript;
 const DEFAULT_CONFIG = {
   logoSrc:  null,
   logoUrl:  null,
-  nameA:    'Nex',
-  nameB:    'Clima',
+  nameA:    'Lisit',
+  nameB:    '',
   module:   'Dashboard IA · Comercial',
   tagline:  'Plataforma IA · Comercial',
   dashsub:  'Métricas en tiempo real · Motor IA · Plataforma Comercial',
-  email:    'contacto@empresa.com',
-  location: 'Copiapó → Talca',
-  since:    'Empresa · desde 2000',
-  colors: { teal:'1E95A6', orange:'D46E3A', dark:'252530' },
+  email:    'contacto@lisit.cl',
+  location: 'Chile',
+  since:    'Lisit · desde 1998',
+  colors: { teal:'8C5BB3', orange:'D46E3A', dark:'252530' },
   users: {
     admin:    { pass:'Lisit', name:'Administrador' },
     ejecutivo:{ pass:'Lisit2',name:'Ejecutivo'    }
@@ -2084,6 +2102,18 @@ let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
     const s = document.createElement('style'); s.id='_dyn_colors';
     s.textContent=':root{--teal:#'+t+';--teal2:#'+_drk(t,0.14)+';--teal-rgb:'+_h2rgb(t)+';--orange:#'+o+';--dark:#'+d+';--bbg:#'+_blnd(t,0.09)+';--bbr:#'+_blnd(t,0.32)+';--abg:#'+_blnd(o,0.09)+';}';
     document.head.appendChild(s);
+    // Actualizar login screen con branding del config (sin esperar window.load)
+    try {
+      const elA = document.getElementById('login-logo-a'); if(elA && CONFIG.nameA) elA.textContent = CONFIG.nameA;
+      const elB = document.getElementById('login-logo-b'); if(elB) elB.textContent = CONFIG.nameB || '';
+      const elT = document.getElementById('login-tagline'); if(elT && CONFIG.tagline) elT.textContent = CONFIG.tagline;
+      if(CONFIG.logoSrc) {
+        const img = document.getElementById('login-logo-img');
+        const def = document.getElementById('login-logo-default');
+        if(img){ img.src = CONFIG.logoSrc; img.style.display='block'; }
+        if(def) def.style.display='none';
+      }
+    } catch(_) {}
   } catch(e) {}
 })();
 
@@ -3146,6 +3176,7 @@ function doLogin(){
     _refreshChip();
     document.getElementById('user-chip').style.display='flex';
     document.getElementById('login-screen').style.display='none';
+    const pl=document.getElementById('preloader'); if(pl) pl.remove();
     document.getElementById('login-pass').value='';
     // Mostrar ⚙️ solo para admin
     const cfgBtn=document.querySelector('.cfg-btn');
