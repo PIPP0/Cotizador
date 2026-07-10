@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NexClima · Dashboard IA</title>
+<title id="page-title">Dashboard IA</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -605,6 +605,8 @@ tbody tr:hover .row-acts{opacity:1}
 #view-cotizador input,#view-cotizador select,#view-cotizador textarea{width:100%;padding:9px 12px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r2);color:var(--t1);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
 #view-cotizador input:focus,#view-cotizador select:focus,#view-cotizador textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(var(--teal-rgb),.1)}
 #view-cotizador input::placeholder{color:var(--t4)}
+#view-cotizador input.field-error{border-color:#e74c3c!important;box-shadow:0 0 0 3px rgba(231,76,60,.12)!important;animation:field-shake .3s ease}
+@keyframes field-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 #view-cotizador textarea{resize:vertical;min-height:76px}
 
 /* Segments */
@@ -1086,6 +1088,24 @@ tbody tr:hover .row-acts{opacity:1}
 <!-- TOASTS -->
 <div class="toast-container" id="toastContainer"></div>
 
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmOverlay" style="z-index:9997" onclick="if(event.target===this)_confirmClose()">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-hdr" style="border-bottom:none;padding-bottom:8px">
+      <div id="confirm-icon" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"></div>
+      <div class="modal-title" id="confirm-title" style="font-size:14px;margin-left:4px"></div>
+      <button class="modal-close" onclick="_confirmClose()">✕</button>
+    </div>
+    <div class="modal-body" style="padding-top:4px">
+      <p id="confirm-msg" style="font-size:13px;color:var(--t2);line-height:1.55;margin-bottom:20px"></p>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn-sm btn-o" onclick="_confirmClose()">Cancelar</button>
+        <button id="confirm-ok" class="btn-sm" style="background:var(--red);color:#fff;border-color:var(--red)" onclick="_confirmOk()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal" id="modal">
@@ -1367,7 +1387,18 @@ tbody tr:hover .row-acts{opacity:1}
         <div class="card-title">Pipeline de cotizaciones activas</div>
         <div class="card-sub">Probabilidad de conversión estimada por IA <span class="ab" style="margin-left:4px">✦ IA</span></div>
       </div>
-      <div class="card-act" onclick="switchView('cotizaciones')">Ver todas →</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+        <button id="ia-pipeline-btn" onclick="analyzePipeline()" style="background:var(--teal);color:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;transition:background .15s;white-space:nowrap"
+          onmouseover="this.style.background='var(--teal2)'" onmouseout="this.style.background='var(--teal)'">
+          <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          ✦ Analizar con IA
+        </button>
+        <div class="card-act" onclick="switchView('cotizaciones')" style="margin-left:0">Ver todas →</div>
+      </div>
+    </div>
+    <!-- Resultado del análisis IA (inline, sobre los filtros) -->
+    <div id="ia-pipeline-card" style="display:none;margin:0 0 12px 0">
+      <div id="ia-pipeline-result" style="background:linear-gradient(135deg,var(--bbg) 0%,#f0f8fa 100%);border:1.5px solid var(--bbr);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--t2);line-height:1.65"></div>
     </div>
     <div class="tbl-controls">
       <div class="search-bar">
@@ -1403,10 +1434,10 @@ tbody tr:hover .row-acts{opacity:1}
         <div><div class="card-title">Actividad IA <span class="ab" style="margin-left:4px">✦ IA</span></div><div class="card-sub">Acciones del motor</div></div>
       </div>
       <div class="feed-list">
-        <div class="feed-item"><div class="fi-ic fi-t"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div><div class="feed-main">Cotización <strong>COT-NX-582</strong> generada en 6 min — 8 ítems MyInBiot + HEPA H14 recomendados</div><div class="feed-time">hace 12 min · Hotel Plaza Bosque</div></div></div>
-        <div class="feed-item"><div class="fi-ic fi-gr"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="feed-main"><strong>COT-NX-571</strong> marcada como ganada — 84% prob. correcta</div><div class="feed-time">hace 1 h · Castro y Asociados · Construcción y Arq.</div></div></div>
+        <div class="feed-item"><div class="fi-ic fi-t"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div><div class="feed-main">Cotización <strong id="feed-id-1"></strong> generada en 6 min — 8 ítems MyInBiot + HEPA H14 recomendados</div><div class="feed-time">hace 12 min · Hotel Plaza Bosque</div></div></div>
+        <div class="feed-item"><div class="fi-ic fi-gr"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="feed-main"><strong id="feed-id-2"></strong> marcada como ganada — 84% prob. correcta</div><div class="feed-time">hace 1 h · Castro y Asociados · Construcción y Arq.</div></div></div>
         <div class="feed-item"><div class="fi-ic fi-g"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div><div class="feed-main">IA detectó oportunidad: <strong>CBRE Chile</strong> consume 42% sobre benchmark — recomienda auditoría SGClima</div><div class="feed-time">hace 2 h · Eficiencia Energética</div></div></div>
-        <div class="feed-item"><div class="fi-ic fi-o"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div><div class="feed-main">Alerta: <strong>COT-NX-575</strong> vence en 4 días — prob. cae a 54% sin seguimiento</div><div class="feed-time">hace 3 h · Tavelli S.A.</div></div></div>
+        <div class="feed-item"><div class="fi-ic fi-o"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div><div class="feed-main">Alerta: <strong id="feed-id-3"></strong> vence en 4 días — prob. cae a 54% sin seguimiento</div><div class="feed-time">hace 3 h · Tavelli S.A.</div></div></div>
         <div class="feed-item"><div class="fi-ic fi-t"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div><div class="feed-main">SGClima detectó consumo anómalo en <strong>INACAP</strong> — mantenimiento anticipado recomendado</div><div class="feed-time">hace 5 h · SGClima · IoT</div></div></div>
       </div>
     </div>
@@ -1418,7 +1449,7 @@ tbody tr:hover .row-acts{opacity:1}
       </div>
       <div class="card-body">
         <div class="alert-list" id="alert-list">
-          <div class="alert-c a-warn" data-alert="1"><div class="alert-ic"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="alert-txt"><div class="alert-title">Cotización próxima a vencer</div><div class="alert-body">COT-NX-575 (Tavelli) vence en 4 días. IA sugiere llamada — hist. muestra +28% cierre.</div></div><div class="alert-dismiss" onclick="dismissAlert(1)">✕</div></div>
+          <div class="alert-c a-warn" data-alert="1"><div class="alert-ic"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="alert-txt"><div class="alert-title">Cotización próxima a vencer</div><div class="alert-body"><span id="alert-demo-id"></span> (Tavelli) vence en 4 días. IA sugiere llamada — hist. muestra +28% cierre.</div></div><div class="alert-dismiss" onclick="dismissAlert(1)">✕</div></div>
           <div class="alert-c a-suc" data-alert="2"><div class="alert-ic"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="alert-txt"><div class="alert-title">SGClima: ahorro 18.4% confirmado</div><div class="alert-body">CBRE Chile lleva 3 meses en SGClima. Ideal para propuesta de renovación.</div></div><div class="alert-dismiss" onclick="dismissAlert(2)">✕</div></div>
           <div class="alert-c a-info" data-alert="3"><div class="alert-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="alert-txt"><div class="alert-title">Oportunidad: mantenimiento predictivo</div><div class="alert-body">Cool Automation IoC detectó vibración anómala en Chiller Carrier (Porsche). Cotizar preventivo.</div></div><div class="alert-dismiss" onclick="dismissAlert(3)">✕</div></div>
           <div class="alert-c a-gold" data-alert="4"><div class="alert-ic"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="alert-txt"><div class="alert-title">Upsell detectado</div><div class="alert-body">INACAP: IA proyecta +$4.2M con módulo ROBOTBAS RoomControl.</div></div><div class="alert-dismiss" onclick="dismissAlert(4)">✕</div></div>
@@ -1478,7 +1509,7 @@ tbody tr:hover .row-acts{opacity:1}
 <div class="view-panel" id="view-clientes">
   <div style="margin-bottom:12px"><button class="btn-sm btn-o" onclick="switchView('dashboard')" style="font-size:11.5px;padding:6px 12px">← Dashboard</button></div>
   <div class="page-hdr">
-    <div><div class="page-title">Gestión de <span>clientes</span></div><div class="page-sub">Portafolio activo NexClima · ordenado por ingreso proyectado</div></div>
+    <div><div class="page-title">Gestión de <span>clientes</span></div><div class="page-sub" id="clientes-page-sub">Portafolio activo · ordenado por ingreso proyectado</div></div>
   </div>
   <div class="g2">
     <div class="card">
@@ -1541,7 +1572,7 @@ tbody tr:hover .row-acts{opacity:1}
 <div class="view-panel" id="view-sgclima">
   <div style="margin-bottom:12px"><button class="btn-sm btn-o" onclick="switchView('dashboard')" style="font-size:11.5px;padding:6px 12px">← Dashboard</button></div>
   <div class="page-hdr">
-    <div><div class="page-title"><span>SGClima</span> · Monitoreo IoT <span class="ab">✦ IA</span></div><div class="page-sub">Plataforma propietaria NexClima · Cool Automation IoC · ROBOTBAS</div></div>
+    <div><div class="page-title"><span>SGClima</span> · Monitoreo IoT <span class="ab">✦ IA</span></div><div class="page-sub" id="sgclima-page-sub">Plataforma propietaria · Cool Automation IoC · ROBOTBAS</div></div>
     <button class="btn-sm btn-p" onclick="toast('Informe SGClima generado','green')">
       <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Informe mensual
@@ -1598,7 +1629,7 @@ tbody tr:hover .row-acts{opacity:1}
 <div class="view-panel" id="view-cotizador">
   <div style="margin-bottom:12px"><button class="btn-sm btn-o" onclick="switchView('dashboard')" style="font-size:11.5px;padding:6px 12px">← Dashboard</button></div>
   <div class="page-hdr">
-    <div><div class="page-title">Cotizador <span>IA</span> <span class="ab">✦ IA</span></div><div class="page-sub">Genera propuestas en segundos — motor inteligente NexClima</div></div>
+    <div><div class="page-title">Cotizador <span>IA</span> <span class="ab">✦ IA</span></div><div class="page-sub" id="cot-page-sub">Genera propuestas en segundos — motor inteligente</div></div>
   </div>
 
   <!-- Stepper horizontal -->
@@ -1628,6 +1659,26 @@ tbody tr:hover .row-acts{opacity:1}
 
     <!-- ── SCREEN 1 ── -->
     <div class="screen active" id="screen1">
+      <!-- ✦ NL AUTO-FILL -->
+      <div id="nl-autofill-card" style="background:linear-gradient(135deg,var(--bbg) 0%,#f0f8fa 100%);border:1.5px solid var(--bbr);border-radius:12px;padding:16px 18px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--teal)" stroke-width="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span style="font-size:12px;font-weight:800;color:var(--teal);text-transform:uppercase;letter-spacing:.5px">Auto-completar con IA</span>
+          <span style="font-size:11px;color:var(--t3);font-weight:400;margin-left:2px">— describe el proyecto en lenguaje natural</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-start">
+          <textarea id="nl-input" rows="2" placeholder="Ej: Mantención preventiva para Hotel Gavina, 20 equipos split Samsung, segmento hotelería, necesito cotización urgente con certificado MINSAL."
+            style="flex:1;resize:none;border:1.5px solid var(--bbr);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;background:#fff;color:var(--t1);line-height:1.5;transition:.12s"
+            onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--bbr)'"
+            onkeydown="if(event.key==='Enter'&&event.ctrlKey)nlAutoFill()"></textarea>
+          <button id="nl-btn" onclick="nlAutoFill()" style="flex-shrink:0;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;height:fit-content;display:flex;align-items:center;gap:6px;transition:background .15s"
+            onmouseover="this.style.background='var(--teal2)'" onmouseout="this.style.background='var(--teal)'">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Completar
+          </button>
+        </div>
+        <div id="nl-status" style="font-size:11.5px;color:var(--t3);margin-top:7px;min-height:16px"></div>
+      </div>
       <div class="card">
         <div class="card-head">
           <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
@@ -1635,10 +1686,10 @@ tbody tr:hover .row-acts{opacity:1}
           <button class="cot-edit-btn" onclick="toggleCardEditor('ce-client-ed','ce-client-icon')" title="Editar campos" id="ce-client-icon"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         </div>
         <div class="g2" id="client-fields-container">
-          <div class="fg"><label>Empresa / Nombre</label><input id="cn" value="INACAP Santiago" placeholder="Razón social o nombre"></div>
-          <div class="fg"><label>RUT</label><input id="cr" value="70.571.800-0" placeholder="76.123.456-7"></div>
-          <div class="fg"><label>Email de contacto</label><input id="ce" value="infraestructura@inacap.cl" placeholder="correo@empresa.cl"></div>
-          <div class="fg"><label>Teléfono</label><input id="cp" value="+56 2 2422 3000" placeholder="+56 x xxxx xxxx"></div>
+          <div class="fg"><label>Empresa / Nombre <span style="color:var(--red);font-size:13px">*</span></label><input id="cn" placeholder="Ej: INACAP Santiago"></div>
+          <div class="fg"><label>RUT</label><input id="cr" placeholder="Ej: 70.571.800-0"></div>
+          <div class="fg"><label>Email de contacto <span style="color:var(--red);font-size:13px">*</span></label><input id="ce" placeholder="Ej: contacto@empresa.cl" type="email"></div>
+          <div class="fg"><label>Teléfono</label><input id="cp" placeholder="Ej: +56 2 2422 3000"></div>
         </div>
         <div class="card-editor" id="ce-client-ed">
           <div class="ce-title">Campos del formulario</div>
@@ -1681,8 +1732,8 @@ tbody tr:hover .row-acts{opacity:1}
           <button class="cot-edit-btn" onclick="toggleCardEditor('ce-sys-ed','ce-sys-icon')" title="Editar tipos de sistema" id="ce-sys-icon"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         </div>
         <div class="detail-row">
-          <div class="fg" style="margin-bottom:0"><label>N° de equipos</label><input type="number" id="ne" value="12" min="1"></div>
-          <div class="fg" style="margin-bottom:0"><label>Superficie (m²)</label><input type="number" id="sm" value="1200" min="1"></div>
+          <div class="fg" style="margin-bottom:0"><label>N° de equipos</label><input type="number" id="ne" value="1" min="1" placeholder="Ej: 12"></div>
+          <div class="fg" style="margin-bottom:0"><label>Superficie (m²)</label><input type="number" id="sm" value="" min="1" placeholder="Ej: 1200"></div>
           <div class="fg" style="margin-bottom:0">
             <label>Marca principal</label>
             <select id="brd"><option selected>Daikin</option><option>Mitsubishi Electric</option><option>LG</option><option>Samsung</option><option>Carrier</option><option>Otro</option></select>
@@ -1708,7 +1759,7 @@ tbody tr:hover .row-acts{opacity:1}
         </div>
         <div class="fg">
           <label>Descripción del requerimiento <span class="ai-badge-outline"><svg viewBox="0 0 24 24" fill="var(--teal)" width="8" height="8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>IA interpreta</span></label>
-          <textarea id="rd" placeholder="Describe el proyecto, condiciones especiales, urgencia...">Mantención preventiva semestral de 12 equipos split Daikin en sede Santiago. Salas de clases y laboratorios en 3 pisos. Se requiere certificado de mantención.</textarea>
+          <textarea id="rd" placeholder="Ej: Mantención preventiva de 12 equipos split Daikin en sede Santiago. Salas de clases y laboratorios en 3 pisos. Se requiere certificado de mantención."></textarea>
         </div>
       </div>
       <div class="btn-row">
@@ -1724,7 +1775,7 @@ tbody tr:hover .row-acts{opacity:1}
           <div class="ring-spin"></div>
           <div class="ring-core"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
         </div>
-        <div class="ai-h">Motor IA de NexClima procesando...</div>
+        <div class="ai-h" id="motor-ia-title">Motor IA procesando...</div>
         <div class="ai-p">Consultando historial de cotizaciones, catálogo de equipos y costos operacionales.</div>
         <div class="ai-list">
           <div class="ai-row run" id="ai1"><div class="ai-dot"></div><span>Clasificando tipo y alcance del servicio <span class="ai-row-tag">✦ IA</span></span><div class="mspin"></div></div>
@@ -1839,10 +1890,10 @@ const DEFAULT_CONFIG = {
   nameB:    'Clima',
   module:   'Dashboard IA · Comercial',
   tagline:  'Plataforma IA · Comercial',
-  dashsub:  'Métricas en tiempo real · Motor NexClima IA · Piloto Grupo 1 Diplomado IA',
-  email:    'contacto@nexclima.com',
+  dashsub:  'Métricas en tiempo real · Motor IA · Plataforma Comercial',
+  email:    'contacto@empresa.com',
   location: 'Copiapó → Talca',
-  since:    'NexClima · desde 1998',
+  since:    'Empresa · desde 2000',
   colors: { teal:'1E95A6', orange:'D46E3A', dark:'252530' },
   users: {
     admin:    { pass:'1234', name:'Administrador' },
@@ -1888,8 +1939,8 @@ const DEFAULT_CONFIG = {
   },
   motorIA: [
     'Clasificando tipo y alcance del servicio',
-    'Consultando historial NexClima y cotizaciones similares',
-    'Seleccionando repuestos y materiales — catálogo real NexClima',
+    'Consultando historial y cotizaciones similares',
+    'Seleccionando repuestos y materiales — catálogo real',
     'Calculando horas técnico, desplazamientos y costos operacionales',
     'Generando cotización personalizada con insight comercial'
   ],
@@ -1914,7 +1965,8 @@ const DEFAULT_CONFIG = {
     {key:'uvC',          label:'Sistema UV-C bactericida',               valor:220000},
     {key:'robotbas',     label:'ROBOTBAS RoomControl (unid.)',           valor:210000},
     {key:'diagnosticoIA',label:'Reporte diagnóstico IA',                 valor:85000}
-  ]
+  ],
+  llm: { apiKey: '', model: 'gpt-4o-mini' }
 };
 // @@CONFIG-END
 let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
@@ -2126,6 +2178,22 @@ function applyConfig() {
   renderSegRow();
   renderSysRow();
   renderSbSvcs();
+  // Dynamic company name in UI elements
+  const _co = (CONFIG.nameA||'') + (CONFIG.nameB||'');
+  document.title = _co + ' · Dashboard IA';
+  liveText('cot-page-sub', 'Genera propuestas en segundos — motor inteligente ' + _co);
+  liveText('motor-ia-title', 'Motor IA de ' + _co + ' procesando...');
+  liveText('chat-header-title', 'Chat IA ' + _co);
+  liveText('clientes-page-sub', 'Portafolio activo ' + _co + ' · ordenado por ingreso proyectado');
+  liveText('sgclima-page-sub', 'Plataforma propietaria ' + _co + ' · Cool Automation IoC · ROBOTBAS');
+  // Update chat welcome message
+  const _chatWelcome = document.getElementById('chat-welcome-msg');
+  if (_chatWelcome) _chatWelcome.innerHTML = `¡Hola! Soy el asistente IA de <strong>${_co}</strong>. Tengo acceso al pipeline, cotizaciones y configuración. Puedes preguntarme: <em>¿cuál es mi cliente más rentable?</em>, <em>¿qué cotizaciones vencen esta semana?</em>, <em>¿cómo mejorar mi tasa de conversión?</em>`;
+  // Actualizar IDs de demo en feed de actividad y alertas usando prefijo de marca actual
+  const _fi1=document.getElementById('feed-id-1'); if(_fi1) _fi1.textContent=_demoId(582);
+  const _fi2=document.getElementById('feed-id-2'); if(_fi2) _fi2.textContent=_demoId(571);
+  const _fi3=document.getElementById('feed-id-3'); if(_fi3) _fi3.textContent=_demoId(575);
+  const _ai1=document.getElementById('alert-demo-id'); if(_ai1) _ai1.textContent=_demoId(575);
 }
 
 // ─── Dynamic renderers ───────────────────────────────────────────────
@@ -2240,6 +2308,7 @@ function renderEdicion() {
   const cot = CONFIG.cotizacion || {};
   const steps = CONFIG.motorIA || [];
   const precios = CONFIG.precios || [];
+  const llm = CONFIG.llm || {};
 
   const precioRows = precios.map((p, i) =>
     `<div class="ev-price-row" id="ev-pr-${i}">
@@ -2323,6 +2392,50 @@ function renderEdicion() {
       </div>
     </div>
 
+    <!-- LLM / IA -->
+    <div class="ev-card" style="margin-top:20px">
+      <div class="ev-card-title">
+        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Integración IA — OpenAI GPT-4o mini
+        <span style="margin-left:auto;font-size:10.5px;font-weight:500;color:var(--t4);text-transform:none;letter-spacing:0">Recomendado</span>
+      </div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:14px;line-height:1.6">
+        Ingresa tu API key de OpenAI para activar: auto-generación de tips, análisis de pipeline, redacción de emails, auto-completado en lenguaje natural y chat interno.
+        Obtén tu key en <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--teal)">platform.openai.com/api-keys</a>.
+      </div>
+      <div class="ev-field" style="max-width:520px">
+        <label>API Key OpenAI</label>
+        <div style="position:relative">
+          <input type="password" id="ev-llm-key" placeholder="sk-proj-…" value="${llm.apiKey||''}"
+            style="width:100%;padding-right:38px"
+            oninput="CONFIG.llm=CONFIG.llm||{};CONFIG.llm.apiKey=this.value"
+            onfocus="this.style.borderColor='var(--teal)'"
+            onblur="this.style.borderColor=''">
+          <button title="Mostrar / ocultar" onclick="var i=document.getElementById('ev-llm-key');i.type=i.type==='password'?'text':'password'"
+            style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:2px;color:var(--t3)">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="ev-3col" style="max-width:400px;margin-top:10px">
+        <div class="ev-field">
+          <label>Modelo</label>
+          <select id="ev-llm-model" style="width:100%;padding:9px 12px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:13px;font-family:inherit;background:#fff;cursor:pointer"
+            onchange="CONFIG.llm=CONFIG.llm||{};CONFIG.llm.model=this.value">
+            <option value="gpt-4o-mini" ${(llm.model||'gpt-4o-mini')==='gpt-4o-mini'?'selected':''}>gpt-4o-mini (recomendado)</option>
+            <option value="gpt-4o" ${llm.model==='gpt-4o'?'selected':''}>gpt-4o</option>
+            <option value="gpt-3.5-turbo" ${llm.model==='gpt-3.5-turbo'?'selected':''}>gpt-3.5-turbo</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <button onclick="testLlmKey()" style="background:var(--bbg);border:1px solid var(--bbr);color:var(--teal);font-size:12px;font-weight:700;padding:8px 16px;border-radius:7px;cursor:pointer;font-family:inherit">
+          ✦ Probar conexión
+        </button>
+        <span id="ev-llm-test-result" style="margin-left:12px;font-size:12px;color:var(--t3)"></span>
+      </div>
+    </div>
+
   `;
 }
 
@@ -2350,12 +2463,103 @@ function saveEdicionValores() {
   const cond = document.getElementById('ev-cond'); if(cond && cond.value) CONFIG.cotizacion.condiciones = cond.value;
   // Motor IA (live-updated via oninput, apply to DOM)
   applyMotorIA();
+  // LLM config
+  CONFIG.llm = CONFIG.llm || {};
+  const llmKey = document.getElementById('ev-llm-key'); if(llmKey) CONFIG.llm.apiKey = llmKey.value.trim();
+  const llmModel = document.getElementById('ev-llm-model'); if(llmModel) CONFIG.llm.model = llmModel.value;
   // Precios (live-updated via oninput)
   saveConfigToStorage();
   // Reusar el modal de confirmación existente (adapta colores automáticamente)
   const sub = document.getElementById('saveConfirmSub');
   if (sub) sub.textContent = 'Edición de valores guardada correctamente';
   showSaveConfirm();
+  setTimeout(() => switchView('dashboard'), 300);
+}
+
+// ─── LLM Core ────────────────────────────────────────────────────────
+async function _llmCall(system, user, onChunk, maxTokens) {
+  const key = (CONFIG.llm && CONFIG.llm.apiKey) ? CONFIG.llm.apiKey.trim() : '';
+  if (!key) { toast('Configura tu API key de OpenAI en Edición Valores → IA', 'red'); return null; }
+  const model = (CONFIG.llm && CONFIG.llm.model) ? CONFIG.llm.model : 'gpt-4o-mini';
+  const _mt = maxTokens || 700;
+  try {
+    if (onChunk) {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer '+key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model, stream: true, max_tokens: _mt,
+          messages: [{role:'system',content:system},{role:'user',content:user}] })
+      });
+      if (!res.ok) { const e=await res.json(); throw new Error(e.error?.message||'API error '+res.status); }
+      const reader = res.body.getReader(); const dec = new TextDecoder(); let full = '';
+      while(true) {
+        const {done,value} = await reader.read(); if(done) break;
+        const lines = dec.decode(value).split('\n').filter(l=>l.startsWith('data: '));
+        for(const line of lines){
+          const data=line.slice(6); if(data==='[DONE]') continue;
+          try{ const delta=JSON.parse(data).choices[0].delta.content||''; full+=delta; onChunk(full,delta); }catch(e){}
+        }
+      }
+      return full;
+    } else {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer '+key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model, max_tokens: _mt,
+          messages: [{role:'system',content:system},{role:'user',content:user}] })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      return data.choices[0].message.content.trim();
+    }
+  } catch(e) { toast('Error IA: '+e.message, 'red'); return null; }
+}
+
+// ── Feature 2: Pipeline Analysis ──────────────────────────────────
+async function analyzePipeline() {
+  const btn = document.getElementById('ia-pipeline-btn');
+  const card = document.getElementById('ia-pipeline-card');
+  const result = document.getElementById('ia-pipeline-result');
+  if (!btn || !result) return;
+  btn.disabled = true; btn.style.opacity = '.6';
+  if (card) card.style.display = 'block';
+  result.innerHTML = '<span style="color:var(--teal);opacity:.7">✦ Analizando pipeline…</span>';
+
+  const today2 = new Date().toISOString().slice(0,10);
+  const pipeline_summary = (PIPELINE||[]).slice(0,20).map(r=>
+    `- ${r.cliente||'?'} | ${r.svc||''} | ${r.monto?'$'+r.monto.toLocaleString('es-CL'):''} | Prob:${r.prob||'?'}% | Estado:${r.estado||'?'} | Vence:${r.vence||'?'}`
+  ).join('\n');
+
+  const total_monto = (PIPELINE||[]).reduce((a,r)=>a+(r.monto||0),0);
+  const _co2 = (CONFIG.nameA||'') + (CONFIG.nameB||'');
+  const system = `Eres el motor de análisis comercial IA de ${_co2} (${CONFIG.tagline||CONFIG.module||'empresa de servicios'}).
+Analiza el pipeline de cotizaciones y entrega 3-4 insights accionables en español.
+Usa viñetas (•). Sé específico con nombres de clientes y montos. Máximo 5 líneas. Sin encabezados.`;
+  const user = `Fecha: ${today2}
+Pipeline total: ${PIPELINE?.length||0} cotizaciones | Monto total: $${total_monto.toLocaleString('es-CL')}
+Cotizaciones recientes:
+${pipeline_summary||'Pipeline vacío'}`;
+
+  const r2 = await _llmCall(system, user, (full) => {
+    result.innerHTML = full.replace(/•/g,'<br>•').replace(/\n/g,'<br>');
+  }, 1200);
+  btn.disabled = false; btn.style.opacity = '1';
+  if (!r2) { result.innerHTML = '<span style="color:var(--red)">Error — revisa tu API key en Edición Valores → IA</span>'; }
+}
+
+async function testLlmKey() {
+  const el = document.getElementById('ev-llm-test-result');
+  if(el) el.textContent = 'Probando…';
+  // Save key first
+  CONFIG.llm = CONFIG.llm || {};
+  const k = document.getElementById('ev-llm-key'); if(k) CONFIG.llm.apiKey = k.value.trim();
+  const m = document.getElementById('ev-llm-model'); if(m) CONFIG.llm.model = m.value;
+  const result = await _llmCall('Eres un asistente.','Responde exactamente: OK');
+  if(el) {
+    if(result && result.includes('OK')) { el.textContent = '✓ Conexión exitosa'; el.style.color='var(--green)'; }
+    else if(result) { el.textContent = '✓ Conectado'; el.style.color='var(--green)'; }
+    else { el.textContent = '✗ Error — revisa tu API key'; el.style.color='var(--red)'; }
+  }
 }
 
 // ─── Panel functions ─────────────────────────────────────────────────
@@ -2443,7 +2647,7 @@ function addServiceCustom() {
   const name = inp.value.trim();
   if (!name) { inp.focus(); return; }
   CONFIG.services.push({ id:'svc'+Date.now(), name, desc:'', icon:'<circle cx="12" cy="12" r="10"/>' });
-  inp.value = ''; rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage(); saveConfigToStorage();
+  inp.value = ''; rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
 }
 function removeService(i) {
   if (CONFIG.services.length <= 1) return;
@@ -2541,7 +2745,7 @@ function addSegmentCustom() {
   const name = inp.value.trim();
   if (!name) { inp.focus(); return; }
   CONFIG.segments.push({ id:'seg'+Date.now(), name });
-  inp.value = ''; rebuildSegList(); renderSegRow(); markCfgDirty(); saveConfigToStorage(); saveConfigToStorage();
+  inp.value = ''; rebuildSegList(); renderSegRow(); markCfgDirty(); saveConfigToStorage();
 }
 function removeSegment(i) {
   if (CONFIG.segments.length <= 1) return;
@@ -2643,7 +2847,8 @@ function saveConfigToStorage() {
       logoUrl: CONFIG.logoUrl || null,
       cotizacion: CONFIG.cotizacion,
       motorIA: CONFIG.motorIA,
-      precios: CONFIG.precios
+      precios: CONFIG.precios,
+      llm: CONFIG.llm
     };
     localStorage.setItem('spc', JSON.stringify(slim));
     // Guardar en Firebase (sincroniza con todos los dispositivos)
@@ -2677,6 +2882,7 @@ function _syncFromFirebase() {
     if (r.cotizacion) CONFIG.cotizacion = {...(CONFIG.cotizacion||{}), ...r.cotizacion};
     if (r.motorIA) CONFIG.motorIA = r.motorIA;
     if (r.precios) CONFIG.precios = r.precios;
+    if (r.llm) CONFIG.llm = {...(CONFIG.llm||{}), ...r.llm};
     // Actualizar localStorage con la versión de Firebase
     localStorage.setItem('spc', JSON.stringify(r));
     _applyDynamicColors();
@@ -2702,6 +2908,7 @@ function loadConfigFromStorage() {
     if (sv.cotizacion) CONFIG.cotizacion = {...(CONFIG.cotizacion||{}), ...sv.cotizacion};
     if (sv.motorIA) CONFIG.motorIA = sv.motorIA;
     if (sv.precios) CONFIG.precios = sv.precios;
+    if (sv.llm) CONFIG.llm = {...(CONFIG.llm||{}), ...sv.llm};
     CONFIG.logoSrc = localStorage.getItem('spc_logo') || null;
     _applyDynamicColors();
     return true;
@@ -2892,21 +3099,24 @@ const STATUS_BADGE = {
 };
 
 const _D=Date.now(), _DAY=86400000;
+// Los IDs de demo se generan dinámicamente para respetar el prefijo de la marca actual
+function _demoId(n){ return ((CONFIG.nameA||'COT')+(CONFIG.nameB||'')).replace(/\s+/g,'').substring(0,6).toUpperCase()+'-'+n; }
 const PIPELINE_DEMO = [
-  {id:'COT-NX-582',cliente:'Hotel Plaza Bosque',seg:'Hotelería y Gast.',svc:'Calidad del Aire',sys:'Estación MyInBiot + HEPA H14',monto:18400000,prob:88,estado:'En revisión',vence:'05 jul',tip:'Cliente hotelería con alta demanda calidad aire. Incluir informe normativo Minsal + variables CO₂/HR/PM como diferenciador.',created:_D-5*_DAY},
-  {id:'COT-NX-581',cliente:'INACAP Santiago',seg:'Ctros. Formación',svc:'Mantenimiento de Clima',sys:'12× Daikin Split · SGClima integrado',monto:3200000,prob:81,estado:'Enviada',vence:'28 jul',tip:'Recurrencia histórica 2.3 contratos/año. Proponer contrato anual con 8% descuento para asegurar ingresos recurrentes.',created:_D-7*_DAY},
-  {id:'COT-NX-579',cliente:'CBRE Chile',seg:'Oficinas',svc:'Eficiencia Energética',sys:'SGClima + Cool Automation IoC',monto:42600000,prob:80,estado:'Negociando',vence:'12 jul',tip:'Ahorro estimado 18–24% garantizado por SGClima. Incluir informe ROI 3 años para presentación a directorio.',created:_D-10*_DAY},
-  {id:'COT-NX-577',cliente:'Porsche Centro',seg:'Retail',svc:'Mantenimiento de Clima',sys:'2× Chiller Carrier · análisis vibración',monto:8900000,prob:72,estado:'Enviada',vence:'18 jul',tip:'Incluir protocolo de análisis vibración predictivo como valor agregado. Certificación ASHRAE relevante para el sector.',created:_D-14*_DAY},
-  {id:'COT-NX-575',cliente:'Tavelli S.A.',seg:'Construcción y Arq.',svc:'Ingeniería de Proyectos',sys:'Cálculo térmico ASHRAE + LEED',monto:21300000,prob:80,estado:'En proceso',vence:'02 jul',tip:'Propuesta con ingeniería de detalle + supervisión de obras tiene 35% mayor tasa de cierre en Construcción y Arquitectura.',created:_D-18*_DAY},
-  {id:'COT-NX-573',cliente:'Municipalidad Rancagua',seg:'Mercado Público',svc:'Mantenimiento Virtual',sys:'SGClima + ROBOTBAS RoomControl',monto:12100000,prob:73,estado:'Borrador',vence:'15 jul',tip:'Segmento Mercado Público: destacar eficiencia presupuestaria y cumplimiento normativo. Mantenimiento Virtual reduce visitas en 60%.',created:_D-21*_DAY},
-  {id:'COT-NX-571',cliente:'Castro y Asociados',seg:'Construcción y Arq.',svc:'Instalaciones de Clima',sys:'VRV/VRF Daikin + Paneles Solares',monto:34200000,prob:84,estado:'Ganada',vence:'Cerrada',tip:'Ganada. Proyecto LEED completado. Historial positivo — proponer mantención anual y upsell SGClima en próxima reunión.',created:_D-28*_DAY},
-  {id:'COT-NX-569',cliente:'Mall Costanera',seg:'Retail',svc:'Instalaciones de Clima',sys:'VRV Daikin 48HP × 2',monto:55800000,prob:58,estado:'Perdida',vence:'Cerrada',tip:'Perdida por precio. Revisar estructura de costos en segmento Retail. Considerar propuesta escalonada en próxima licitación.',created:_D-35*_DAY},
+  {id:_demoId(582),cliente:'Hotel Plaza Bosque',seg:'Hotelería y Gast.',svc:'Calidad del Aire',sys:'Estación MyInBiot + HEPA H14',monto:18400000,prob:88,estado:'En revisión',vence:'05 jul',tip:'Cliente hotelería con alta demanda calidad aire. Incluir informe normativo Minsal + variables CO₂/HR/PM como diferenciador.',created:_D-5*_DAY},
+  {id:_demoId(581),cliente:'INACAP Santiago',seg:'Ctros. Formación',svc:'Mantenimiento de Clima',sys:'12× Daikin Split · SGClima integrado',monto:3200000,prob:81,estado:'Enviada',vence:'28 jul',tip:'Recurrencia histórica 2.3 contratos/año. Proponer contrato anual con 8% descuento para asegurar ingresos recurrentes.',created:_D-7*_DAY},
+  {id:_demoId(579),cliente:'CBRE Chile',seg:'Oficinas',svc:'Eficiencia Energética',sys:'SGClima + Cool Automation IoC',monto:42600000,prob:80,estado:'Negociando',vence:'12 jul',tip:'Ahorro estimado 18–24% garantizado por SGClima. Incluir informe ROI 3 años para presentación a directorio.',created:_D-10*_DAY},
+  {id:_demoId(577),cliente:'Porsche Centro',seg:'Retail',svc:'Mantenimiento de Clima',sys:'2× Chiller Carrier · análisis vibración',monto:8900000,prob:72,estado:'Enviada',vence:'18 jul',tip:'Incluir protocolo de análisis vibración predictivo como valor agregado. Certificación ASHRAE relevante para el sector.',created:_D-14*_DAY},
+  {id:_demoId(575),cliente:'Tavelli S.A.',seg:'Construcción y Arq.',svc:'Ingeniería de Proyectos',sys:'Cálculo térmico ASHRAE + LEED',monto:21300000,prob:80,estado:'En proceso',vence:'02 jul',tip:'Propuesta con ingeniería de detalle + supervisión de obras tiene 35% mayor tasa de cierre en Construcción y Arquitectura.',created:_D-18*_DAY},
+  {id:_demoId(573),cliente:'Municipalidad Rancagua',seg:'Mercado Público',svc:'Mantenimiento Virtual',sys:'SGClima + ROBOTBAS RoomControl',monto:12100000,prob:73,estado:'Borrador',vence:'15 jul',tip:'Segmento Mercado Público: destacar eficiencia presupuestaria y cumplimiento normativo. Mantenimiento Virtual reduce visitas en 60%.',created:_D-21*_DAY},
+  {id:_demoId(571),cliente:'Castro y Asociados',seg:'Construcción y Arq.',svc:'Instalaciones de Clima',sys:'VRV/VRF Daikin + Paneles Solares',monto:34200000,prob:84,estado:'Ganada',vence:'Cerrada',tip:'Ganada. Proyecto LEED completado. Historial positivo — proponer mantención anual y upsell SGClima en próxima reunión.',created:_D-28*_DAY},
+  {id:_demoId(569),cliente:'Mall Costanera',seg:'Retail',svc:'Instalaciones de Clima',sys:'VRV Daikin 48HP × 2',monto:55800000,prob:58,estado:'Perdida',vence:'Cerrada',tip:'Perdida por precio. Revisar estructura de costos en segmento Retail. Considerar propuesta escalonada en próxima licitación.',created:_D-35*_DAY},
 ];
 
 let PIPELINE = [...PIPELINE_DEMO.map(r=>({...r}))];
 
+function _plKey(){ return 'pipeline_'+((CONFIG.nameA||'')+(CONFIG.nameB||'empresa')).toLowerCase().replace(/\s+/g,''); }
 function savePipelineToStorage() {
-  try { localStorage.setItem('nexclima_pipeline', JSON.stringify(PIPELINE)); } catch(e){}
+  try { localStorage.setItem(_plKey(), JSON.stringify(PIPELINE)); } catch(e){}
   if (_fbDb) {
     _fbDb.ref('pipeline').set(PIPELINE).catch(e => console.warn('[Firebase] pipeline save error:', e));
   }
@@ -2919,21 +3129,22 @@ function _syncPipelineFromFirebase() {
     if (!r || !Array.isArray(r) || r.length === 0) return;
     PIPELINE.length = 0;
     r.forEach(row => PIPELINE.push(row));
-    localStorage.setItem('nexclima_pipeline', JSON.stringify(PIPELINE));
+    localStorage.setItem(_plKey(), JSON.stringify(PIPELINE));
     renderAll();
     console.log('[Firebase] pipeline sincronizado:', r.length, 'filas');
   }).catch(e => console.warn('[Firebase] pipeline sync error:', e));
 }
 
 function resetDemoData(){
-  if(!confirm('¿Restablecer los datos de ejemplo? Se perderán los datos importados.')) return;
-  localStorage.removeItem('nexclima_pipeline');
-  PIPELINE.length = 0;
-  PIPELINE_DEMO.forEach(r => PIPELINE.push({...r}));
-  savePipelineToStorage();
-  renderTable();
-  if(typeof renderTable2 === 'function') renderTable2();
-  toast('Datos de ejemplo restablecidos', 'blue');
+  _confirm('¿Restablecer los datos de ejemplo? Se perderán los datos importados.', ()=>{
+    localStorage.removeItem(_plKey());
+    PIPELINE.length = 0;
+    PIPELINE_DEMO.forEach(r => PIPELINE.push({...r}));
+    savePipelineToStorage();
+    renderTable();
+    if(typeof renderTable2 === 'function') renderTable2();
+    toast('Datos de ejemplo restablecidos', 'blue');
+  }, { title: 'Restablecer datos', okLabel: 'Restablecer', variant: 'warn' });
 }
 
 const CLIENTS = [
@@ -3002,7 +3213,7 @@ function switchView(v){
   if(v==='cotizaciones') renderTable2();
   if(v==='clientes') renderClients();
   if(v==='edicion') renderEdicion();
-  if(v==='cotizador'){ [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
+  if(v==='cotizador'){ _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
   closeSidebar(); // close drawer after navigating
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -3482,11 +3693,12 @@ function cycleStatus(id){
   toast(`${r.id} → ${r.estado}`,'blue');
 }
 function deleteRow(id){
-  if(!confirm('¿Eliminar cotización '+id+'?')) return;
-  PIPELINE=PIPELINE.filter(x=>x.id!==id);
-  savePipelineToStorage();
-  renderAll(); renderTable2();
-  toast('Cotización eliminada','warn');
+  _confirm(`¿Eliminar la cotización ${id}? Esta acción no se puede deshacer.`, ()=>{
+    PIPELINE=PIPELINE.filter(x=>x.id!==id);
+    savePipelineToStorage();
+    renderAll(); renderTable2();
+    toast('Cotización eliminada','warn');
+  }, { title: 'Eliminar cotización', okLabel: 'Eliminar' });
 }
 
 // ══════════════════════════════════════════════════
@@ -3606,7 +3818,7 @@ function exportCSV(){
   const blob=new Blob([csv],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url; a.download='nexclima-cotizaciones.csv'; a.click();
+  a.href=url; a.download=((CONFIG.nameA||'empresa')+(CONFIG.nameB||'')).toLowerCase().replace(/\s+/g,'-')+'-cotizaciones.csv'; a.click();
   URL.revokeObjectURL(url);
   toast('CSV exportado correctamente','green');
 }
@@ -3627,7 +3839,7 @@ function refreshData(){
         if(r && Array.isArray(r) && r.length>0){
           PIPELINE.length=0;
           r.forEach(row=>PIPELINE.push(row));
-          try{localStorage.setItem('nexclima_pipeline',JSON.stringify(PIPELINE));}catch(e){}
+          try{localStorage.setItem(_plKey(),JSON.stringify(PIPELINE));}catch(e){}
         }
         renderAll();
         toast('Datos actualizados','green');
@@ -3655,10 +3867,50 @@ function toast(msg, type='blue'){
 }
 
 // ══════════════════════════════════════════════════
+//  CONFIRM MODAL
+// ══════════════════════════════════════════════════
+let _confirmCallback = null;
+function _confirm(msg, onConfirm, opts={}){
+  _confirmCallback = onConfirm;
+  const ov  = document.getElementById('confirmOverlay');
+  const ttl = document.getElementById('confirm-title');
+  const txt = document.getElementById('confirm-msg');
+  const btn = document.getElementById('confirm-ok');
+  const ico = document.getElementById('confirm-icon');
+  const variant = opts.variant || 'danger'; // danger | warn
+  const isDanger = variant !== 'warn';
+  // Colores del botón e ícono
+  const col  = isDanger ? 'var(--red)' : 'var(--orange)';
+  const bg   = isDanger ? 'rgba(214,59,59,.12)' : 'rgba(212,110,58,.12)';
+  const svg  = isDanger
+    ? '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.2" fill="none"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>'
+    : '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+  ico.style.background  = bg;
+  ico.style.color       = col;
+  ico.innerHTML         = svg;
+  btn.style.background  = col;
+  btn.style.borderColor = col;
+  ttl.textContent = opts.title || (isDanger ? 'Confirmar acción' : 'Advertencia');
+  txt.textContent = msg;
+  btn.textContent = opts.okLabel || 'Confirmar';
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function _confirmOk(){
+  _confirmClose();
+  if(typeof _confirmCallback === 'function') _confirmCallback();
+}
+function _confirmClose(){
+  document.getElementById('confirmOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _confirmCallback = null;
+}
+
+// ══════════════════════════════════════════════════
 //  KEYBOARD
 // ══════════════════════════════════════════════════
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape') closeModal(null);
+  if(e.key==='Escape'){ closeModal(null); _confirmClose(); }
 });
 
 // ══════════════════════════════════════════════════
@@ -3667,7 +3919,7 @@ document.addEventListener('keydown',e=>{
 window.addEventListener('load',()=>{
   // Restaurar datos guardados localmente
   try {
-    const saved = localStorage.getItem('nexclima_pipeline');
+    const saved = localStorage.getItem(_plKey());
     if(saved){
       const parsed = JSON.parse(saved);
       if(Array.isArray(parsed) && parsed.length > 0){
@@ -3863,7 +4115,7 @@ function showImportError(msg){
 function confirmImport(){
   if(!_parsedRows.length) return;
   const newPipeline = _parsedRows.map((r, i) => ({
-    id: r['id'] || ('COT-NX-' + (600+i)),
+    id: r['id'] || _demoId(600+i),
     cliente: r['cliente'] || '',
     seg: r['segmento'] || '',
     svc: r['servicio'] || '',
@@ -3891,13 +4143,13 @@ function confirmImport(){
 
 function downloadTemplate(){
   const headers = 'ID,Cliente,Segmento,Servicio,Sistema,Monto,Probabilidad,Estado,Vence,Insight';
-  const ex1 = 'COT-NX-601,Hotel Ejemplo,Hotelería y Gast.,Mantenimiento de Clima,VRV/VRF Mitsubishi,12500000,82,Enviada,15 jul,Cliente recurrente — proponer contrato anual';
-  const ex2 = 'COT-NX-602,Clínica Santa Rosa,Salud,Calidad del Aire,Estación MyInBiot + HEPA H14,8900000,77,En revisión,22 jul,Alta probabilidad cierre';
-  const ex3 = 'COT-NX-603,Colegio San Ignacio,Educación,Instalación,Split / Compactos Daikin,6300000,68,Borrador,30 jul,';
+  const ex1 = _demoId(601)+',Hotel Ejemplo,Hotelería y Gast.,Mantenimiento de Clima,VRV/VRF Mitsubishi,12500000,82,Enviada,15 jul,Cliente recurrente — proponer contrato anual';
+  const ex2 = _demoId(602)+',Clínica Santa Rosa,Salud,Calidad del Aire,Estación MyInBiot + HEPA H14,8900000,77,En revisión,22 jul,Alta probabilidad cierre';
+  const ex3 = _demoId(603)+',Colegio San Ignacio,Educación,Instalación,Split / Compactos Daikin,6300000,68,Borrador,30 jul,';
   const csv = [headers, ex1, ex2, ex3].join('\n');
   const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'nexclima-plantilla.csv'; a.click();
+  const a = document.createElement('a'); a.href = url; a.download = ((CONFIG.nameA||'empresa')+(CONFIG.nameB||'')).toLowerCase().replace(/\s+/g,'-')+'-plantilla.csv'; a.click();
   URL.revokeObjectURL(url);
   toast('Plantilla descargada · ábrela en Excel o Google Sheets', 'green');
 }
@@ -3907,8 +4159,33 @@ function downloadTemplate(){
 // ══════════════════════════════════════════════════
 let svc='mant', seg='edu', urg='m', sys='split';
 let _cotStartTime=null, _cotConvProb=75;
-const today = new Date().toLocaleDateString('es-CL',{year:'numeric',month:'long',day:'numeric'});
-const qId   = 'COT-NX-' + (Math.floor(Math.random()*900)+100);
+let today = new Date().toLocaleDateString('es-CL',{year:'numeric',month:'long',day:'numeric'});
+let qId   = _genQId();
+function _genQId(){
+  const pfx = ((CONFIG.nameA||'COT')+(CONFIG.nameB||'')).replace(/\s+/g,'').substring(0,6).toUpperCase();
+  const num = Math.floor(Math.random()*900)+100;
+  // Evitar colisión con IDs existentes en PIPELINE
+  const existing = (typeof PIPELINE !== 'undefined' ? PIPELINE : []).map(r=>r.id);
+  let id = pfx+'-'+num;
+  let tries = 0;
+  while(existing.includes(id) && tries<20){ id = pfx+'-'+(Math.floor(Math.random()*900)+100); tries++; }
+  return id;
+}
+function _resetCotizador(){
+  today = new Date().toLocaleDateString('es-CL',{year:'numeric',month:'long',day:'numeric'});
+  qId   = _genQId();
+  // Resetear variables de estado
+  svc='mant'; seg='edu'; urg='m'; sys='split';
+  // Limpiar campos del formulario (IDs reales del cotizador)
+  ['cn','cr','ce','cp','rd'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  const neEl=document.getElementById('ne'); if(neEl) neEl.value='1';
+  const smEl=document.getElementById('sm'); if(smEl) smEl.value='';
+  const nlEl=document.getElementById('nl-input'); if(nlEl) nlEl.value='';
+  const nlSt=document.getElementById('nl-status'); if(nlSt) nlSt.textContent='';
+  // Resetear selecciones visuales (se aplicarán al renderizar)
+}
 
 function setSvc(s){
   svc=s;
@@ -3935,6 +4212,90 @@ function setUrg(u){
   document.getElementById('um').className='urg'+(u==='m'?' um':'');
   document.getElementById('uh').className='urg'+(u==='h'?' uh':'');
 }
+
+// ── Feature 4: Natural Language Auto-fill ──────────────────────────
+async function nlAutoFill() {
+  const txt = (document.getElementById('nl-input').value||'').trim();
+  if (!txt) { document.getElementById('nl-status').textContent = 'Escribe una descripción primero.'; return; }
+  const btn = document.getElementById('nl-btn');
+  const status = document.getElementById('nl-status');
+  btn.disabled = true; btn.style.opacity = '.6';
+  status.textContent = '✦ IA analizando descripción…'; status.style.color = 'var(--teal)';
+
+  const svcList = (CONFIG.services||[]).map(s=>`"${s.id}"=${s.name}`).join(' | ');
+  const segList = (CONFIG.segments||[]).map(s=>`"${s.id}"=${s.name}`).join(' | ');
+  const sysList = (CONFIG.systemTypes||[]).map(s=>`"${s.id}"=${s.name}`).join(' | ');
+
+  const _nlCo = (CONFIG.nameA||'') + (CONFIG.nameB||'');
+  const system = `Eres un extractor de datos para cotizaciones de ${_nlCo}. Analiza el texto y devuelve un JSON con estos campos:
+
+REGLAS POR CAMPO:
+- "empresa": cualquier nombre, sigla o abreviatura de empresa/institución/persona mencionada (ej: "UBB", "Hotel Gavina", "Juan Pérez"). Si hay un nombre en el texto, PONLO aquí aunque sea una sigla.
+- "rut": SOLO si hay un RUT explícito en el formato XX.XXX.XXX-X. Si no → "".
+- "email": SOLO si hay un email explícito (@). Si no → "".
+- "telefono": SOLO si hay un número de teléfono explícito. Si no → "".
+- "segmento": infiere el más apropiado. Opciones: ${segList}
+- "servicio": infiere el más apropiado según lo que se describe. Opciones: ${svcList}
+- "sistema": infiere el más apropiado. Opciones: ${sysList}
+- "num_equipos": número entero si menciona cantidad de equipos/unidades explícitamente. Si NO se menciona pero sí hay superficie, estima la cantidad según el tipo de sistema (split: 1 por cada 25-35 m²; VRV: 1 unidad interior por cada 20-30 m²; chiller: 1 cada 300-500 m²). Nunca devuelvas null si tienes suficiente contexto para estimar.
+- "superficie": número entero en m² si menciona metros cuadrados/m²/superficie, sino null.
+- "descripcion": resumen claro del proyecto en 1-2 frases en español.
+- "urgencia": "h" si dice urgente/hoy/inmediato, "l" si dice sin apuro/flexible, "m" en los demás casos.
+
+Responde ÚNICAMENTE con el JSON válido, sin texto adicional ni bloques de código.`;
+
+  const userMsg = `Texto:\n"""\n${txt}\n"""`;
+  const result = await _llmCall(system, userMsg, null, 400);
+  btn.disabled = false; btn.style.opacity = '1';
+  if (!result) { status.textContent = 'Error al procesar. Revisa tu API key en Edición Valores.'; status.style.color='var(--red)'; return; }
+
+  try {
+    const json = JSON.parse(result.replace(/```json|```/g,'').trim());
+    let filled = [];
+
+    if (json.empresa) { const el=document.getElementById('cn'); if(el){el.value=json.empresa;filled.push('empresa');} }
+    if (json.rut) { const el=document.getElementById('cr'); if(el){el.value=json.rut;filled.push('RUT');} }
+    if (json.email) { const el=document.getElementById('ce'); if(el){el.value=json.email;filled.push('email');} }
+    if (json.telefono) { const el=document.getElementById('cp'); if(el){el.value=json.telefono;filled.push('teléfono');} }
+
+    // Segmento
+    if (json.segmento && document.getElementById('seg-'+json.segmento)) {
+      setSeg(json.segmento); filled.push('segmento');
+    }
+    // Servicio
+    if (json.servicio && document.getElementById('svc-'+json.servicio)) {
+      setSvc(json.servicio); filled.push('servicio');
+    }
+    // Sistema
+    if (json.sistema && document.getElementById('sys-'+json.sistema)) {
+      setSys(json.sistema); filled.push('sistema');
+    }
+    // Superficie m² (aplicar antes de equipos para usar en estimación)
+    if (json.superficie) { const el=document.getElementById('sm'); if(el){el.value=json.superficie;filled.push('superficie');} }
+    // N° equipos — si el LLM devolvió null pero hay superficie, estimar
+    let equipos = json.num_equipos;
+    if (!equipos && json.superficie) {
+      const m2 = parseInt(json.superficie);
+      const sysId = json.sistema || sys;
+      if (sysId==='chiller') equipos = Math.max(1, Math.round(m2/400));
+      else if (sysId==='vrv') equipos = Math.max(1, Math.round(m2/25));
+      else equipos = Math.max(1, Math.round(m2/30)); // split por defecto
+    }
+    if (equipos) { const el=document.getElementById('ne'); if(el){el.value=equipos; filled.push('N° equipos'+(json.num_equipos?'':' (estimado)'));} }
+    // Descripción
+    if (json.descripcion) { const el=document.getElementById('rd'); if(el){el.value=json.descripcion;filled.push('descripción');} }
+    // Urgencia
+    if (json.urgencia) { try{setUrg(json.urgencia);}catch(e){} }
+
+    status.textContent = '✓ Campos completados: ' + (filled.join(', ')||'ninguno detectado');
+    status.style.color = 'var(--green)';
+  } catch(e) {
+    // Mostrar qué devolvió el modelo para facilitar el diagnóstico
+    const preview = result ? result.substring(0,80).replace(/\n/g,' ') : '(sin respuesta)';
+    status.textContent = 'No pude interpretar la respuesta IA. Intenta con más detalle. Respuesta: "'+preview+'"';
+    status.style.color = 'var(--red)';
+  }
+}
 function setNav(n,st){
   const el=document.getElementById('ns'+n);
   if(!el) return;
@@ -3948,7 +4309,14 @@ function cShow(n){
   document.getElementById('screen'+n).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
+function _markError(id){ const el=document.getElementById(id); if(!el)return; el.classList.add('field-error'); el.focus(); el.addEventListener('input',()=>el.classList.remove('field-error'),{once:true}); }
 function go2(){
+  // Validar campos obligatorios
+  const nombre = (document.getElementById('cn')?.value||'').trim();
+  const email  = (document.getElementById('ce')?.value||'').trim();
+  if (!nombre) { _markError('cn'); toast('El nombre de empresa es obligatorio','red'); return; }
+  if (!email)  { _markError('ce'); toast('El email de contacto es obligatorio','red'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { _markError('ce'); toast('Email inválido — verifica el formato','red'); return; }
   _cotStartTime=Date.now();
   setNav(1,'done'); setNav(2,'active'); cShow(2);
   const ids=['ai1','ai2','ai3','ai4','ai5'];
@@ -4022,19 +4390,19 @@ function buildQ(){
       {n:'Revisión y purga circuito hidráulico',d:'Control presión, temperatura y expansión — eliminar bolsas de aire',q:Math.ceil(neq/2),u:35000,a:false},
       {n:'Revisión tablero de control y termostatos',d:'Calibración setpoints y parámetros de seguridad ASHRAE',q:Math.ceil(neq/3),u:28000,a:true},
       {n:'Certificado de mantención calefacción (SEC)',d:'Informe técnico homologado — exigido por aseguradoras',q:neq,u:12000,a:false},
-      {n:'Mano de obra técnico especialista NexClima',d:'Incluye traslado, herramientas, EPP — cobertura Copiapó–Talca',q:Math.ceil(neq/2),u:58000,a:false},
+      {n:'Mano de obra técnico especialista '+((CONFIG.nameA||'')+(CONFIG.nameB||'')),d:'Incluye traslado, herramientas, EPP — '+((CONFIG.location)||'cobertura nacional'),q:Math.ceil(neq/2),u:58000,a:false},
     ] : [
       {n:'Mantención preventiva '+sysLabel[sys]+' '+brand,d:'Limpieza filtros, revisión refrigerante, lubricación — NCh2681',q:neq,u:_cfgP('mantSplit',52000),a:false},
       {n:'Gas refrigerante R-410A',d:'Carga hasta 0.5 kg por equipo según lectura de presión',q:neq,u:_cfgP('gasRef',19000),a:false},
       {n:'Limpieza profunda evaporador y condensador',d:'Tratamiento antibacterial y antifúngico certificado MINSAL',q:neq,u:14000,a:false},
       {n:'Revisión tablero eléctrico y parámetros ASHRAE',d:'Medición consumo, corriente, voltaje y parámetros de seguridad',q:Math.ceil(neq/4),u:38000,a:true},
       {n:'Certificado de mantención por equipo',d:'Informe técnico para auditoría interna y aseguradora',q:neq,u:5000,a:false},
-      {n:'Mano de obra técnico especialista NexClima',d:'Incluye traslado, herramientas, EPP — cobertura Copiapó–Talca',q:Math.ceil(neq/2),u:58000,a:false},
+      {n:'Mano de obra técnico especialista '+((CONFIG.nameA||'')+(CONFIG.nameB||'')),d:'Incluye traslado, herramientas, EPP — '+((CONFIG.location)||'cobertura nacional'),q:Math.ceil(neq/2),u:58000,a:false},
     ],
     inst:[
       {n:'Equipo split inverter '+brand+' 18.000 BTU — certificado LEED',d:'Eficiencia A++, refrigerante R-32, garantía 24 meses',q:neq,u:385000,a:true},
       {n:'Kit instalación — tuberías cobre, soportes y ductos',d:'Material primera calidad, certificado ASHRAE 90.1',q:neq,u:42000,a:false},
-      {n:'Instalación y puesta en marcha',d:'Técnico certificado NexClima · garantía de instalación 12 meses',q:neq,u:_cfgP('instalacion',65000),a:false},
+      {n:'Instalación y puesta en marcha',d:'Técnico certificado '+((CONFIG.nameA||'')+(CONFIG.nameB||''))+' · garantía de instalación 12 meses',q:neq,u:_cfgP('instalacion',65000),a:false},
       {n:'Ingeniería de diseño y cálculo de carga térmica',d:'Memoria de cálculo + planos de distribución según ASHRAE',q:1,u:_cfgP('ingTermica',180000),a:true},
       {n:'Prueba y protocolo de recepción técnica',d:'Verificación parámetros eléctricos, vibración y rendimiento',q:1,u:75000,a:false},
     ],
@@ -4043,11 +4411,11 @@ function buildQ(){
       {n:'Plataforma SGClima — suscripción anual',d:'Dashboard 24/7, alertas automáticas, reportes predictivos IA',q:1,u:_cfgP('sgclimaSub',480000),a:true},
       {n:'ROBOTBAS RoomControl — módulo domótica',d:'Control por habitación/sala: temperatura, iluminación, sensores presencia',q:Math.ceil(neq/3),u:_cfgP('robotbas',210000),a:true},
       {n:'Configuración e integración con HVAC existente',d:'Hasta 3 jornadas de puesta en marcha y capacitación',q:1,u:180000,a:false},
-      {n:'Soporte remoto 12 meses — NOC NexClima',d:'Monitoreo continuo + respuesta a alertas en < 15 min',q:1,u:150000,a:false},
+      {n:'Soporte remoto 12 meses — NOC '+((CONFIG.nameA||'')+(CONFIG.nameB||'')),d:'Monitoreo continuo + respuesta a alertas en < 15 min',q:1,u:150000,a:false},
     ],
     ener:[
       {n:'Auditoría energética equipos de clima — baseline',d:'Análisis consumo eléctrico, mapa de oportunidades, benchmark sectorial',q:1,u:_cfgP('auditoria',320000),a:true},
-      {n:'Implementación SGClima — licencia anual',d:'Software NexClima: control autónomo, decisiones automáticas e instantáneas',q:1,u:_cfgP('sgclimaLic',620000),a:true},
+      {n:'Implementación SGClima — licencia anual',d:'Software '+((CONFIG.nameA||'')+(CONFIG.nameB||''))+': control autónomo, decisiones automáticas e instantáneas',q:1,u:_cfgP('sgclimaLic',620000),a:true},
       {n:'Cool Automation IoC — control remoto HVAC',d:'Optimización setpoints en tiempo real. Garantía ahorro mínimo 15%',q:neq,u:_cfgP('coolAuto',45000),a:true},
       {n:'ROBOTBAS — sensores presencia y bajo consumo',d:'Modo bajo consumo automático cuando espacio desocupado',q:Math.ceil(neq/2),u:95000,a:true},
       {n:'Informe ROI con proyección 3 años',d:'Análisis costo-beneficio certificado para presentación a directorio',q:1,u:120000,a:false},
@@ -4058,7 +4426,7 @@ function buildQ(){
       {n:'Sistema UV-C bactericida (instalación incluida)',d:'Eliminación virus y bacterias ≥99.9% — certificación MINSAL',q:Math.ceil(neq/3),u:_cfgP('uvC',220000),a:true},
       {n:'Auditoría calidad aire — informe técnico completo',d:'CO₂ < 800 ppm, HR 40–60%, PM2.5 según OMS, TVOC < 300 µg/m³',q:1,u:280000,a:true},
       {n:'Ventilación con recuperador calor',d:'Renovación aire controlada — mantiene confort 21–25°C',q:Math.ceil(neq/4),u:195000,a:false},
-      {n:'Mano de obra técnico especialista calidad aire',d:'Certificado NexClima — norma NCh3190',q:Math.ceil(neq/3),u:65000,a:false},
+      {n:'Mano de obra técnico especialista calidad aire',d:'Certificado '+((CONFIG.nameA||'')+(CONFIG.nameB||''))+' — norma NCh3190',q:Math.ceil(neq/3),u:65000,a:false},
     ],
     ing:[
       {n:'Levantamiento instalaciones existentes',d:'Visita técnica + planos as-built + informe estado actual',q:1,u:180000,a:false},
@@ -4068,7 +4436,21 @@ function buildQ(){
       {n:'Supervisión de obras (por visita técnica)',d:'Informe de avance + protocolo de recepción técnica final',q:Math.ceil(neq/4),u:95000,a:false},
     ],
   };
-  const items=rows[svc]||rows.mant;
+  // Resolver: primero por ID exacto, luego por keyword en el nombre del servicio, luego mant
+  function _resolveRows(rows, svcId){
+    if(rows[svcId]) return rows[svcId];
+    const svcObj = (CONFIG.services||[]).find(s=>s.id===svcId);
+    if(svcObj){
+      const nm = (svcObj.name||'').toLowerCase();
+      if(nm.includes('instal'))              return rows.inst;
+      if(nm.includes('virtual')||nm.includes('remoto')||nm.includes('iot')) return rows.virt;
+      if(nm.includes('energ')||nm.includes('efici'))  return rows.ener;
+      if(nm.includes('aire')||nm.includes('calidad')) return rows.aire;
+      if(nm.includes('ingenie')||nm.includes('proy')) return rows.ing;
+    }
+    return rows.mant;
+  }
+  const items=_resolveRows(rows, svc);
   const tbody=document.getElementById('qbody');
   tbody.innerHTML='';
   let sub=0;
@@ -4090,19 +4472,44 @@ function buildQ(){
   document.getElementById('tt').textContent=fmt(sub+iva);
   const lblIva=document.getElementById('lbl-iva'); if(lblIva) lblIva.textContent='IVA ('+_ivaPct+'%)';
   const convProb={mant:{hotel:84,edu:81,of:76,ret:72,con:68,pub:79},inst:{hotel:72,edu:68,of:74,ret:65,con:77,pub:61},virt:{hotel:79,edu:75,of:71,ret:62,con:58,pub:73},ener:{hotel:83,edu:78,of:80,ret:69,con:74,pub:66},aire:{hotel:88,edu:82,of:77,ret:65,con:60,pub:71},ing:{hotel:70,edu:66,of:73,ret:58,con:80,pub:55}};
-  const cp=(convProb[svc]||{})[seg]||75;
+  const _svcKey=convProb[svc]?svc:(()=>{const o=(CONFIG.services||[]).find(s=>s.id===svc);if(!o)return'mant';const n=(o.name||'').toLowerCase();if(n.includes('instal'))return'inst';if(n.includes('virtual')||n.includes('iot'))return'virt';if(n.includes('energ'))return'ener';if(n.includes('aire'))return'aire';if(n.includes('ingenie'))return'ing';return'mant';})();
+  const cp=(convProb[_svcKey]||{})[seg]||75;
   _cotConvProb=cp;
   const kvEl=document.getElementById('kv-conv');
   if(kvEl) kvEl.textContent=cp+'%';
   const tips={
-    mant:`Segmento ${sgn[seg]} con alta recurrencia histórica (2.3 contratos/año promedio NexClima). La IA recomienda proponer contrato anual de mantención con 8% descuento para asegurar ingresos recurrentes y mejorar tasa de cierre estimada en ${cp}%.`,
-    inst:`Proyecto de instalación en ${sgn[seg]}. La IA detecta oportunidad de incluir plan de mantención preventiva semestral como servicio complementario, proyectando +18% de ingreso adicional. Destacar certificación ASHRAE y garantía NexClima como diferenciadores.`,
+    mant:`Segmento ${sgn[seg]} con alta recurrencia histórica (2.3 contratos/año promedio). La IA recomienda proponer contrato anual de mantención con 8% descuento para asegurar ingresos recurrentes y mejorar tasa de cierre estimada en ${cp}%.`,
+    inst:`Proyecto de instalación en ${sgn[seg]}. La IA detecta oportunidad de incluir plan de mantención preventiva semestral como servicio complementario, proyectando +18% de ingreso adicional. Destacar certificación ASHRAE y garantía ${(CONFIG.nameA||'')+(CONFIG.nameB||'')} como diferenciadores.`,
     virt:`Mantenimiento virtual con plataforma SGClima + Cool Automation IoC. La IA proyecta reducción de visitas presenciales en 60% y ahorro operacional de 22% para clientes del segmento ${sgn[seg]}. NPS promedio clientes con este servicio: 78.`,
     ener:`SGClima garantiza ahorro mínimo 15% en consumo energético de clima. La IA calcula ROI a 18 meses para ${sgn[seg]} basado en benchmark sectorial. Incluir informe de ROI proyectado a 3 años acelera significativamente la decisión de compra.`,
     aire:`Demanda en ${sgn[seg]} creció 340% desde 2021. Variables críticas detectadas: CO₂ >800 ppm, HR fuera de rango 40–60%, TVOC elevado. La IA recomienda incluir estación MyInBiot + informe normativo como diferenciador frente a competencia.`,
     ing:`Proyecto de ingeniería con potencial de certificación LEED. La IA detecta que propuestas con ingeniería de detalle + supervisión de obras tienen 35% mayor tasa de cierre en ${sgn[seg]}. Incluir estudio de eficiencia energética como valor agregado.`,
   };
-  document.getElementById('tip').textContent=tips[svc]||tips.mant;
+  // Show static tip as fallback, then replace with LLM-generated insight if key is set
+  const tipEl = document.getElementById('tip');
+  if(!tipEl) return;
+  tipEl.textContent = tips[_svcKey]||tips.mant;
+  if (CONFIG.llm && CONFIG.llm.apiKey) {
+    const totalStr = document.getElementById('tt') ? document.getElementById('tt').textContent : '';
+    const clientName = document.getElementById('cn') ? document.getElementById('cn').value : 'Cliente';
+    const descr = document.getElementById('rd') ? document.getElementById('rd').value : '';
+    const llmSys = `Eres el motor de IA comercial de ${(CONFIG.nameA||'')+(CONFIG.nameB||'')} (${CONFIG.tagline||CONFIG.module||'empresa de servicios'}).
+Genera UN insight comercial breve (2-3 oraciones) para el ejecutivo de ventas, en español.
+El insight debe ser específico, accionable y mencionar datos concretos. NO empieces con "El modelo" o "IA detecta".
+Sé directo como un asesor comercial experto en HVAC.`;
+    const llmUser = `Cliente: ${clientName}
+Segmento: ${sgn[seg]||seg}
+Servicio: ${sn[svc]||svc}
+Sistema: ${sysLabel[sys]||sys}
+Descripción: ${descr}
+Prob. conversión estimada: ${cp}%
+Monto estimado: ${totalStr}`;
+    tipEl.style.opacity = '0.5';
+    _llmCall(llmSys, llmUser).then(r => {
+      if (r) { tipEl.textContent = r; tipEl.style.opacity = '1'; }
+      else { tipEl.style.opacity = '1'; }
+    }).catch(()=>{ tipEl.style.opacity='1'; });
+  }
 }
 function _buildEmailData(){
   const sn={mant:'Mantenimiento de Clima',inst:'Instalaciones de Clima',ing:'Ingeniería de Proyectos',virt:'Mantenimiento Virtual',ener:'Eficiencia Energética · SGClima',aire:'Calidad del Aire'};
@@ -4128,12 +4535,31 @@ function _buildEmailData(){
     servicio:sn[svc]||svc,segmento:sgn2[seg]||seg};
 }
 
-function go4(){
+async function go4(){
   const d=_buildEmailData();
-  if(!d.toEmail){ toast('Ingresa un email de contacto válido','red'); return; }
+  if(!d.toEmail){ toast('Ingresa un email de contacto','red'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.toEmail)){ toast('Email inválido — verifica el formato','red'); return; }
   const btn=document.querySelector('#screen3 .btn-primary');
+  if(!btn){ toast('Error interno: botón no encontrado','red'); return; }
   btn.disabled=true; btn.textContent='Enviando...';
   const company=(CONFIG.nameA||'Nex')+(CONFIG.nameB||'Clima');
+
+  // Feature 3: Generate personalized email intro with LLM (if key available)
+  let emailIntro = '';
+  if (CONFIG.llm && CONFIG.llm.apiKey) {
+    btn.textContent = 'Redactando email…';
+    const eSys = `Eres el redactor de emails comerciales de ${company} (${CONFIG.tagline||CONFIG.module||'empresa de servicios'}).
+Escribe un párrafo introductorio breve (3-4 oraciones) y personalizado para acompañar una cotización.
+Tono profesional y cercano. En español. Sin saludo ni firma — solo el párrafo del cuerpo.`;
+    const eUser = `Cliente: ${d.toName}
+Segmento: ${d.segmento}
+Servicio: ${d.servicio}
+Total cotización: ${d.total}
+Insight IA: ${d.tipText}`;
+    emailIntro = await _llmCall(eSys, eUser) || '';
+    btn.textContent = 'Enviando...';
+  }
+
   emailjs.send('service_oa9hbgk','template_1hljlkf',{
     to_email:        d.toEmail,
     to_name:         d.toName,
@@ -4146,6 +4572,7 @@ function go4(){
     iva:             d.iva,
     total:           d.total,
     tip:             d.tipText,
+    email_intro:     emailIntro,
     name:            company,
     company_name:    company,
     company_email:   CONFIG.email    || '',
@@ -4221,7 +4648,9 @@ function downloadPDF(){
 
   // Logo imagen o texto
   if(CONFIG.logoSrc){
-    try{ pdf.addImage(CONFIG.logoSrc,'PNG',M,6,18,14,'','FAST'); } catch(e){
+    // Detectar tipo real de imagen desde el data URI para evitar error de jsPDF
+    const _imgType=(src=>{const m=src.match(/^data:image\/(\w+)/i);if(!m)return'PNG';const t=m[1].toUpperCase();return(t==='JPEG'||t==='JPG')?'JPEG':(t==='WEBP'?'WEBP':t);} )(CONFIG.logoSrc);
+    try{ pdf.addImage(CONFIG.logoSrc,_imgType,M,6,18,14,'','FAST'); } catch(e){
       pdf.setTextColor(...teal); pdf.setFontSize(18); pdf.setFont('helvetica','bold');
       pdf.text(nameA,M,18);
       pdf.setTextColor(...orange); pdf.text(nameB,M+pdf.getTextWidth(nameA),18);
@@ -4354,7 +4783,7 @@ function downloadPDF(){
   toast('PDF descargado','green');
 }
 function back1(){ setNav(3,null); setNav(2,null); setNav(1,'active'); cShow(1); }
-function newQ(){ [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
+function newQ(){ _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
 </script>
 <div class="save-confirm-backdrop" id="saveConfirmBackdrop" style="position:fixed;inset:0;z-index:1199;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s" onclick="hideSaveConfirm()"></div>
 <div class="save-confirm" id="saveConfirm">
@@ -4367,5 +4796,200 @@ function newQ(){ [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); 
   <div class="save-confirm-bar" id="saveConfirmBar"></div>
 </div>
 <div class="save-toast" id="saveToast"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Configuración guardada</div>
+
+<!-- ✦ CHAT IA FLOTANTE -->
+<button id="chat-fab" onclick="toggleChat()" title="Chat IA" id2="chat-fab-title"
+  style="position:fixed;bottom:24px;right:24px;z-index:8000;width:52px;height:52px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(30,149,166,.45);transition:all .2s"
+  onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+  <svg id="chat-fab-icon" viewBox="0 0 24 24" width="22" height="22" stroke="#fff" stroke-width="2" fill="none">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+  </svg>
+</button>
+
+<div id="chat-panel" style="position:fixed;bottom:88px;right:24px;z-index:8000;width:360px;max-width:calc(100vw - 32px);background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.18);border:1px solid var(--border);display:none;flex-direction:column;overflow:hidden;max-height:520px">
+  <!-- Header -->
+  <div style="background:var(--dark);padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <div style="width:32px;height:32px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="#fff" stroke-width="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:800;color:#fff" id="chat-header-title">Chat IA</div>
+      <div style="font-size:10.5px;color:rgba(255,255,255,.45);margin-top:1px">GPT-4o mini · contexto del pipeline</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:6px">
+      <button onclick="clearChat()" title="Limpiar historial" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.55);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">
+        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+      <button onclick="toggleChat()" style="background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+  </div>
+  <!-- Messages -->
+  <div id="chat-msgs" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:220px;max-height:340px">
+    <div style="background:var(--bbg);border:1px solid var(--bbr);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--t2);line-height:1.55">
+      <span id="chat-welcome-msg">¡Hola! Soy el asistente IA. Tengo acceso al pipeline, cotizaciones y configuración. Puedes preguntarme: <em>¿cuál es mi cliente más rentable?</em>, <em>¿qué cotizaciones vencen esta semana?</em>, <em>¿cómo mejorar mi tasa de conversión?</em></span>
+    </div>
+  </div>
+  <!-- Input -->
+  <div style="padding:10px 12px;border-top:1px solid var(--border);background:#fafbfc;flex-shrink:0;display:flex;gap:8px;align-items:flex-end">
+    <textarea id="chat-input" rows="1" placeholder="Pregunta sobre tu pipeline…"
+      style="flex:1;resize:none;border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;background:#fff;color:var(--t1);line-height:1.4;max-height:80px;overflow-y:auto;transition:.12s"
+      onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"
+      oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+    <button onclick="sendChat()" style="flex-shrink:0;background:var(--teal);color:#fff;border:none;border-radius:8px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s"
+      onmouseover="this.style.background='var(--teal2)'" onmouseout="this.style.background='var(--teal)'">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="#fff" stroke-width="2.5" fill="none"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+// ── Feature 5: Floating Chat ──────────────────────────────────────
+let _chatOpen = false;
+let _chatHistory = [];
+
+// Clave de localStorage para el historial del chat (por empresa)
+function _chatKey(){ return 'chat_'+((CONFIG.nameA||'')+(CONFIG.nameB||'empresa')).toLowerCase().replace(/\s+/g,''); }
+
+// Guardar historial en localStorage
+function _saveChatHistory(){
+  try{ localStorage.setItem(_chatKey(), JSON.stringify(_chatHistory.slice(-50))); }catch(e){}
+}
+
+// Restaurar historial desde localStorage y renderizar mensajes
+function _restoreChatHistory(){
+  const msgs = document.getElementById('chat-msgs');
+  if(!msgs) return;
+  try{
+    const saved = localStorage.getItem(_chatKey());
+    if(!saved) return;
+    const parsed = JSON.parse(saved);
+    if(!Array.isArray(parsed)||parsed.length===0) return;
+    _chatHistory = parsed;
+    // Renderizar mensajes guardados
+    parsed.forEach(m => msgs.appendChild(_chatBubble(m.role, m.content)));
+    msgs.scrollTop = msgs.scrollHeight;
+    // Mostrar separador de sesión anterior
+    const sep = document.createElement('div');
+    sep.style.cssText = 'text-align:center;font-size:10.5px;color:var(--t4);padding:4px 0 8px;border-top:1px solid var(--border);margin-top:4px';
+    sep.textContent = '— sesión anterior restaurada —';
+    msgs.insertBefore(sep, msgs.lastChild);
+  }catch(e){}
+}
+
+// Limpiar historial
+function clearChat(){
+  _confirm('¿Limpiar el historial del chat? Esta acción no se puede deshacer.', ()=>{
+    _chatHistory = [];
+    try{ localStorage.removeItem(_chatKey()); }catch(e){}
+    const msgs = document.getElementById('chat-msgs');
+    if(msgs){
+      msgs.innerHTML = '';
+      const welcome = document.createElement('div');
+      welcome.style.cssText = 'background:var(--bbg);border:1px solid var(--bbr);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--t2);line-height:1.55';
+      const co = (CONFIG.nameA||'')+(CONFIG.nameB||'');
+      welcome.innerHTML = `<span id="chat-welcome-msg">¡Hola! Soy el asistente IA de <strong>${co}</strong>. Tengo acceso al pipeline, cotizaciones y configuración. Puedes preguntarme: <em>¿cuál es mi cliente más rentable?</em>, <em>¿qué cotizaciones vencen esta semana?</em>, <em>¿cómo mejorar mi tasa de conversión?</em></span>`;
+      msgs.appendChild(welcome);
+    }
+  }, { title: 'Limpiar chat', okLabel: 'Limpiar' });
+}
+
+function toggleChat() {
+  _chatOpen = !_chatOpen;
+  const panel = document.getElementById('chat-panel');
+  if (panel) panel.style.display = _chatOpen ? 'flex' : 'none';
+  if (_chatOpen) {
+    // Restaurar historial solo la primera vez que se abre
+    if (_chatHistory.length === 0) _restoreChatHistory();
+    const inp = document.getElementById('chat-input'); if(inp) inp.focus();
+  }
+}
+
+function _chatBubble(role, text) {
+  const el = document.createElement('div');
+  el.style.cssText = role==='user'
+    ? 'background:var(--teal);color:#fff;border-radius:10px 10px 2px 10px;padding:9px 12px;font-size:12.5px;line-height:1.55;align-self:flex-end;max-width:88%'
+    : 'background:var(--bg);border:1px solid var(--border);border-radius:10px 10px 10px 2px;padding:9px 12px;font-size:12.5px;color:var(--t2);line-height:1.55;max-width:88%';
+  el.innerHTML = text.replace(/\n/g,'<br>');
+  return el;
+}
+
+async function sendChat() {
+  const inp = document.getElementById('chat-input');
+  const msgs = document.getElementById('chat-msgs');
+  if (!inp || !msgs) return;
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = ''; inp.style.height = 'auto';
+
+  _chatHistory.push({role:'user',content:txt});
+  msgs.appendChild(_chatBubble('user', txt));
+
+  const typing = document.createElement('div');
+  typing.style.cssText = 'color:var(--t3);font-size:12px;padding:4px 2px';
+  typing.textContent = '✦ Pensando…';
+  msgs.appendChild(typing);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Build context
+  const todayStr = new Date().toISOString().slice(0,10);
+  const pl_ctx = (PIPELINE||[]).slice(0,15).map(r=>
+    `${r.cliente||'?'} | ${r.svc||''} | $${(r.monto||0).toLocaleString('es-CL')} | Prob:${r.prob||'?'}% | ${r.estado||'?'} | Vence:${r.vence||'?'}`
+  ).join('\n');
+  const total_m = (PIPELINE||[]).reduce((a,r)=>a+(r.monto||0),0);
+
+  const _chatCo = (CONFIG.nameA||'') + (CONFIG.nameB||'');
+  const systemPrompt = `Eres el asistente comercial IA interno de ${_chatCo} (${CONFIG.tagline||CONFIG.module||'empresa de servicios'}).
+Tienes acceso al pipeline y datos de cotizaciones. Responde en español, de forma concisa y accionable.
+No inventes datos que no estén en el contexto.
+
+Datos del pipeline (${PIPELINE?.length||0} cotizaciones, total $${total_m.toLocaleString('es-CL')}):
+${pl_ctx||'Pipeline vacío'}
+
+Fecha hoy: ${todayStr}
+Empresa: ${_chatCo}`;
+
+  const historyMsgs = _chatHistory.slice(-8);
+  const body = { model: (CONFIG.llm&&CONFIG.llm.model)||'gpt-4o-mini', max_tokens:900, stream:true,
+    messages: [{role:'system',content:systemPrompt}, ...historyMsgs] };
+  const key = (CONFIG.llm&&CONFIG.llm.apiKey)||'';
+  if (!key) {
+    typing.remove();
+    const errBubble = _chatBubble('assistant','⚠ Configura tu API key en Edición Valores → IA para usar el chat.');
+    msgs.appendChild(errBubble);
+    msgs.scrollTop = msgs.scrollHeight;
+    return;
+  }
+
+  let full = '';
+  const aiBubble = _chatBubble('assistant','');
+  typing.replaceWith(aiBubble);
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions',{
+      method:'POST', headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) { const e=await res.json(); throw new Error(e.error?.message||'Error '+res.status); }
+    const reader=res.body.getReader(); const dec=new TextDecoder();
+    while(true){
+      const {done,value}=await reader.read(); if(done) break;
+      const lines=dec.decode(value).split('\n').filter(l=>l.startsWith('data: '));
+      for(const line of lines){
+        const data=line.slice(6); if(data==='[DONE]') continue;
+        try{ const delta=JSON.parse(data).choices[0].delta.content||''; full+=delta; aiBubble.innerHTML=full.replace(/\n/g,'<br>'); msgs.scrollTop=msgs.scrollHeight; }catch(e){}
+      }
+    }
+    _chatHistory.push({role:'assistant',content:full});
+    // Limitar historial en memoria a 50 mensajes (25 intercambios)
+    if (_chatHistory.length > 50) _chatHistory.splice(0, _chatHistory.length - 50);
+    _saveChatHistory();
+  } catch(e) {
+    aiBubble.innerHTML = '⚠ Error: '+e.message;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+</script>
+
 </body>
 </html>
