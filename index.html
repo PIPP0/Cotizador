@@ -594,8 +594,23 @@ tbody tr:hover .row-acts{opacity:1}
   /* Chat FAB — subir sobre bottom nav */
   #chat-fab{bottom:calc(66px + env(safe-area-inset-bottom,0px) + 12px) !important;right:16px !important}
 
-  /* Chat panel — ajustar posición en mobile */
-  #chat-panel{bottom:calc(66px + env(safe-area-inset-bottom,0px) + 72px) !important;right:8px !important;left:8px !important;width:auto !important;max-height:60vh}
+  /* Chat panel — full screen en mobile (como WhatsApp) */
+  #chat-panel{
+    position:fixed !important;
+    top:52px !important;
+    left:0 !important;
+    right:0 !important;
+    bottom:0 !important;
+    width:100% !important;
+    max-width:100% !important;
+    max-height:none !important;
+    border-radius:0 !important;
+    z-index:9000 !important;
+  }
+  #chat-panel > div:first-child{border-radius:0}
+  #chat-msgs{max-height:none !important;flex:1}
+  /* FAB en mobile */
+  #chat-fab{bottom:calc(66px + env(safe-area-inset-bottom,0px) + 12px) !important;right:16px !important}
 
   /* ── Cotizador mobile ── */
 
@@ -4941,7 +4956,7 @@ function newQ(){ _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active'
     </div>
   </div>
   <!-- Input -->
-  <div style="padding:10px 12px;border-top:1px solid var(--border);background:#fafbfc;flex-shrink:0;display:flex;gap:8px;align-items:flex-end">
+  <div id="chat-input-bar" style="padding:10px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom,10px));border-top:1px solid var(--border);background:#fafbfc;flex-shrink:0;display:flex;gap:8px;align-items:flex-end">
     <textarea id="chat-input" rows="1" placeholder="Pregunta sobre tu pipeline…"
       style="flex:1;resize:none;border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;background:#fff;color:var(--t1);line-height:1.4;max-height:80px;overflow-y:auto;transition:.12s"
       onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"
@@ -5012,14 +5027,56 @@ function clearChat(){
   }, { title: 'Limpiar chat', okLabel: 'Limpiar' });
 }
 
+function _isChatMobile(){ return window.innerWidth <= 680; }
+
+function _applyChatPanelStyles(open) {
+  const panel = document.getElementById('chat-panel');
+  if (!panel) return;
+  if (!open) { panel.style.display = 'none'; return; }
+  if (_isChatMobile()) {
+    const topOffset = 52; // topbar height on mobile
+    const h = (window.visualViewport ? window.visualViewport.height : window.innerHeight) - topOffset;
+    panel.style.cssText = [
+      'position:fixed','top:'+topOffset+'px','left:0','right:0',
+      'width:100%','max-width:100%','height:'+h+'px','max-height:none',
+      'bottom:auto','border-radius:0','z-index:9000',
+      'background:#fff','border:none','box-shadow:0 -2px 20px rgba(0,0,0,.15)',
+      'display:flex','flex-direction:column','overflow:hidden'
+    ].join(';');
+  } else {
+    panel.style.cssText = [
+      'position:fixed','bottom:88px','right:24px',
+      'width:360px','max-width:calc(100vw - 32px)','max-height:520px',
+      'border-radius:16px','z-index:8000',
+      'background:#fff','border:1px solid var(--border)',
+      'box-shadow:0 8px 40px rgba(0,0,0,.18)',
+      'display:flex','flex-direction:column','overflow:hidden'
+    ].join(';');
+  }
+  // chat-msgs: fill remaining height
+  const msgs = document.getElementById('chat-msgs');
+  if (msgs) { msgs.style.maxHeight = _isChatMobile() ? 'none' : '340px'; msgs.style.flex = '1'; msgs.style.minHeight = '0'; }
+}
+
+// Visual Viewport API — teclado iOS
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    if (!_chatOpen || !_isChatMobile()) return;
+    const panel = document.getElementById('chat-panel');
+    if (panel) {
+      const h = window.visualViewport.height - 52;
+      panel.style.height = Math.max(200, h) + 'px';
+    }
+  });
+}
+
 function toggleChat() {
   _chatOpen = !_chatOpen;
-  const panel = document.getElementById('chat-panel');
-  if (panel) panel.style.display = _chatOpen ? 'flex' : 'none';
+  _applyChatPanelStyles(_chatOpen);
   if (_chatOpen) {
-    // Restaurar historial solo la primera vez que se abre
     if (_chatHistory.length === 0) _restoreChatHistory();
-    const inp = document.getElementById('chat-input'); if(inp) inp.focus();
+    const inp = document.getElementById('chat-input');
+    if (inp) setTimeout(() => inp.focus(), 80);
   }
 }
 
