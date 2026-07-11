@@ -126,6 +126,8 @@ body.has-logo #login-logo-img{display:block!important}
 .sb-item svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .sb-item:hover{color:rgba(255,255,255,.82);background:rgba(255,255,255,.05)}
 .sb-item.on{color:var(--teal);border-left-color:var(--teal);background:rgba(var(--teal-rgb),.1)}
+.admin-only{display:none!important}
+body.is-admin .admin-only{display:flex!important}
 .sb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .sb-foot{margin-top:auto;padding:14px 18px;font-size:10px;color:rgba(255,255,255,.22);line-height:1.7}
 
@@ -1247,12 +1249,12 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
       <div class="login-err" id="login-err">Usuario o contraseña incorrectos</div>
       <div class="login-field">
         <label>Usuario</label>
-        <input type="text" id="login-user" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+        <input type="text" id="login-user" autocomplete="username" value="admin" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <div class="login-field">
         <label>Contraseña</label>
         <div style="position:relative">
-          <input type="password" id="login-pass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding-right:40px;box-sizing:border-box">
+          <input type="password" id="login-pass" autocomplete="current-password" value="Lisit" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding-right:40px;box-sizing:border-box">
           <button type="button" onclick="(function(){var i=document.getElementById('login-pass');var b=document.getElementById('pass-eye');i.type=i.type==='password'?'text':'password';b.innerHTML=i.type==='password'?'<path d=\'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24\'/><line x1=\'1\' y1=\'1\' x2=\'23\' y2=\'23\'/>':'<path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'/><circle cx=\'12\' cy=\'12\' r=\'3\'/>'})()" id="pass-eye-btn" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:#9590a8;display:flex;align-items:center">
             <svg id="pass-eye" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8'/><circle cx='12' cy='12' r='3'/></svg>
           </button>
@@ -1366,8 +1368,11 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
   <div class="sb-item" data-view="sgclima" onclick="switchView('sgclima')">
     <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>SGClima
   </div>
-  <div class="sb-item" data-view="edicion" onclick="switchView('edicion')">
+  <div class="sb-item admin-only" data-view="edicion" onclick="switchView('edicion')">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Edición Valores
+  </div>
+  <div class="sb-item admin-only" data-view="conv" onclick="switchView('conv')">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Tasas de conversión
   </div>
   <div class="sb-sec">Servicios</div>
   <div id="sb-svc-list"></div>
@@ -1401,9 +1406,13 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
     <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
     <span>SGClima</span>
   </div>
-  <div class="mn-item" data-view="edicion" onclick="switchView('edicion')">
+  <div class="mn-item admin-only" data-view="edicion" onclick="switchView('edicion')">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     <span>Edición</span>
+  </div>
+  <div class="mn-item admin-only" data-view="conv" onclick="switchView('conv')">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    <span>Conversión</span>
   </div>
   </div>
 </nav>
@@ -1724,7 +1733,22 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
       Guardar cambios
     </button>
   </div>
+
   <div id="ev-body"></div>
+
+</div>
+
+<!-- ─── VIEW: TASAS DE CONVERSIÓN ─── -->
+<div class="view-panel" id="view-conv">
+  <div style="margin-bottom:12px"><button class="btn-sm btn-o" onclick="switchView('dashboard')" style="font-size:11.5px;padding:6px 12px">← Dashboard</button></div>
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Tasas de conversión</div>
+      <div class="page-sub">Historial de conversión por servicio y segmento</div>
+    </div>
+    <span style="font-size:11px;color:var(--t4);align-self:center">Calculado desde pipeline · editable</span>
+  </div>
+  <div id="conv-body"></div>
 </div>
 
 <!-- ─── VIEW: COTIZADOR IA ─── -->
@@ -2039,6 +2063,17 @@ const DEFAULT_CONFIG = {
     convProb: 75,
     condiciones: 'Validez 30 días · Pago 30 días factura · Ejecución 5 días hábiles'
   },
+  // Capa 1: baseline de referencia editable (fallback cuando no hay datos reales)
+  convRef: {
+    'mant_hotel':84,'mant_edu':81,'mant_of':76,'mant_ret':72,'mant_con':68,'mant_pub':79,
+    'inst_hotel':72,'inst_edu':68,'inst_of':74,'inst_ret':65,'inst_con':77,'inst_pub':61,
+    'virt_hotel':79,'virt_edu':75,'virt_of':71,'virt_ret':62,'virt_con':58,'virt_pub':73,
+    'ener_hotel':83,'ener_edu':78,'ener_of':80,'ener_ret':69,'ener_con':74,'ener_pub':66,
+    'aire_hotel':88,'aire_edu':82,'aire_of':77,'aire_ret':65,'aire_con':60,'aire_pub':71,
+    'ing_hotel':70,'ing_edu':66,'ing_of':73,'ing_ret':58,'ing_con':80,'ing_pub':55
+  },
+  // Capa 3: overrides explícitos del usuario (máxima prioridad, vacío por defecto)
+  convOverride: {},
   motorIA: [
     'Clasificando tipo y alcance del servicio',
     'Consultando historial y cotizaciones similares',
@@ -2293,6 +2328,11 @@ function applyConfig() {
   USERS.admin.name      = CONFIG.users.admin.name;
   USERS.ejecutivo.pass  = CONFIG.users.ejecutivo.pass;
   USERS.ejecutivo.name  = CONFIG.users.ejecutivo.name;
+  // Sincronizar _AUTH con las credenciales guardadas en CONFIG
+  if (typeof _AUTH !== 'undefined') {
+    _AUTH.admin     = CONFIG.users.admin.pass     || 'Lisit';
+    _AUTH.ejecutivo = CONFIG.users.ejecutivo.pass || 'Lisit2';
+  }
   renderSvcGrid();
   renderSegRow();
   renderSysRow();
@@ -2418,6 +2458,136 @@ function renderClientFields(){
     div.innerHTML=`<label>${f.label}</label><input id="${f.id}" placeholder="${f.placeholder||f.label}">`;
     cont.appendChild(div);
   });
+}
+
+// ─── Tab switcher Edición de Valores ────────────────────────────────────
+function evSwitchTab(tab) {
+  const params = document.getElementById('ev-tab-params');
+  const conv   = document.getElementById('ev-tab-conv');
+  const btnP   = document.getElementById('ev-tab-params-btn');
+  const btnC   = document.getElementById('ev-tab-conv-btn');
+  const sub    = document.getElementById('ev-page-sub');
+  const saveBtn= document.getElementById('ev-save-btn');
+  if (tab === 'params') {
+    if (params) params.style.display = '';
+    if (conv)   conv.style.display   = 'none';
+    if (btnP)   { btnP.style.borderBottomColor='var(--teal)'; btnP.style.color='var(--teal)'; }
+    if (btnC)   { btnC.style.borderBottomColor='transparent'; btnC.style.color='var(--t3)'; }
+    if (sub)    sub.textContent = 'Parámetros de cotización · Precios · Motor IA';
+    if (saveBtn) saveBtn.style.display = '';
+  } else {
+    if (params) params.style.display = 'none';
+    if (conv)   conv.style.display   = '';
+    if (btnP)   { btnP.style.borderBottomColor='transparent'; btnP.style.color='var(--t3)'; }
+    if (btnC)   { btnC.style.borderBottomColor='var(--teal)'; btnC.style.color='var(--teal)'; }
+    if (sub)    sub.textContent = 'Historial de conversión por servicio y segmento';
+    if (saveBtn) saveBtn.style.display = 'none';
+    renderConvTab();
+  }
+}
+function renderConvView() {
+  const el = document.getElementById('conv-body');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="ev-card">
+      <div class="ev-card-title">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Tasas de conversión histórica · Servicio / Segmento
+      </div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:18px;line-height:1.7">
+        La tabla funciona en <strong>3 capas</strong> de prioridad automática:<br>
+        <strong style="color:var(--teal)">Borde teal</strong> → calculado desde deals cerrados reales (<strong>Ganado / Perdido</strong>) del pipeline. Se actualiza solo.<br>
+        <strong>Borde gris</strong> → baseline de referencia editable. Se usa cuando aún no hay historial real para ese segmento.<br>
+        <strong style="color:var(--orange)">Borde naranja</strong> → override manual explícito. Anula todo. Usa ↺ reset para volver al automático.
+      </div>
+      ${buildConvTable()}
+    </div>`;
+}
+function renderConvTab() {
+  const el = document.getElementById('ev-conv-body');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="ev-card">
+      <div class="ev-card-title">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Tasas de conversión histórica · Servicio / Segmento
+        <span style="margin-left:auto;font-size:10.5px;font-weight:500;color:var(--t4);text-transform:none;letter-spacing:0">En tiempo real desde el pipeline</span>
+      </div>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:18px;line-height:1.7">
+        Los valores en <strong style="color:var(--teal)">teal</strong> se calculan automáticamente
+        desde cotizaciones <strong>Ganadas&nbsp;/&nbsp;Perdidas</strong> del pipeline.<br>
+        Donde aún no hay historial puedes ingresar un porcentaje manual de referencia —
+        el cotizador lo usará para estimar la probabilidad de cierre.
+        <br><span style="color:var(--t4);font-size:11px">Los valores manuales se guardan al cerrar la pestaña o al recargar.</span>
+      </div>
+      ${buildConvTable()}
+    </div>`;
+}
+
+// ─── Normalización nombre/abreviatura → ID canónico ──────────────────
+function _buildConvMaps() {
+  const svcById = {};
+  (CONFIG.services||[]).forEach(s => { svcById[s.id]=s.id; svcById[s.name]=s.id; });
+  const segById = {};
+  (CONFIG.segments||[]).forEach(s => { segById[s.id]=s.id; segById[s.name]=s.id; });
+  // Aliases para abreviaturas usadas en el pipeline
+  Object.assign(segById, {
+    'Hotelería y Gast.':'hotel','Hotelería y Gastronomía':'hotel',
+    'Ctros. Formación':'edu','Centros de Formación':'edu',
+    'Construcción y Arq.':'con','Construcción y Arquitectura':'con',
+    'Mercado Público':'pub','Oficinas':'of','Retail':'ret'
+  });
+  Object.assign(svcById, {
+    'Calidad del Aire':'aire','Mantenimiento de Clima':'mant',
+    'Instalaciones de Clima':'inst','Eficiencia Energética':'ener',
+    'Mantenimiento Virtual':'virt','Ingeniería de Proyectos':'ing'
+  });
+  return { svcById, segById };
+}
+function _normSvc(v){ const {svcById}=_buildConvMaps(); return svcById[v]||String(v||''); }
+function _normSeg(v){ const {segById}=_buildConvMaps(); return segById[v]||String(v||''); }
+
+// ─── Conversión histórica ─────────────────────────────────────────────
+function calcHistoricalConv() {
+  const r = {};
+  const { svcById, segById } = _buildConvMaps();
+
+  // Solo registros cerrados reales — evita loop circular con getConvProb
+  (PIPELINE||[]).forEach(q => {
+    if (q.estado !== 'Ganada' && q.estado !== 'Perdida') return;
+    const svcId = svcById[q.svc] || String(q.svc||'');
+    const segId = segById[q.seg] || String(q.seg||'');
+    if (!svcId || !segId) return;
+    const k = svcId+'_'+segId;
+    if (!r[k]) r[k] = { g:0, p:0 };
+    if (q.estado === 'Ganada') r[k].g++; else r[k].p++;
+  });
+  Object.keys(r).forEach(k => {
+    const d = r[k];
+    d.n    = d.g + d.p;
+    d.rate = d.n > 0 ? Math.round((d.g / d.n) * 100) : null;
+  });
+  return r;
+}
+function getConvProb(svcRaw, segRaw) {
+  const svcId = _normSvc(svcRaw);
+  const segId = _normSeg(segRaw);
+  const key   = svcId + '_' + segId;
+
+  // Capa 3 — override explícito del usuario (máxima prioridad)
+  const ov = CONFIG.convOverride || {};
+  if (ov[key] != null && ov[key] !== '') { const _p=parseInt(ov[key]); return isNaN(_p)?75:_p; }
+
+  // Capa 2 — histórico real del pipeline (solo Ganada/Perdida cerradas)
+  const hist = calcHistoricalConv();
+  if (hist[key] && hist[key].n >= 1) return hist[key].rate;
+
+  // Capa 1 — baseline de referencia
+  const ref = CONFIG.convRef || {};
+  if (ref[key] != null) { const _p=parseInt(ref[key]); return isNaN(_p)?75:_p; }
+
+  // Default global
+  return (CONFIG.cotizacion||{}).convProb || 75;
 }
 
 // ══════════════════════════════════════════════════
@@ -2555,7 +2725,123 @@ function renderEdicion() {
       </div>
     </div>
 
+
   `;
+}
+
+// ─── Tabla de conversión — 3 capas independientes ────────────────────
+function _convCellSave(key, val, el) {
+  CONFIG.convOverride = CONFIG.convOverride || {};
+  CONFIG.convOverride[key] = (val === '' || val == null) ? null : parseInt(val);
+  if (el) {
+    el.style.borderColor = (val === '' || val == null) ? '' : 'var(--orange)';
+  }
+  saveConfigToStorage();
+}
+function _convCellReset(key) {
+  CONFIG.convOverride = CONFIG.convOverride || {};
+  CONFIG.convOverride[key] = null;
+  saveConfigToStorage();
+  renderConvView();
+}
+
+function buildConvTable() {
+  const svcs = CONFIG.services  || [];
+  const segs = CONFIG.segments  || [];
+  const hist = calcHistoricalConv();
+  const ref  = CONFIG.convRef     || {};
+  const ov   = CONFIG.convOverride || {};
+
+  if (!svcs.length || !segs.length) {
+    return `<div style="text-align:center;color:var(--t4);font-size:12px;padding:20px">No hay servicios o segmentos configurados aún.</div>`;
+  }
+
+  const thStyle   = `padding:8px 6px;text-align:center;font-size:9.5px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;border-bottom:2px solid var(--border);white-space:nowrap`;
+  const tdSvcStyle= `padding:9px 12px;font-size:12px;font-weight:600;color:var(--t1);border-bottom:1px solid var(--border);white-space:nowrap`;
+
+  let ths = `<th style="padding:8px 12px;text-align:left;font-size:9.5px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;border-bottom:2px solid var(--border)">Servicio</th>`;
+  segs.forEach(sg => {
+    const short = sg.name.length > 12 ? sg.name.split(' ')[0] : sg.name;
+    ths += `<th style="${thStyle}" title="${sg.name}">${short}</th>`;
+  });
+
+  let rows = '';
+  svcs.forEach(sv => {
+    let cells = `<td style="${tdSvcStyle}">${sv.name}</td>`;
+    segs.forEach(sg => {
+      const key = sv.id + '_' + sg.id;
+      const h   = hist[key];   // Capa 2: datos reales del pipeline
+      const hasOv  = ov[key] != null && ov[key] !== '';
+      const hasReal = h && h.n >= 1;
+      const hasRef  = ref[key] != null;
+
+      // Determinar fuente activa y valor a mostrar
+      let displayVal, borderColor, badge, resetBtn = '';
+      if (hasOv) {
+        // Capa 3: override explícito del usuario (máxima prioridad)
+        displayVal  = parseInt(ov[key]);
+        borderColor = 'var(--orange)';
+        badge       = 'editado';
+        resetBtn    = `<button onclick="event.stopPropagation();_convCellReset('${key}')"
+          title="Restaurar valor automático"
+          style="font-size:9px;color:var(--orange);background:rgba(255,120,0,.08);border:1px solid var(--orange);border-radius:4px;cursor:pointer;padding:1px 5px;line-height:1.4;font-weight:600;font-family:inherit"
+          onmouseover="this.style.background='var(--orange)';this.style.color='#fff'"
+          onmouseout="this.style.background='rgba(255,120,0,.08)';this.style.color='var(--orange)'">↺ reset</button>`;
+      } else if (hasReal) {
+        // Capa 2: histórico real Ganada/Perdida
+        displayVal  = h.rate;
+        borderColor = 'var(--teal)';
+        badge       = `real · n=${h.n}`;
+      } else if (hasRef) {
+        // Capa 1: baseline de referencia
+        displayVal  = parseInt(ref[key]);
+        borderColor = '#d0d5dd';
+        badge       = 'referencia';
+      } else {
+        displayVal  = '';
+        borderColor = '#d0d5dd';
+        badge       = '—';
+      }
+
+      cells += `<td style="padding:5px 4px;text-align:center;border-bottom:1px solid var(--border)">
+        <div style="display:inline-flex;flex-direction:column;align-items:center;gap:2px">
+          <input type="number" min="1" max="99"
+            value="${displayVal}"
+            placeholder="—"
+            title="${sv.name} / ${sg.name} · Fuente: ${badge}"
+            style="width:52px;text-align:center;border:1.5px solid ${borderColor};border-radius:7px;padding:5px 4px;font-size:13px;font-weight:700;font-family:inherit;background:#fff;color:var(--t1);transition:.12s"
+            oninput="_convCellSave('${key}', this.value, this)"
+            onfocus="this.style.boxShadow='0 0 0 3px rgba(30,149,166,.1)'"
+            onblur="this.style.boxShadow='none'">
+          <span style="font-size:8px;color:var(--t4);white-space:nowrap">${badge}</span>
+          ${resetBtn}
+        </div>
+      </td>`;
+    });
+    rows += `<tr>${cells}</tr>`;
+  });
+
+  return `
+    <div style="overflow-x:auto;border-radius:10px;border:1.5px solid var(--border)">
+      <table style="border-collapse:collapse;width:100%;min-width:480px;font-size:12px">
+        <thead><tr>${ths}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div style="margin-top:12px;display:flex;align-items:center;gap:20px;font-size:11px;color:var(--t3);flex-wrap:wrap">
+      <span style="display:flex;align-items:center;gap:5px">
+        <input type="number" value="84" style="width:38px;text-align:center;border:1.5px solid var(--teal);border-radius:5px;padding:2px;font-size:11px;font-weight:700;background:#f0fafa" disabled>
+        histórico real (Ganada/Perdida)
+      </span>
+      <span style="display:flex;align-items:center;gap:5px">
+        <input type="number" value="76" style="width:38px;text-align:center;border:1.5px solid #d0d5dd;border-radius:5px;padding:2px;font-size:11px;font-weight:700" disabled>
+        baseline de referencia (editable)
+      </span>
+      <span style="display:flex;align-items:center;gap:5px">
+        <input type="number" value="90" style="width:38px;text-align:center;border:1.5px solid var(--orange);border-radius:5px;padding:2px;font-size:11px;font-weight:700;background:#fff8f0" disabled>
+        override manual (máxima prioridad)
+      </span>
+    </div>`;
 }
 
 function evRemovePrecio(i) {
@@ -2586,7 +2872,7 @@ function saveEdicionValores() {
   CONFIG.llm = CONFIG.llm || {};
   const llmKey = document.getElementById('ev-llm-key'); if(llmKey) CONFIG.llm.apiKey = llmKey.value.trim();
   const llmModel = document.getElementById('ev-llm-model'); if(llmModel) CONFIG.llm.model = llmModel.value;
-  // Precios (live-updated via oninput)
+  // Precios y convTable (live-updated via oninput)
   saveConfigToStorage();
   // Reusar el modal de confirmación existente (adapta colores automáticamente)
   const sub = document.getElementById('saveConfirmSub');
@@ -2698,6 +2984,9 @@ function openCfgPanel() {
     // Abrir primero — cualquier error posterior no bloquea la apertura
     ov.classList.add('open');
     document.body.style.overflow = 'hidden';
+    // Siempre mostrar desde el inicio (sección MARCA / logo)
+    const cfgBody = document.querySelector('.cfg-body');
+    if (cfgBody) cfgBody.scrollTop = 0;
     // MARCA
     ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => {
       try { const el = document.getElementById('cfg-'+k); if (el) el.value = CONFIG[k] || ''; } catch(e) {}
@@ -2988,7 +3277,9 @@ function saveConfigToStorage() {
       cotizacion: CONFIG.cotizacion,
       motorIA: CONFIG.motorIA,
       precios: CONFIG.precios,
-      llm: CONFIG.llm
+      llm: CONFIG.llm,
+      convRef: CONFIG.convRef,
+      convOverride: CONFIG.convOverride
     };
     try {
       localStorage.setItem('spc', JSON.stringify(slim));
@@ -3005,10 +3296,10 @@ function saveConfigToStorage() {
 }
 window.addEventListener('beforeunload', saveConfigToStorage);
 
-// Carga config desde Firebase y la aplica (async, después del load inicial)
+// Listener en tiempo real — aplica cambios de admin a todos los dispositivos conectados
 function _syncFromFirebase() {
   if (!_fbDb) return;
-  _fbDb.ref('config').once('value').then(snapshot => {
+  _fbDb.ref('config').on('value', snapshot => {
     const r = snapshot.val();
     if (!r) return;
     ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => { if (r[k] !== undefined) CONFIG[k] = r[k]; });
@@ -3029,13 +3320,15 @@ function _syncFromFirebase() {
     if (r.motorIA) CONFIG.motorIA = r.motorIA;
     if (r.precios) CONFIG.precios = r.precios;
     if (r.llm) CONFIG.llm = {...(CONFIG.llm||{}), ...r.llm};
-    // Actualizar localStorage con la versión de Firebase
+    if (r.convRef) CONFIG.convRef = {...(CONFIG.convRef||{}), ...r.convRef};
+    if (r.convOverride) CONFIG.convOverride = {...(CONFIG.convOverride||{}), ...r.convOverride};
+    if (r.convTable && !r.convOverride) CONFIG.convOverride = {...r.convTable};
     localStorage.setItem('spc', JSON.stringify(r));
     _applyDynamicColors();
     try { applyConfig(); } catch(e) {}
     try { applyLogoToDOM(); } catch(e) {}
-    console.log('[Firebase] config sincronizada');
-  }).catch(e => console.warn('[Firebase] sync error:', e));
+    console.log('[Firebase] config sincronizada (live)');
+  }, e => console.warn('[Firebase] sync error:', e));
 }
 
 function loadConfigFromStorage() {
@@ -3060,6 +3353,10 @@ function loadConfigFromStorage() {
     if (sv.motorIA) CONFIG.motorIA = sv.motorIA;
     if (sv.precios) CONFIG.precios = sv.precios;
     if (sv.llm) CONFIG.llm = {...(CONFIG.llm||{}), ...sv.llm};
+    if (sv.convRef) CONFIG.convRef = {...(CONFIG.convRef||{}), ...sv.convRef};
+    if (sv.convOverride) CONFIG.convOverride = {...(CONFIG.convOverride||{}), ...sv.convOverride};
+    // Migración: si hay datos del antiguo convTable, promoverlos a convOverride
+    if (sv.convTable && !sv.convOverride) CONFIG.convOverride = {...sv.convTable};
     CONFIG.logoSrc = localStorage.getItem('spc_logo') || null;
     _applyDynamicColors();
     return true;
@@ -3168,7 +3465,7 @@ function _refreshChip(){
   document.getElementById('ud-name').textContent=currentUser.name;
   document.getElementById('ud-role').textContent=currentUser.role;
 }
-// Credenciales fijas (no afectadas por localStorage/CONFIG)
+// Credenciales por defecto — se sobreescriben en applyConfig() con lo guardado en CONFIG
 const _AUTH={admin:'Lisit',ejecutivo:'Lisit2'};
 function doLogin(){
   const u=(document.getElementById('login-user').value||'').trim().toLowerCase();
@@ -3182,9 +3479,10 @@ function doLogin(){
     document.getElementById('login-screen').style.display='none';
     const pl=document.getElementById('preloader'); if(pl) pl.remove();
     document.getElementById('login-pass').value='';
-    // Mostrar ⚙️ solo para admin
+    // Mostrar ⚙️ y menú admin solo para admin
     const cfgBtn=document.querySelector('.cfg-btn');
     if(cfgBtn) cfgBtn.style.display=(u==='admin')?'flex':'none';
+    document.body.classList.toggle('is-admin', u==='admin');
   } else {
     err.style.display='block';
     document.getElementById('login-pass').value='';
@@ -3200,6 +3498,7 @@ function doLogout(e){
   document.getElementById('login-pass').value='';
   document.getElementById('login-err').style.display='none';
   document.getElementById('login-screen').style.display='flex';
+  document.body.classList.remove('is-admin');
 }
 function toggleUserMenu(e){
   e.stopPropagation();
@@ -3302,15 +3601,15 @@ function savePipelineToStorage() {
 
 function _syncPipelineFromFirebase() {
   if (!_fbDb) return;
-  _fbDb.ref('pipeline').once('value').then(snapshot => {
+  _fbDb.ref('pipeline').on('value', snapshot => {
     const r = snapshot.val();
     if (!r || !Array.isArray(r) || r.length === 0) return;
     PIPELINE.length = 0;
     r.forEach(row => PIPELINE.push(row));
     localStorage.setItem(_plKey(), JSON.stringify(PIPELINE));
-    renderAll();
-    console.log('[Firebase] pipeline sincronizado:', r.length, 'filas');
-  }).catch(e => console.warn('[Firebase] pipeline sync error:', e));
+    try { renderAll(); } catch(e) {}
+    console.log('[Firebase] pipeline sincronizado (live):', r.length, 'filas');
+  }, e => console.warn('[Firebase] pipeline sync error:', e));
 }
 
 function resetDemoData(){
@@ -3391,6 +3690,7 @@ function switchView(v){
   if(v==='cotizaciones') renderTable2();
   if(v==='clientes') renderClients();
   if(v==='edicion') renderEdicion();
+  if(v==='conv') renderConvView();
   if(v==='cotizador'){ _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
   closeSidebar(); // close drawer after navigating
   window.scrollTo({top:0,behavior:'smooth'});
@@ -3798,7 +4098,9 @@ function renderTableInto(tableId, rows){
   if(rows.length===0){
     tbody=`<tr class="empty-row"><td colspan="${COLS.length}">No hay cotizaciones con ese filtro.</td></tr>`;
   } else {
-    tbody=rows.map(r=>`
+    tbody=rows.map(r=>{
+      const liveProb = getConvProb(r.svc, r.seg);
+      return `
       <tr onclick="openModal('${r.id}')">
         <td><span class="cot-id">${r.id}</span></td>
         <td><div class="cot-name">${r.cliente}</div><div class="cot-sub">${r.seg}</div></td>
@@ -3806,8 +4108,8 @@ function renderTableInto(tableId, rows){
         <td><div class="amt" style="color:${r.monto>20000000?'var(--orange)':'var(--teal)'}">${fmtMonto(r.monto)}</div></td>
         <td>
           <div class="prob-wrap">
-            <div class="prob-track"><div class="prob-fill" style="width:${r.prob}%;background:${probColor(r.prob)}"></div></div>
-            <span class="prob-val" style="color:${probColor(r.prob)}">${r.prob}%</span>
+            <div class="prob-track"><div class="prob-fill" style="width:${liveProb}%;background:${probColor(liveProb)}"></div></div>
+            <span class="prob-val" style="color:${probColor(liveProb)}">${liveProb}%</span>
           </div>
         </td>
         <td><span class="badge ${STATUS_BADGE[r.estado]||'bg-gray'}" onclick="event.stopPropagation();cycleStatus('${r.id}')">${r.estado}</span></td>
@@ -3818,7 +4120,8 @@ function renderTableInto(tableId, rows){
           <button class="row-btn del" onclick="deleteRow('${r.id}')">✕</button>
         </div></td>
       </tr>
-    `).join('');
+    `;
+    }).join('');
   }
   document.getElementById(tableId).innerHTML=`<thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody>`;
 }
@@ -4650,9 +4953,7 @@ function buildQ(){
   document.getElementById('ti').textContent=fmt(iva);
   document.getElementById('tt').textContent=fmt(sub+iva);
   const lblIva=document.getElementById('lbl-iva'); if(lblIva) lblIva.textContent='IVA ('+_ivaPct+'%)';
-  const convProb={mant:{hotel:84,edu:81,of:76,ret:72,con:68,pub:79},inst:{hotel:72,edu:68,of:74,ret:65,con:77,pub:61},virt:{hotel:79,edu:75,of:71,ret:62,con:58,pub:73},ener:{hotel:83,edu:78,of:80,ret:69,con:74,pub:66},aire:{hotel:88,edu:82,of:77,ret:65,con:60,pub:71},ing:{hotel:70,edu:66,of:73,ret:58,con:80,pub:55}};
-  const _svcKey=convProb[svc]?svc:(()=>{const o=(CONFIG.services||[]).find(s=>s.id===svc);if(!o)return'mant';const n=(o.name||'').toLowerCase();if(n.includes('instal'))return'inst';if(n.includes('virtual')||n.includes('iot'))return'virt';if(n.includes('energ'))return'ener';if(n.includes('aire'))return'aire';if(n.includes('ingenie'))return'ing';return'mant';})();
-  const cp=(convProb[_svcKey]||{})[seg]||75;
+  const cp=getConvProb(svc,seg);
   _cotConvProb=cp;
   const kvEl=document.getElementById('kv-conv');
   if(kvEl) kvEl.textContent=cp+'%';
