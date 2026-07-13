@@ -11,7 +11,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 :root{
-  --dark:#252530;--teal:#1e95a6;--teal2:#187f8e;--teal-rgb:30,149,166;--orange:#d46e3a;
+  --dark:#252530;--teal:#8C5BB3;--teal2:#7a4d97;--teal-rgb:140,91,179;--orange:#d46e3a;
   --blueg:#8aaac5;--gold:#e4b840;
   --bg:#f0f3f6;--surface:#fff;--border:#dde4ea;--border2:#c5d0d9;
   --t1:#252530;--t2:#3d3d4f;--t3:#737380;--t4:#aaaabc;
@@ -41,8 +41,8 @@ body.has-logo #topbar-logo-default{display:none!important}
 body.has-logo #topbar-logo-img{display:block!important}
 body.has-logo #login-logo-default{display:none!important}
 body.has-logo #login-logo-img{display:block!important}
-.login-logo-txt{font-size:26px;font-weight:800;color:#1e95a6;letter-spacing:-.5px}
-.login-logo-txt span{color:#d46e3a}
+.login-logo-txt{font-size:26px;font-weight:800;color:var(--teal);letter-spacing:-.5px}
+.login-logo-txt span{color:var(--orange)}
 .login-bar{width:40px;height:3px;background:var(--teal);margin:10px auto 0;border-radius:2px}
 .login-sub{color:rgba(255,255,255,.45);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-top:8px}
 .login-body{padding:32px}
@@ -2299,7 +2299,8 @@ function syncColor(varName, hex) {
   // 2. Actualizar hex field (sin #)
   const hx = document.getElementById('hex-' + varName);
   if (hx && hx !== document.activeElement) hx.value = clean;
-  // 3. Solo marcar cambio pendiente — no tocar CONFIG ni CSS hasta Guardar
+  // 3. Aplicar color inmediatamente a todo el DOM (live preview)
+  liveColor(varName, full);
   markCfgDirty();
 }
 function hexToRgb(h) {
@@ -2342,19 +2343,31 @@ function liveUser(role, field, val) {
 // _pendingLogo: undefined=sin cambio, null=quitar, string=nuevo logo
 let _pendingLogo = undefined;
 
+function _applyLogoLive(src) {
+  // Aplica logo inmediatamente a topbar + login sin esperar Guardar
+  document.body.classList.toggle('has-logo', !!src);
+  const tbImg = document.getElementById('topbar-logo-img');
+  const tbDef = document.getElementById('topbar-logo-default');
+  const lgImg = document.getElementById('login-logo-img');
+  const lgDef = document.getElementById('login-logo-default');
+  if (tbImg) { tbImg.src = src||''; tbImg.style.display = src?'block':'none'; }
+  if (tbDef) tbDef.style.display = src?'none':'';
+  if (lgImg) { lgImg.src = src||''; lgImg.style.display = src?'block':'none'; }
+  if (lgDef) lgDef.style.display = src?'none':'';
+}
 function handleLogoUpload(input) {
   const file = input.files[0];
   if (!file) return;
   const compress = (src) => {
-    if (file.size <= 200000) { _pendingLogo = src; updateCfgLogoPreview(); markCfgDirty(); return; }
+    const done = (s) => { _pendingLogo = s; updateCfgLogoPreview(); _applyLogoLive(s); markCfgDirty(); };
+    if (file.size <= 200000) { done(src); return; }
     const img = new Image();
     img.onload = function() {
       const c = document.createElement('canvas');
       const sc = Math.min(1, 300 / Math.max(img.width, img.height));
       c.width = img.width*sc; c.height = img.height*sc;
       c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-      _pendingLogo = c.toDataURL('image/jpeg', 0.7);
-      updateCfgLogoPreview(); markCfgDirty();
+      done(c.toDataURL('image/jpeg', 0.7));
     };
     img.src = src;
   };
@@ -2366,6 +2379,7 @@ function removeLogo() {
   _pendingLogo = null;
   document.getElementById('cfg-logo-file').value = '';
   updateCfgLogoPreview();
+  _applyLogoLive(null);
   markCfgDirty();
 }
 function applyLogoToDOM() {
@@ -3476,7 +3490,15 @@ function loadConfigFromStorage() {
     if (!raw) return false;
     const sv = JSON.parse(raw);
     ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => { if (sv[k] !== undefined) CONFIG[k] = sv[k]; });
-    if (sv.colors) { CONFIG.colors.teal = sv.colors.teal || CONFIG.colors.teal; CONFIG.colors.orange = sv.colors.orange || CONFIG.colors.orange; CONFIG.colors.dark = sv.colors.dark || CONFIG.colors.dark; }
+    if (sv.colors) {
+      // Guard: ignorar colores de config anterior (legacy NexClima teal #1e95a6)
+      const _isLegacyTeal = (sv.colors.teal||'').toLowerCase().replace('#','') === '1e95a6';
+      if (!_isLegacyTeal) {
+        CONFIG.colors.teal   = sv.colors.teal   || CONFIG.colors.teal;
+        CONFIG.colors.orange = sv.colors.orange || CONFIG.colors.orange;
+        CONFIG.colors.dark   = sv.colors.dark   || CONFIG.colors.dark;
+      }
+    }
     if (sv.users) {
       CONFIG.users = sv.users;
       // Migrar claves viejas al nuevo default
@@ -3496,7 +3518,10 @@ function loadConfigFromStorage() {
     if (sv.convOverride) CONFIG.convOverride = {...(CONFIG.convOverride||{}), ...sv.convOverride};
     // Migración: si hay datos del antiguo convTable, promoverlos a convOverride
     if (sv.convTable && !sv.convOverride) CONFIG.convOverride = {...sv.convTable};
-    CONFIG.logoSrc = localStorage.getItem('spc_logo') || null;
+    // Solo cargar logo guardado si los colores son de este cliente (no legacy)
+    const _savedTeal = (sv.colors?.teal||'').toLowerCase().replace('#','');
+    const _legacyBrand = _savedTeal === '1e95a6';
+    CONFIG.logoSrc = _legacyBrand ? (DEFAULT_CONFIG.logoSrc||null) : (localStorage.getItem('spc_logo') || null);
     _applyDynamicColors();
     return true;
   } catch(e) { console.warn('[CFG] load error:', e); return false; }
