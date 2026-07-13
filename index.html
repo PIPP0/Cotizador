@@ -1697,7 +1697,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
       </div>
 
       <!-- Análisis de pipeline -->
-      <div onclick="switchView('pipeline');setTimeout(()=>document.getElementById('analyze-btn')&&document.getElementById('analyze-btn').click(),400)" style="background:var(--bbg);border:1.5px solid var(--bbr);border-radius:14px;padding:22px 20px;cursor:pointer;transition:.15s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--bbr)'">
+      <div onclick="switchView('dashboard');setTimeout(()=>{analyzePipeline();document.getElementById('ia-pipeline-btn')?.scrollIntoView({behavior:'smooth',block:'center'});},300)" style="background:var(--bbg);border:1.5px solid var(--bbr);border-radius:14px;padding:22px 20px;cursor:pointer;transition:.15s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--bbr)'">
         <div style="width:52px;height:52px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         </div>
@@ -4577,20 +4577,51 @@ function changeStatusFromModal(id,val){
 //  CLIENTES
 // ══════════════════════════════════════════════════
 function renderClients(){
-  const html=CLIENTS.map(c=>`
-    <div class="client-row" onclick="toast('${c.n}: ${c.cot} cotizaciones · ${c.monto}','blue')">
-      <div class="client-av" style="background:${c.color}">${c.n.charAt(0)}</div>
-      <div><div class="client-name">${c.n}</div><div class="client-seg">${c.seg}</div></div>
-      <div class="client-val"><div class="client-amt">${c.monto}</div><div class="client-cot">${c.cot} cotizaciones</div></div>
-    </div>
-  `).join('');
-  document.getElementById('client-list').innerHTML=html;
-  // reuse seg bars for 90d in clientes view
-  const segs=PERIODS['90d'].segmentos;
-  const html2=segs.map((s,i)=>`<div class="bar-row"><div class="bar-lbl">${s.s}</div><div class="bar-track"><div class="bar-fill" style="width:0%;background:${SEG_COLORS[i]}"></div></div><div class="bar-v">${s.v}</div></div>`).join('');
-  document.getElementById('seg-bars-2').innerHTML=html2;
+  // ── Construir clientes desde PIPELINE real ──────────────────
+  const _fmtM = v => v>=1e6?'$'+(v/1e6).toFixed(1)+'M':v>=1e3?'$'+(v/1e3).toFixed(0)+'K':'$'+v;
+  const _avColors=['#1e95a6','#d46e3a','#0fa06a','#e4b840','#8aaac5','#8C5BB3','#aaaabc','#187f8e','#e05c5c','#5c9ee0'];
+
+  // Agrupar por cliente
+  const cMap={};
+  (PIPELINE||[]).forEach(r=>{
+    if(!r.cliente) return;
+    if(!cMap[r.cliente]) cMap[r.cliente]={n:r.cliente,seg:r.seg||'—',monto:0,cot:0};
+    cMap[r.cliente].monto+=(r.monto||0);
+    cMap[r.cliente].cot++;
+    if(r.seg) cMap[r.cliente].seg=r.seg; // conservar segmento más reciente
+  });
+
+  const clients=Object.values(cMap)
+    .sort((a,b)=>b.monto-a.monto)
+    .map((c,i)=>({...c,color:_avColors[i%_avColors.length]}));
+
+  const clientHtml = clients.length>0
+    ? clients.map(c=>`
+        <div class="client-row" onclick="toast('${c.n.replace(/'/g,"&#39;")}: ${c.cot} cotización${c.cot!==1?'es':''} · ${_fmtM(c.monto)}','blue')">
+          <div class="client-av" style="background:${c.color}">${c.n.charAt(0).toUpperCase()}</div>
+          <div><div class="client-name">${c.n}</div><div class="client-seg">${c.seg}</div></div>
+          <div class="client-val"><div class="client-amt">${_fmtM(c.monto)}</div><div class="client-cot">${c.cot} cotización${c.cot!==1?'es':''}</div></div>
+        </div>`).join('')
+    : '<div style="padding:32px;text-align:center;color:var(--t4);font-size:13px">Sin clientes en el pipeline aún.<br>Envía tu primera cotización para ver datos aquí.</div>';
+
+  document.getElementById('client-list').innerHTML=clientHtml;
+
+  // ── Barras de segmento desde PIPELINE real ──────────────────
+  const segMap={};
+  (PIPELINE||[]).forEach(r=>{ if(r.seg&&r.monto) segMap[r.seg]=(segMap[r.seg]||0)+r.monto; });
+  const segColors=['#1e95a6','#8aaac5','#e4b840','#d46e3a','#aaaabc','#8C5BB3','#0fa06a','#187f8e'];
+  const segs=Object.entries(segMap).sort((a,b)=>b[1]-a[1]);
+  const maxSeg=segs.length>0?segs[0][1]:1;
+
+  const segHtml = segs.length>0
+    ? segs.map(([s,v],i)=>`<div class="bar-row"><div class="bar-lbl">${s}</div><div class="bar-track"><div class="bar-fill" style="width:0%;background:${segColors[i%segColors.length]}"></div></div><div class="bar-v">${_fmtM(v)}</div></div>`).join('')
+    : '<div style="padding:16px;text-align:center;color:var(--t4);font-size:13px">Sin datos de segmento.</div>';
+
+  document.getElementById('seg-bars-2').innerHTML=segHtml;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    document.querySelectorAll('#seg-bars-2 .bar-fill').forEach((el,i)=>{ el.style.width=segs[i].pct+'%'; });
+    document.querySelectorAll('#seg-bars-2 .bar-fill').forEach((el,i)=>{
+      el.style.width=segs[i]?((segs[i][1]/maxSeg)*100)+'%':'0%';
+    });
   }));
 }
 
