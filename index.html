@@ -843,7 +843,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 .cfg-ph-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px}
 .cfg-close{width:28px;height:28px;border:none;background:rgba(255,255,255,.1);border-radius:6px;cursor:pointer;color:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;transition:all .12s}
 .cfg-close:hover{background:rgba(255,255,255,.2);color:#fff}
-.cfg-body{flex:1;overflow-y:auto}
+.cfg-body{flex:1;overflow-y:auto;min-height:0;overscroll-behavior:contain}
 .cfg-sec{border-bottom:1px solid #f0f3f6;padding:14px 18px}
 .cfg-sec:last-child{border-bottom:none}
 .cfg-sec-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#aaaabc;margin-bottom:12px;display:flex;align-items:center;gap:6px}
@@ -3587,6 +3587,7 @@ function saveCfgPanel() {
   }
   // Siempre cerrar panel y mostrar confirmación
   document.getElementById('cfgOverlay').classList.remove('open');
+  document.body.style.overflow = '';
   setTimeout(showSaveConfirm, 200);
 }
 function resetConfig() {
