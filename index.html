@@ -277,7 +277,7 @@ tbody tr:hover .row-acts{opacity:1}
 .alert-list{display:flex;flex-direction:column;gap:9px}
 .alert-c{border-radius:var(--r2);padding:11px 12px;display:flex;align-items:flex-start;gap:9px;border:1px solid;position:relative;transition:opacity .3s}
 .alert-c.dismissing{opacity:0}
-.a-warn{background:var(--abg);border-color:#f5c9aa}.a-suc{background:var(--gbg);border-color:var(--gbr)}.a-info{background:var(--bbg);border-color:var(--bbr)}.a-gold{background:#fdf9e6;border-color:#f0d97a}
+.a-warn{background:var(--abg);border-color:#f5c9aa}.a-suc{background:var(--gbg);border-color:var(--gbr)}.a-info{background:var(--bbg);border-color:var(--bbr)}.a-gold{background:#fdf9e6;border-color:#f0d97a}.a-red{background:#fdf0f0;border-color:#f5aaaa}
 .alert-ic{flex-shrink:0;margin-top:1px}.alert-ic svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .a-warn .alert-ic{color:var(--orange)}.a-suc .alert-ic{color:var(--green)}.a-info .alert-ic{color:var(--teal)}.a-gold .alert-ic{color:#a07a10}
 .alert-title{font-size:12px;font-weight:800}
@@ -655,6 +655,15 @@ tbody tr:hover .row-acts{opacity:1}
 .ai-badge-outline{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.3px;background:var(--bbg);color:var(--teal);border:1px solid var(--bbr);vertical-align:middle;margin-left:6px}
 .ai-badge-outline svg{width:9px;height:9px;fill:var(--teal);flex-shrink:0}
 .ai-row-tag{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:700;background:var(--bbg);color:var(--teal);border:1px solid var(--bbr);white-space:nowrap;vertical-align:middle;margin-left:4px}
+/* Quote table inputs — readonly looks like plain text, edit mode shows borders */
+#qt-table input.qt-name,#qt-table input.qt-desc,#qt-table input.qt-qty,#qt-table input.qt-unit{font-family:inherit;font-size:inherit;border:none;background:transparent;outline:none;padding:2px 0;line-height:1.5;min-height:28px;color:inherit;width:100%;box-sizing:border-box;transition:border .15s,background .15s,padding .15s,border-radius .15s}
+#qt-table input.qt-qty{text-align:center;width:56px}
+#qt-table input.qt-unit{text-align:right;color:var(--t3);width:110px}
+#qt-table input.qt-name{font-weight:700}
+#qt-table input.qt-desc{font-size:11px;color:var(--t3);margin-top:3px}
+/* Hide spinner arrows on number inputs */
+#qt-table input[type=number]::-webkit-inner-spin-button,#qt-table input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+#qt-table input[type=number]{-moz-appearance:textfield}
 
 /* Wizard step indicator */
 .cot-stepper{display:flex;align-items:center;margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;box-shadow:var(--sh)}
@@ -667,9 +676,11 @@ tbody tr:hover .row-acts{opacity:1}
 .cot-step.done .cot-step-txt{color:var(--t3)}
 .cot-connector{flex:1;height:1px;background:var(--border);margin:0 8px}
 
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
 /* Cotizador screens */
 .screen{display:none}
-.screen.active{display:block;animation:fadeUp .3s ease}
+.screen.active{display:block;animation:fadeUp .35s ease}
 
 /* Cotizador card overrides */
 #view-cotizador .card{padding:20px 22px;margin-bottom:14px;overflow:visible}
@@ -783,8 +794,12 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 
 /* Success screen */
 .success-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;padding:70px 24px}
-.check-circle{width:72px;height:72px;border-radius:50%;background:var(--gbg);border:2px solid var(--gbr);display:flex;align-items:center;justify-content:center;margin-bottom:20px;animation:cot-pop .4s cubic-bezier(.175,.885,.32,1.275)}
+.check-circle{width:72px;height:72px;border-radius:50%;background:var(--gbg);border:2px solid var(--gbr);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.check-circle.animated{animation:cot-pop .45s cubic-bezier(.175,.885,.32,1.275) both}
 .check-circle svg{width:30px;height:30px;stroke:var(--green);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.check-circle svg polyline{stroke-dasharray:32;stroke-dashoffset:32}
+.check-circle.animated svg polyline{animation:draw-check .35s .3s cubic-bezier(.65,0,.45,1) forwards}
+@keyframes draw-check{to{stroke-dashoffset:0}}
 @keyframes cot-pop{from{transform:scale(0)}to{transform:scale(1)}}
 .suc-h{font-size:22px;font-weight:800;margin-bottom:8px}
 .suc-p{font-size:13px;color:var(--t3);max-width:360px;margin-bottom:30px;line-height:1.65}
@@ -1544,13 +1559,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
         <div class="ch-ic ci-g"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
         <div><div class="card-title">Actividad IA <span class="ab" style="margin-left:4px">✦ IA</span></div><div class="card-sub">Acciones del motor</div></div>
       </div>
-      <div class="feed-list">
-        <div class="feed-item"><div class="fi-ic fi-t"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div><div class="feed-main">Cotización <strong id="feed-id-1"></strong> generada en 6 min — 8 ítems MyInBiot + HEPA H14 recomendados</div><div class="feed-time">hace 12 min · Hotel Plaza Bosque</div></div></div>
-        <div class="feed-item"><div class="fi-ic fi-gr"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="feed-main"><strong id="feed-id-2"></strong> marcada como ganada — 84% prob. correcta</div><div class="feed-time">hace 1 h · Castro y Asociados · Construcción y Arq.</div></div></div>
-        <div class="feed-item"><div class="fi-ic fi-g"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div><div class="feed-main">IA detectó oportunidad: <strong>CBRE Chile</strong> consume 42% sobre benchmark — recomienda auditoría SGClima</div><div class="feed-time">hace 2 h · Eficiencia Energética</div></div></div>
-        <div class="feed-item"><div class="fi-ic fi-o"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div><div class="feed-main">Alerta: <strong id="feed-id-3"></strong> vence en 4 días — prob. cae a 54% sin seguimiento</div><div class="feed-time">hace 3 h · Tavelli S.A.</div></div></div>
-        <div class="feed-item"><div class="fi-ic fi-t"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div><div class="feed-main">SGClima detectó consumo anómalo en <strong>INACAP</strong> — mantenimiento anticipado recomendado</div><div class="feed-time">hace 5 h · SGClima · IoT</div></div></div>
-      </div>
+      <div class="feed-list" id="feed-list"></div>
     </div>
 
     <div class="card">
@@ -1559,12 +1568,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
         <div><div class="card-title">Alertas predictivas <span class="ab" style="margin-left:4px">✦ IA</span></div><div class="card-sub">Acciones recomendadas</div></div>
       </div>
       <div class="card-body">
-        <div class="alert-list" id="alert-list">
-          <div class="alert-c a-warn" data-alert="1"><div class="alert-ic"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="alert-txt"><div class="alert-title">Cotización próxima a vencer</div><div class="alert-body"><span id="alert-demo-id"></span> (Tavelli) vence en 4 días. IA sugiere llamada — hist. muestra +28% cierre.</div></div><div class="alert-dismiss" onclick="dismissAlert(1)">✕</div></div>
-          <div class="alert-c a-suc" data-alert="2"><div class="alert-ic"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="alert-txt"><div class="alert-title">SGClima: ahorro 18.4% confirmado</div><div class="alert-body">CBRE Chile lleva 3 meses en SGClima. Ideal para propuesta de renovación.</div></div><div class="alert-dismiss" onclick="dismissAlert(2)">✕</div></div>
-          <div class="alert-c a-info" data-alert="3"><div class="alert-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="alert-txt"><div class="alert-title">Oportunidad: mantenimiento predictivo</div><div class="alert-body">Cool Automation IoC detectó vibración anómala en Chiller Carrier (Porsche). Cotizar preventivo.</div></div><div class="alert-dismiss" onclick="dismissAlert(3)">✕</div></div>
-          <div class="alert-c a-gold" data-alert="4"><div class="alert-ic"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="alert-txt"><div class="alert-title">Upsell detectado</div><div class="alert-body">INACAP: IA proyecta +$4.2M con módulo ROBOTBAS RoomControl.</div></div><div class="alert-dismiss" onclick="dismissAlert(4)">✕</div></div>
-        </div>
+        <div class="alert-list" id="alert-list"></div>
       </div>
     </div>
   </div>
@@ -1674,6 +1678,77 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
           <div class="bar-row"><div class="bar-lbl">Estación MyInBiot</div><div class="bar-track"><div class="bar-fill" style="width:36%;background:#aaaabc"></div></div><div class="bar-v">7 cot.</div></div>
           <div class="bar-row"><div class="bar-lbl">ROBOTBAS RoomControl</div><div class="bar-track"><div class="bar-fill" style="width:26%;background:#c5d0d9"></div></div><div class="bar-v">5 cot.</div></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── FEATURES IA ─── -->
+  <div style="margin-top:22px">
+    <div style="font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Funciones IA disponibles</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px">
+
+      <!-- Email personalizado -->
+      <div onclick="openEmailModal()" style="background:var(--bbg);border:1.5px solid var(--bbr);border-radius:14px;padding:22px 20px;cursor:pointer;transition:.15s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--bbr)'">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--red,#c0392b);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px">Email personalizado</div>
+        <div style="font-size:12.5px;color:var(--t3);line-height:1.5">Redacta el correo de cotización con tono profesional y adaptado al cliente.</div>
+      </div>
+
+      <!-- Análisis de pipeline -->
+      <div onclick="switchView('pipeline');setTimeout(()=>document.getElementById('analyze-btn')&&document.getElementById('analyze-btn').click(),400)" style="background:var(--bbg);border:1.5px solid var(--bbr);border-radius:14px;padding:22px 20px;cursor:pointer;transition:.15s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--bbr)'">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px">Análisis de pipeline</div>
+        <div style="font-size:12.5px;color:var(--t3);line-height:1.5">Detecta patrones y oportunidades en el pipeline comercial actual.</div>
+      </div>
+
+      <!-- Chat interno -->
+      <div onclick="document.getElementById('chat-fab')&&document.getElementById('chat-fab').click()" style="background:var(--bbg);border:1.5px solid var(--bbr);border-radius:14px;padding:22px 20px;cursor:pointer;transition:.15s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--bbr)'">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px">Chat interno IA</div>
+        <div style="font-size:12.5px;color:var(--t3);line-height:1.5">Consulta al asistente comercial sobre clientes, precios y estrategias.</div>
+      </div>
+
+      <!-- Cotizador IA -->
+      <div onclick="switchView('cotizador')" style="background:var(--bbg);border:1.5px solid var(--bbr);border-radius:14px;padding:22px 20px;cursor:pointer;transition:.15s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--bbr)'">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--green,#27ae60);display:flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px">Cotizador IA</div>
+        <div style="font-size:12.5px;color:var(--t3);line-height:1.5">Genera cotizaciones en lenguaje natural con sugerencias automáticas.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODAL: EMAIL PERSONALIZADO ─── -->
+<div id="email-modal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:16px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden">
+    <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--t1)">Email personalizado ✦ IA</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:2px">Selecciona una cotización del pipeline para generar el email</div>
+      </div>
+      <button onclick="closeEmailModal()" style="background:none;border:none;cursor:pointer;color:var(--t4);font-size:20px;line-height:1;padding:4px">✕</button>
+    </div>
+    <div style="padding:20px 24px">
+      <div style="margin-bottom:14px">
+        <label style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Cotización</label>
+        <select id="email-modal-select" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;cursor:pointer">
+          <option value="">— Selecciona —</option>
+        </select>
+      </div>
+      <div id="email-modal-preview" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;font-size:13px;color:var(--t2);line-height:1.6;white-space:pre-wrap"></div>
+      <div id="email-modal-status" style="font-size:12px;color:var(--t3);margin-bottom:12px;min-height:18px"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button onclick="closeEmailModal()" class="btn-sm btn-o">Cancelar</button>
+        <button onclick="generateEmailPreview()" id="email-gen-btn" class="btn-sm btn-p">✦ Generar email</button>
       </div>
     </div>
   </div>
@@ -1910,6 +1985,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
           <div class="ai-row" id="ai4"><div class="ai-dot"></div><span>Calculando horas técnico, desplazamientos y costos operacionales <span class="ai-row-tag">✦ IA</span></span></div>
           <div class="ai-row" id="ai5"><div class="ai-dot"></div><span>Generando cotización personalizada con insight comercial <span class="ai-row-tag">✦ IA</span></span></div>
         </div>
+        <button id="ia-fallback-btn" onclick="try{buildQ();}catch(e){}setNav(2,'done');setNav(3,'active');cShow(3);" style="display:none;margin-top:20px;padding:10px 24px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">Continuar →</button>
       </div>
     </div>
 
@@ -1933,19 +2009,28 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
           <div class="card-icon"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
           <span class="card-label">Ítems recomendados por IA</span>
           <span class="ai-badge" style="margin-left:4px"><svg viewBox="0 0 24 24" fill="white" width="10" height="10"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>IA</span>
-          <div class="tag tag-blue" id="stag" style="margin-left:auto">—</div>
+          <div class="tag tag-blue" id="stag" style="margin-left:auto;flex-shrink:0">—</div>
+          <button id="qt-toggle-btn" onclick="toggleQtEdit()" style="margin-left:10px;font-size:11px;padding:5px 12px;border:1px solid var(--border);background:var(--bg);border-radius:6px;cursor:pointer;color:var(--t2);font-family:inherit;display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap;transition:background .15s,color .15s,border-color .15s">
+            <span id="qt-lbl-edit" style="display:inline-flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar</span>
+            <span id="qt-lbl-save" style="display:none;align-items:center;gap:5px"><svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Guardar</span>
+          </button>
         </div>
-        <table>
+        <table id="qt-table">
           <thead>
             <tr>
               <th>Descripción</th>
               <th class="r" style="text-align:center;width:60px">Qty</th>
               <th class="r" style="width:130px">Precio unit.</th>
-              <th class="r" style="width:130px">Total</th>
+              <th class="r" style="width:110px">Total</th>
+              <th class="qt-edit-only" style="width:28px;display:none"></th>
             </tr>
           </thead>
           <tbody id="qbody"></tbody>
         </table>
+        <div id="qt-add-wrap" style="margin:8px 0 16px;display:none;align-items:center;gap:8px">
+          <button onclick="addQtRow()" style="font-size:11px;padding:5px 12px;border:1px dashed var(--border);background:transparent;border-radius:6px;cursor:pointer;color:var(--t3);font-family:inherit">+ Agregar ítem</button>
+          <button onclick="_qtExitEdit(false)" style="font-size:11px;padding:5px 12px;border:1px solid var(--border);background:transparent;border-radius:6px;cursor:pointer;color:var(--t4);font-family:inherit">Descartar</button>
+        </div>
         <div class="totals">
           <div class="trow"><span>Subtotal</span><span id="ts">—</span></div>
           <div class="trow"><span id="lbl-iva">IVA (19%)</span><span id="ti">—</span></div>
@@ -1984,8 +2069,8 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
         <div class="suc-h">Cotización <span style="color:var(--teal)">enviada</span> con éxito</div>
         <div class="suc-p">La propuesta fue enviada al cliente. La IA registró este caso para optimizar futuros modelos y mejorar la tasa de conversión.</div>
         <div class="kpi-strip">
-          <div class="cot-kpi"><div class="cot-kv">8 min</div><div class="cot-kl">Tiempo de generación</div><div style="margin-top:6px"><span class="ab-out">✦ IA</span></div></div>
-          <div class="cot-kpi"><div class="cot-kv" id="kv-conv" style="color:var(--orange)">—</div><div class="cot-kl">Prob. de conversión</div><div style="margin-top:6px"><span class="ab-out">✦ IA</span></div></div>
+          <div class="cot-kpi"><div class="cot-kv" id="kv-tiempo">—</div><div class="cot-kl">Tiempo de generación</div><div style="margin-top:6px"><span class="ab-out">✦ IA</span></div></div>
+          <div class="cot-kpi"><div class="cot-kv" id="sc4-kv-conv" style="color:var(--orange)">—</div><div class="cot-kl">Prob. de conversión</div><div style="margin-top:6px"><span class="ab-out">✦ IA</span></div></div>
           <div class="cot-kpi"><div class="cot-kv">−68%</div><div class="cot-kl">vs proceso manual</div><div style="margin-top:6px"><span class="ab-out">✦ IA</span></div></div>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
@@ -2349,9 +2434,6 @@ function applyConfig() {
   const _chatWelcome = document.getElementById('chat-welcome-msg');
   if (_chatWelcome) _chatWelcome.innerHTML = `¡Hola! Soy el asistente IA de <strong>${_co}</strong>. Tengo acceso al pipeline, cotizaciones y configuración. Puedes preguntarme: <em>¿cuál es mi cliente más rentable?</em>, <em>¿qué cotizaciones vencen esta semana?</em>, <em>¿cómo mejorar mi tasa de conversión?</em>`;
   // Actualizar IDs de demo en feed de actividad y alertas usando prefijo de marca actual
-  const _fi1=document.getElementById('feed-id-1'); if(_fi1) _fi1.textContent=_demoId(582);
-  const _fi2=document.getElementById('feed-id-2'); if(_fi2) _fi2.textContent=_demoId(571);
-  const _fi3=document.getElementById('feed-id-3'); if(_fi3) _fi3.textContent=_demoId(575);
   const _ai1=document.getElementById('alert-demo-id'); if(_ai1) _ai1.textContent=_demoId(575);
 }
 
@@ -2376,13 +2458,14 @@ function renderSegRow() {
 function renderSbSvcs() {
   const el = document.getElementById('sb-svc-list');
   if (!el) return;
-  const dotColors = ['var(--teal)','var(--gold)','var(--orange)','var(--green)','#8aaac5','#c5d0d9'];
-  el.innerHTML = (CONFIG.services || []).map((s, i) =>
-    `<div class="sb-item">
-      <div class="sb-dot" style="background:${dotColors[i % dotColors.length]}"></div>
+  const fallback = ['#1e95a6','#e4b840','#d46e3a','#0fa06a','#8aaac5','#c5d0d9'];
+  el.innerHTML = (CONFIG.services || []).map((s, i) => {
+    const color = SVC_COLOR_MAP[s.name] || fallback[i % fallback.length];
+    return `<div class="sb-item">
+      <div class="sb-dot" style="background:${color}"></div>
       <span>${s.name}</span>
-    </div>`
-  ).join('');
+    </div>`;
+  }).join('');
 }
 function renderSysRow() {
   const row = document.getElementById('sys-container');
@@ -2578,9 +2661,9 @@ function getConvProb(svcRaw, segRaw) {
   const ov = CONFIG.convOverride || {};
   if (ov[key] != null && ov[key] !== '') { const _p=parseInt(ov[key]); return isNaN(_p)?75:_p; }
 
-  // Capa 2 — histórico real del pipeline (solo Ganada/Perdida cerradas)
+  // Capa 2 — histórico real del pipeline (mínimo 3 registros para ser estadísticamente confiable)
   const hist = calcHistoricalConv();
-  if (hist[key] && hist[key].n >= 1) return hist[key].rate;
+  if (hist[key] && hist[key].n >= 3) return Math.max(5, hist[key].rate);
 
   // Capa 1 — baseline de referencia
   const ref = CONFIG.convRef || {};
@@ -2738,6 +2821,62 @@ function _convCellSave(key, val, el) {
   }
   saveConfigToStorage();
 }
+// ─── Email personalizado modal ───────────────────────────────────────
+function openEmailModal() {
+  const modal = document.getElementById('email-modal');
+  const sel   = document.getElementById('email-modal-select');
+  const prev  = document.getElementById('email-modal-preview');
+  const stat  = document.getElementById('email-modal-status');
+  if (!modal) return;
+  // Poblar selector con pipeline
+  sel.innerHTML = '<option value="">— Selecciona una cotización —</option>';
+  (PIPELINE||[]).forEach((q,i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${q.id||('COT-'+i)} · ${q.client||'Cliente'} · ${q.svc||''} · ${q.total||''}`;
+    sel.appendChild(opt);
+  });
+  prev.style.display = 'none';
+  prev.textContent   = '';
+  stat.textContent   = '';
+  modal.style.display = 'flex';
+}
+function closeEmailModal() {
+  const modal = document.getElementById('email-modal');
+  if (modal) modal.style.display = 'none';
+}
+async function generateEmailPreview() {
+  const sel  = document.getElementById('email-modal-select');
+  const prev = document.getElementById('email-modal-preview');
+  const stat = document.getElementById('email-modal-status');
+  const btn  = document.getElementById('email-gen-btn');
+  const idx  = sel.value;
+  if (idx === '') { stat.textContent = 'Selecciona una cotización primero.'; return; }
+  const q = PIPELINE[parseInt(idx)];
+  if (!q) return;
+  const company = (CONFIG.nameA||'Empresa')+(CONFIG.nameB||'');
+  const svcNames = {}; (CONFIG.services||[]).forEach(s=>svcNames[s.id]=s.name);
+  const segNames = {}; (CONFIG.segments||[]).forEach(s=>segNames[s.id]=s.name);
+  const svcLabel = svcNames[q.svc]||q.svc||'';
+  const segLabel = segNames[q.seg]||q.seg||'';
+  btn.disabled = true; btn.textContent = '✦ Generando…';
+  stat.textContent = '';
+  let texto = '';
+  if (CONFIG.llm && CONFIG.llm.apiKey) {
+    const sys = `Eres el redactor de emails comerciales de ${company}. Escribe un párrafo introductorio breve (3-4 oraciones) personalizado para acompañar una cotización. Tono profesional y cercano. En español. Sin saludo ni firma — solo el cuerpo.`;
+    const usr = `Cliente: ${q.client||'el cliente'}\nSegmento: ${segLabel}\nServicio: ${svcLabel}\nTotal: ${q.total||''}\nEstado: ${q.estado||'En proceso'}`;
+    texto = await _llmCall(sys, usr) || '';
+  }
+  if (!texto) {
+    texto = `Es un gusto presentarle la propuesta comercial que hemos preparado especialmente para ${q.client||'su empresa'}. Nuestro equipo ha diseñado esta solución de ${svcLabel} considerando las necesidades del segmento ${segLabel} y los estándares de calidad que nos caracterizan. Quedamos a su disposición para resolver cualquier consulta y coordinar los próximos pasos.`;
+  }
+  prev.textContent   = texto;
+  prev.style.display = 'block';
+  stat.textContent   = '✓ Email generado — puedes copiarlo o adaptarlo.';
+  stat.style.color   = 'var(--green,#27ae60)';
+  btn.disabled = false; btn.textContent = '✦ Regenerar';
+}
+// ─────────────────────────────────────────────────────────────────────
 function _convCellReset(key) {
   CONFIG.convOverride = CONFIG.convOverride || {};
   CONFIG.convOverride[key] = null;
@@ -2772,7 +2911,7 @@ function buildConvTable() {
       const key = sv.id + '_' + sg.id;
       const h   = hist[key];   // Capa 2: datos reales del pipeline
       const hasOv  = ov[key] != null && ov[key] !== '';
-      const hasReal = h && h.n >= 1;
+      const hasReal = h && h.n >= 3; // mínimo 3 registros para ser estadísticamente válido
       const hasRef  = ref[key] != null;
 
       // Determinar fuente activa y valor a mostrar
@@ -3691,7 +3830,7 @@ function switchView(v){
   if(v==='clientes') renderClients();
   if(v==='edicion') renderEdicion();
   if(v==='conv') renderConvView();
-  if(v==='cotizador'){ _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
+  if(v==='cotizador'){ _cotStartTime=Date.now(); _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
   closeSidebar(); // close drawer after navigating
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -3710,6 +3849,15 @@ document.querySelectorAll('.dtab').forEach(el=>{
 // ══════════════════════════════════════════════════
 //  LIVE KPI COMPUTATION FROM PIPELINE
 // ══════════════════════════════════════════════════
+const SVC_COLOR_MAP = {
+  'Mantenimiento de Clima':  '#1e95a6',
+  'Instalaciones de Clima':  '#8aaac5',
+  'Eficiencia Energética':   '#e4b840',
+  'Calidad del Aire':        '#d46e3a',
+  'Ingeniería de Proyectos': '#aaaabc',
+  'Mantenimiento Virtual':   '#c5d0d9'
+};
+
 function buildLiveData() {
   if (!PIPELINE || PIPELINE.length === 0) return null;
 
@@ -3734,11 +3882,7 @@ function buildLiveData() {
                       : '$' + v.toLocaleString('es-CL');
 
   // Services
-  const SVC_COLORS = {
-    'Mantenimiento de Clima':'#1e95a6','Instalaciones de Clima':'#8aaac5',
-    'Eficiencia Energética':'#e4b840','Calidad del Aire':'#d46e3a',
-    'Ingeniería de Proyectos':'#aaaabc','Mantenimiento Virtual':'#c5d0d9'
-  };
+  const SVC_COLORS = SVC_COLOR_MAP;
   const svcMap = {};
   data.forEach(r => {
     const k = r.svc || 'Otros';
@@ -3769,14 +3913,156 @@ function buildLiveData() {
 }
 
 // ══════════════════════════════════════════════════
+//  DYNAMIC FEED & ALERTS
+// ══════════════════════════════════════════════════
+function _parseVence(vStr) {
+  if (!vStr || vStr === 'Cerrada') return null;
+  const months = {ene:0,feb:1,mar:2,abr:3,may:4,jun:5,jul:6,ago:7,sep:8,oct:9,nov:10,dic:11};
+  const parts = vStr.trim().split(' ');
+  if (parts.length < 2) return null;
+  const day = parseInt(parts[0]);
+  const mon = months[parts[1].toLowerCase()];
+  if (isNaN(day) || mon === undefined) return null;
+  const now = new Date();
+  const d = new Date(now.getFullYear(), mon, day);
+  // Si ya pasó por más de 6 meses, asumir próximo año
+  if (d.getTime() < now.getTime() - 180 * 86400000) d.setFullYear(now.getFullYear() + 1);
+  return d;
+}
+
+function _agoStr(ts) {
+  const diff = Math.round((Date.now() - (ts||Date.now())) / 60000);
+  if (diff < 60)   return `hace ${diff} min`;
+  if (diff < 1440) return `hace ${Math.round(diff/60)} h`;
+  return `hace ${Math.round(diff/1440)} días`;
+}
+
+function renderActivityFeed() {
+  const el = document.getElementById('feed-list');
+  if (!el) return;
+  const SVG = {
+    activity: '<svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+    check:    '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
+    warn:     '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    bolt:     '<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>'
+  };
+  const DAY = 86400000;
+  const now = Date.now();
+  // Construir eventos: creación + cambios de estado, ordenados por timestamp
+  const events = [];
+
+  PIPELINE.forEach(r => {
+    // Evento de creación
+    if (r.created) {
+      events.push({ ts: r.created, ic:'fi-t', svg:SVG.activity,
+        main:`Cotización <strong>${r.id}</strong> registrada — ${r.svc}`,
+        time:`${_agoStr(r.created)} · ${r.cliente}` });
+    }
+    // Evento de cambio de estado (si existe lastModified y es posterior a created)
+    if (r.lastModified && r.lastModified !== r.created) {
+      const icon = r.estado==='Ganada' ? 'fi-gr' : r.estado==='Perdida' ? 'fi-o' : 'fi-t';
+      const svg  = r.estado==='Ganada' ? SVG.check : r.estado==='Perdida' ? SVG.warn : SVG.activity;
+      events.push({ ts: r.lastModified, ic:icon, svg,
+        main:`<strong>${r.id}</strong> → <strong>${r.estado}</strong>`,
+        time:`${_agoStr(r.lastModified)} · ${r.cliente}` });
+    }
+  });
+
+  // Ordenar por más reciente y tomar los primeros 5
+  const items = events.sort((a,b)=>b.ts-a.ts).slice(0,5);
+
+  if (!items.length) {
+    el.innerHTML = '<div class="feed-item" style="color:var(--t3);font-size:13px;padding:16px">Sin actividad reciente.</div>';
+    return;
+  }
+  el.innerHTML = items.slice(0,5).map(i =>
+    `<div class="feed-item"><div class="fi-ic ${i.ic}">${i.svg}</div><div><div class="feed-main">${i.main}</div><div class="feed-time">${i.time}</div></div></div>`
+  ).join('');
+}
+
+function renderAlerts() {
+  const el = document.getElementById('alert-list');
+  if (!el) return;
+  const DAY = 86400000;
+  const now = Date.now();
+  const alerts = [];
+  const SVG = {
+    warn:  '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    cross: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info:  '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    act:   '<svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+    bolt:  '<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>'
+  };
+
+  // Próximas a vencer ≤7 días
+  PIPELINE.filter(r => {
+    if (r.estado==='Ganada'||r.estado==='Perdida') return false;
+    const d = _parseVence(r.vence); if (!d) return false;
+    const diff = (d - now) / DAY;
+    return diff >= 0 && diff <= 7;
+  }).slice(0,3).forEach(r => {
+    const days = Math.round((_parseVence(r.vence) - now) / DAY);
+    alerts.push({ cls:'a-warn', svg:SVG.warn,
+      title:'Cotización próxima a vencer',
+      body:`${r.id} (${r.cliente}) vence en ${days} día${days!==1?'s':''}. IA sugiere seguimiento — historial muestra +28% cierre.` });
+  });
+
+  // Vencidas (no cerradas)
+  PIPELINE.filter(r => {
+    if (r.estado==='Ganada'||r.estado==='Perdida') return false;
+    const d = _parseVence(r.vence); if (!d) return false;
+    return d < now;
+  }).slice(0,2).forEach(r => {
+    alerts.push({ cls:'a-red', svg:SVG.cross,
+      title:'Cotización vencida',
+      body:`${r.id} (${r.cliente}) venció el ${r.vence}. Estado: ${r.estado}. Requiere acción.` });
+  });
+
+  // En revisión con monto alto
+  PIPELINE.filter(r=>r.estado==='En revisión'&&r.monto>10000000).slice(0,2).forEach(r => {
+    alerts.push({ cls:'a-info', svg:SVG.info,
+      title:'Revisión pendiente — monto alto',
+      body:`${r.id} (${r.cliente}) por $${(r.monto/1000000).toFixed(1)}M lleva tiempo en revisión. Prob. ${r.prob}%.` });
+  });
+
+  // Oportunidad de renovación (Ganadas)
+  PIPELINE.filter(r=>r.estado==='Ganada').slice(0,2).forEach(r => {
+    alerts.push({ cls:'a-suc', svg:SVG.act,
+      title:'Oportunidad de renovación',
+      body:`${r.cliente} cerró ${r.id} (${r.svc}). Ideal para proponer contrato anual o servicios adicionales.` });
+  });
+
+  // Upsell: clientes con monto alto en Negociando
+  PIPELINE.filter(r=>r.estado==='Negociando'&&r.monto>15000000).slice(0,1).forEach(r => {
+    alerts.push({ cls:'a-gold', svg:SVG.bolt,
+      title:'Upsell detectado',
+      body:`${r.cliente} tiene ${r.id} en negociación por $${(r.monto/1000000).toFixed(1)}M. Alta probabilidad de ampliar alcance.` });
+  });
+
+  if (!alerts.length) {
+    el.innerHTML = '<div style="padding:16px;font-size:13px;color:var(--t3)">Sin alertas activas.</div>';
+    return;
+  }
+  el.innerHTML = alerts.slice(0,4).map((a,i) =>
+    `<div class="alert-c ${a.cls}" data-alert="dyn-${i}">
+      <div class="alert-ic">${a.svg}</div>
+      <div class="alert-txt"><div class="alert-title">${a.title}</div><div class="alert-body">${a.body}</div></div>
+      <div class="alert-dismiss" onclick="dismissAlert('dyn-${i}')">✕</div>
+    </div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════════════
 //  RENDER ALL
 // ══════════════════════════════════════════════════
 function renderAll(){
-  try { renderKPIs(); }    catch(e){ console.warn('[render] KPIs:', e); }
-  try { renderChart(); }   catch(e){ console.warn('[render] Chart:', e); }
-  try { renderDonut(); }   catch(e){ console.warn('[render] Donut:', e); }
-  try { renderSegBars(); } catch(e){ console.warn('[render] SegBars:', e); }
-  try { renderTable(); }   catch(e){ console.warn('[render] Table:', e); }
+  try { renderKPIs(); }          catch(e){ console.warn('[render] KPIs:', e); }
+  try { renderChart(); }         catch(e){ console.warn('[render] Chart:', e); }
+  try { renderDonut(); }         catch(e){ console.warn('[render] Donut:', e); }
+  try { renderSegBars(); }       catch(e){ console.warn('[render] SegBars:', e); }
+  try { renderTable(); }         catch(e){ console.warn('[render] Table:', e); }
+  try { renderActivityFeed(); }  catch(e){ console.warn('[render] Feed:', e); }
+  try { renderAlerts(); }        catch(e){ console.warn('[render] Alerts:', e); }
 }
 
 // ══════════════════════════════════════════════════
@@ -4099,7 +4385,10 @@ function renderTableInto(tableId, rows){
     tbody=`<tr class="empty-row"><td colspan="${COLS.length}">No hay cotizaciones con ese filtro.</td></tr>`;
   } else {
     tbody=rows.map(r=>{
-      const liveProb = getConvProb(r.svc, r.seg);
+      const liveProb = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 0 : getConvProb(r.svc, r.seg);
+      const probLabel = r.estado==='Ganada' ? '✓ Ganada' : r.estado==='Perdida' ? '✗ Perdida' : liveProb+'%';
+      const probFill  = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 100 : liveProb;
+      const probClr   = r.estado==='Ganada' ? 'var(--green)' : r.estado==='Perdida' ? 'var(--red)' : probColor(liveProb);
       return `
       <tr onclick="openModal('${r.id}')">
         <td><span class="cot-id">${r.id}</span></td>
@@ -4108,8 +4397,8 @@ function renderTableInto(tableId, rows){
         <td><div class="amt" style="color:${r.monto>20000000?'var(--orange)':'var(--teal)'}">${fmtMonto(r.monto)}</div></td>
         <td>
           <div class="prob-wrap">
-            <div class="prob-track"><div class="prob-fill" style="width:${liveProb}%;background:${probColor(liveProb)}"></div></div>
-            <span class="prob-val" style="color:${probColor(liveProb)}">${liveProb}%</span>
+            <div class="prob-track"><div class="prob-fill" style="width:${probFill}%;background:${probClr}"></div></div>
+            <span class="prob-val" style="color:${probClr}">${probLabel}</span>
           </div>
         </td>
         <td><span class="badge ${STATUS_BADGE[r.estado]||'bg-gray'}" onclick="event.stopPropagation();cycleStatus('${r.id}')">${r.estado}</span></td>
@@ -4169,6 +4458,7 @@ function cycleStatus(id){
   if(!r) return;
   const idx=STATUSES.indexOf(r.estado);
   r.estado=STATUSES[(idx+1)%STATUSES.length];
+  r.lastModified=Date.now();
   savePipelineToStorage();
   renderAll(); renderTable2();
   toast(`${r.id} → ${r.estado}`,'blue');
@@ -4191,9 +4481,12 @@ function _fmtDate(ts){
   const mo=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
   return String(d.getDate()).padStart(2,'0')+' '+mo[d.getMonth()]+' '+d.getFullYear();
 }
+let _modalId = null; // ID de la cotización abierta en modal
+
 function openModal(id){
   const r=PIPELINE.find(x=>x.id===id);
   if(!r) return;
+  _modalId = id;
   document.getElementById('modal-title').textContent=r.id;
   document.getElementById('modal-sub').textContent=`${r.cliente} · ${r.svc}`;
   const statusOpts=STATUSES.map(s=>`<option${s===r.estado?' selected':''}>${s}</option>`).join('');
@@ -4211,7 +4504,7 @@ function openModal(id){
         <div class="modal-field"><div class="modal-field-label">Fecha de emisión</div><div class="modal-field-value">${fechaEmision}</div></div>
         <div class="modal-field"><div class="modal-field-label">Vencimiento</div><div class="modal-field-value">${r.vence}</div></div>
         <div class="modal-field"><div class="modal-field-label">Estado actual</div>
-          <select class="status-select" id="modal-status-sel" onchange="changeStatusFromModal('${r.id}',this.value)">${statusOpts}</select>
+          <select class="status-select" id="modal-status-sel">${statusOpts}</select>
         </div>
       </div>
     </div>
@@ -4226,35 +4519,58 @@ function openModal(id){
     </div>
     <div class="modal-section">
       <div class="modal-sec-title"><span class="ab">✦ IA</span> Recomendación del motor</div>
-      <div class="ia-rec-box"><div class="ia-rec-lbl">✦ Insight IA · ${(CONFIG.nameA||'Nex')+(CONFIG.nameB||'Clima')}</div><div style="font-size:12.5px;color:var(--t2);line-height:1.55">${r.tip}</div></div>
+      <div class="ia-rec-box"><div class="ia-rec-lbl">✦ Insight IA · ${(CONFIG.nameA||'Nex')+(CONFIG.nameB||'')}</div><div style="font-size:12.5px;color:var(--t2);line-height:1.55">${r.tip}</div></div>
     </div>
     <div class="modal-actions">
-      <button class="btn-sm btn-o" onclick="toast('Cotización duplicada','blue')">Duplicar</button>
-      <button class="btn-sm btn-o" onclick="toast('PDF generado','green')">
+      <button class="btn-sm btn-o" onclick="duplicateRow('${r.id}')">Duplicar</button>
+      <button class="btn-sm btn-o" id="modal-pdf-btn" onclick="downloadModalPDF('${r.id}')">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Descargar PDF
       </button>
-      <button class="btn-sm btn-p" onclick="toast('Enviada al cliente','green');closeModal(null)">
+      <button class="btn-sm btn-o" id="modal-send-btn" onclick="sendModalEmail('${r.id}')">
         <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         Enviar al cliente
+      </button>
+      <button class="btn-sm btn-p" onclick="saveModalChanges()">
+        <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Guardar cambios
       </button>
     </div>
   `;
   const ov = document.getElementById('modalOverlay');
   document.body.style.overflow = 'hidden';
-  // Double RAF: frame 1 = browser pinta el contenido, frame 2 = inicia animación
   requestAnimationFrame(() => requestAnimationFrame(() => ov.classList.add('open')));
+}
+
+function saveModalChanges(){
+  if(!_modalId) return;
+  const r = PIPELINE.find(x=>x.id===_modalId);
+  if(!r) return;
+  const sel = document.getElementById('modal-status-sel');
+  if(sel && sel.value !== r.estado){
+    r.estado = sel.value;
+    r.lastModified = Date.now();
+  }
+  savePipelineToStorage();
+  renderAll(); renderTable2();
+  toast(`${_modalId} guardada`,'green');
+  _closeModalPanel();
+}
+
+function _closeModalPanel(){
+  const ov = document.getElementById('modalOverlay');
+  ov.classList.remove('open');
+  ov.addEventListener('transitionend', () => { document.body.style.overflow = ''; }, { once: true });
+  _modalId = null;
 }
 function closeModal(e){
   if(e && e.target!==document.getElementById('modalOverlay')) return;
-  const ov = document.getElementById('modalOverlay');
-  ov.classList.remove('open');
-  // Restaurar scroll solo cuando termina la transición, no antes
-  ov.addEventListener('transitionend', () => { document.body.style.overflow = ''; }, { once: true });
+  // Descartar cambios sin guardar
+  _closeModalPanel();
 }
 function changeStatusFromModal(id,val){
   const r=PIPELINE.find(x=>x.id===id);
-  if(r){ r.estado=val; savePipelineToStorage(); renderAll(); renderTable2(); toast(`${id} → ${val}`,'blue'); }
+  if(r){ r.estado=val; r.lastModified=Date.now(); savePipelineToStorage(); renderAll(); renderTable2(); toast(`${id} → ${val}`,'blue'); }
 }
 
 // ══════════════════════════════════════════════════
@@ -4379,8 +4695,9 @@ function _confirm(msg, onConfirm, opts={}){
   document.body.style.overflow = 'hidden';
 }
 function _confirmOk(){
+  const cb = _confirmCallback;
   _confirmClose();
-  if(typeof _confirmCallback === 'function') _confirmCallback();
+  if(typeof cb === 'function') cb();
 }
 function _confirmClose(){
   document.getElementById('confirmOverlay').classList.remove('open');
@@ -4399,7 +4716,11 @@ document.addEventListener('keydown',e=>{
 //  INIT
 // ══════════════════════════════════════════════════
 window.addEventListener('load',()=>{
-  // Restaurar datos guardados localmente
+  // Cargar config PRIMERO para que _plKey() use el nombre correcto
+  try { loadConfigFromStorage(); } catch(e) { console.warn('[init] loadConfig:', e); }
+  try { applyConfig(); } catch(e) { console.warn('[init] applyConfig:', e); }
+
+  // Restaurar datos guardados localmente (con la clave correcta)
   try {
     const saved = localStorage.getItem(_plKey());
     if(saved){
@@ -4413,8 +4734,6 @@ window.addEventListener('load',()=>{
 
   try { initFirebase(); } catch(e) { console.warn('[init] firebase:', e); }
   try { renderAll(); } catch(e) { console.warn('[init] renderAll:', e); }
-  try { loadConfigFromStorage(); } catch(e) { console.warn('[init] loadConfig:', e); }
-  try { applyConfig(); } catch(e) { console.warn('[init] applyConfig:', e); }
   try { _syncFromFirebase(); } catch(e) { console.warn('[init] fbSync:', e); }
   try { _syncPipelineFromFirebase(); } catch(e) { console.warn('[init] pipelineSync:', e); }
   try { renderSysRow(); } catch(e) { console.warn('[init] renderSysRow:', e); }
@@ -4721,13 +5040,13 @@ REGLAS POR CAMPO:
 - "sistema": infiere el más apropiado. Opciones: ${sysList}
 - "num_equipos": número entero si menciona cantidad de equipos/unidades explícitamente. Si NO se menciona pero sí hay superficie, estima la cantidad según el tipo de sistema (split: 1 por cada 25-35 m²; VRV: 1 unidad interior por cada 20-30 m²; chiller: 1 cada 300-500 m²). Nunca devuelvas null si tienes suficiente contexto para estimar.
 - "superficie": número entero en m² si menciona metros cuadrados/m²/superficie, sino null.
-- "descripcion": resumen claro del proyecto en 1-2 frases en español.
+- "descripcion": descripción técnica enriquecida del proyecto en 2-3 frases en español. NO repitas literalmente lo que dice el texto: amplía con contexto técnico relevante (tipo de instalación, condiciones del espacio, consideraciones del sistema, requerimientos típicos para ese tipo de cliente/uso). Agrega valor profesional que un ejecutivo comercial añadiría al analizar el requerimiento.
 - "urgencia": "h" si dice urgente/hoy/inmediato, "l" si dice sin apuro/flexible, "m" en los demás casos.
 
 Responde ÚNICAMENTE con el JSON válido, sin texto adicional ni bloques de código.`;
 
   const userMsg = `Texto:\n"""\n${txt}\n"""`;
-  const result = await _llmCall(system, userMsg, null, 400);
+  const result = await _llmCall(system, userMsg, null, 600);
   btn.disabled = false; btn.style.opacity = '1';
   if (!result) { status.textContent = 'Error al procesar. Revisa tu API key en Edición Valores.'; status.style.color='var(--red)'; return; }
 
@@ -4789,6 +5108,18 @@ function setNav(n,st){
 function cShow(n){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen'+n).classList.add('active');
+  if(n===4){
+    // KPI prob. conversión — asegurar valor visible al activar pantalla
+    const kvConv=document.getElementById('sc4-kv-conv');
+    if(kvConv && _cotConvProb) kvConv.textContent=_cotConvProb+'%';
+    // Resetear y relanzar animación del check en cada visita a la pantalla de éxito
+    const cc=document.querySelector('.check-circle');
+    if(cc){
+      cc.classList.remove('animated');
+      void cc.offsetWidth; // forzar reflow para reiniciar animación
+      cc.classList.add('animated');
+    }
+  }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function _markError(id){ const el=document.getElementById(id); if(!el)return; el.classList.add('field-error'); el.focus(); el.addEventListener('input',()=>el.classList.remove('field-error'),{once:true}); }
@@ -4799,7 +5130,6 @@ function go2(){
   if (!nombre) { _markError('cn'); toast('El nombre de empresa es obligatorio','red'); return; }
   if (!email)  { _markError('ce'); toast('El email de contacto es obligatorio','red'); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { _markError('ce'); toast('Email inválido — verifica el formato','red'); return; }
-  _cotStartTime=Date.now();
   setNav(1,'done'); setNav(2,'active'); cShow(2);
   const ids=['ai1','ai2','ai3','ai4','ai5'];
   ids.forEach(id=>{
@@ -4826,7 +5156,17 @@ function go2(){
       el.querySelector('.mspin')&&el.querySelector('.mspin').remove();
     },i*720+680);
   });
-  setTimeout(()=>{ buildQ(); setNav(2,'done'); setNav(3,'active'); cShow(3); }, ids.length*720+380);
+  setTimeout(()=>{
+    try { buildQ(); } catch(e) { console.warn('[buildQ]', e); }
+    setNav(2,'done'); setNav(3,'active'); cShow(3);
+  }, ids.length*720+380);
+  // Fallback: si en 8s no avanzó, mostrar botón de emergencia
+  setTimeout(()=>{
+    if (document.getElementById('screen2') && document.getElementById('screen2').style.display !== 'none') {
+      const fb = document.getElementById('ia-fallback-btn');
+      if (fb) fb.style.display = 'inline-block';
+    }
+  }, 8000);
 }
 function buildQ(){
   const name=document.getElementById('cn').value||'Cliente';
@@ -4838,7 +5178,7 @@ function buildQ(){
   document.getElementById('qe').textContent=email;
   document.getElementById('qd').textContent=today;
   // Actualizar nombre empresa y logo desde CONFIG
-  const companyFull=(CONFIG.nameA||'Nex')+(CONFIG.nameB||'Clima');
+  const companyFull=(CONFIG.nameA||'Nex')+(CONFIG.nameB||'');
   const recLabel=document.getElementById('cot-rec-label');
   if(recLabel) recLabel.textContent='✦ Recomendación IA · '+companyFull;
   // Logo en banner cotización
@@ -4935,15 +5275,29 @@ function buildQ(){
   const items=_resolveRows(rows, svc);
   const tbody=document.getElementById('qbody');
   tbody.innerHTML='';
+  // Reset edit mode on new quote
+  document.getElementById('qt-add-wrap').style.display='none';
+  const toggleBtn=document.getElementById('qt-toggle-btn');
+  if(toggleBtn) toggleBtn.dataset.mode='';
+  _qtSetBtnMode(false);
+  document.querySelectorAll('.qt-edit-only').forEach(el=>el.style.display='none');
   let sub=0;
   const aitag=`<span class="ai-row-tag">✦ IA</span>`;
+  const inpS='font-family:inherit;font-size:inherit;border:none;background:transparent;width:100%;outline:none;color:inherit;padding:0';
+  const numS='font-family:inherit;font-size:inherit;border:none;background:transparent;width:100%;outline:none;text-align:right;color:var(--t3);padding:0';
   items.forEach(r=>{
     const t=r.q*r.u; sub+=t;
     tbody.innerHTML+=`<tr>
-      <td><div class="iname">${r.n}${r.a?aitag:''}</div><div class="idesc">${r.d}</div></td>
-      <td class="c">${r.q}</td>
-      <td class="r" style="color:var(--t3)">${fmt(r.u)}</td>
-      <td class="r">${fmt(t)}</td>
+      <td>
+        <div class="iname"><input class="qt-name" type="text" value="${r.n.replace(/"/g,'&quot;')}" readonly style="${inpS};font-weight:700">${r.a?aitag:''}</div>
+        <div class="idesc"><input class="qt-desc" type="text" value="${r.d.replace(/"/g,'&quot;')}" readonly style="${inpS};font-size:11px;color:var(--t3)"></div>
+      </td>
+      <td class="c"><input class="qt-qty" type="number" value="${r.q}" min="1" readonly oninput="recalcQt()" style="${inpS};text-align:center;width:48px"></td>
+      <td class="r"><input class="qt-unit" type="number" value="${r.u}" min="0" readonly oninput="recalcQt()" style="${numS};width:100px"></td>
+      <td class="r qt-total">${fmt(t)}</td>
+      <td class="qt-edit-only" style="display:none;padding:2px;vertical-align:middle">
+        <button onclick="this.closest('tr').remove();recalcQt()" style="border:none;background:none;cursor:pointer;color:var(--t4);font-size:18px;padding:0 4px;line-height:1;border-radius:4px" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--t4)'" title="Eliminar fila">×</button>
+      </td>
     </tr>`;
   });
   const _ivaPct=CONFIG.cotizacion?.iva??19;
@@ -4953,44 +5307,142 @@ function buildQ(){
   document.getElementById('ti').textContent=fmt(iva);
   document.getElementById('tt').textContent=fmt(sub+iva);
   const lblIva=document.getElementById('lbl-iva'); if(lblIva) lblIva.textContent='IVA ('+_ivaPct+'%)';
-  const cp=getConvProb(svc,seg);
-  _cotConvProb=cp;
-  const kvEl=document.getElementById('kv-conv');
-  if(kvEl) kvEl.textContent=cp+'%';
-  const tips={
-    mant:`Segmento ${sgn[seg]} con alta recurrencia histórica (2.3 contratos/año promedio). La IA recomienda proponer contrato anual de mantención con 8% descuento para asegurar ingresos recurrentes y mejorar tasa de cierre estimada en ${cp}%.`,
-    inst:`Proyecto de instalación en ${sgn[seg]}. La IA detecta oportunidad de incluir plan de mantención preventiva semestral como servicio complementario, proyectando +18% de ingreso adicional. Destacar certificación ASHRAE y garantía ${(CONFIG.nameA||'')+(CONFIG.nameB||'')} como diferenciadores.`,
-    virt:`Mantenimiento virtual con plataforma SGClima + Cool Automation IoC. La IA proyecta reducción de visitas presenciales en 60% y ahorro operacional de 22% para clientes del segmento ${sgn[seg]}. NPS promedio clientes con este servicio: 78.`,
-    ener:`SGClima garantiza ahorro mínimo 15% en consumo energético de clima. La IA calcula ROI a 18 meses para ${sgn[seg]} basado en benchmark sectorial. Incluir informe de ROI proyectado a 3 años acelera significativamente la decisión de compra.`,
-    aire:`Demanda en ${sgn[seg]} creció 340% desde 2021. Variables críticas detectadas: CO₂ >800 ppm, HR fuera de rango 40–60%, TVOC elevado. La IA recomienda incluir estación MyInBiot + informe normativo como diferenciador frente a competencia.`,
-    ing:`Proyecto de ingeniería con potencial de certificación LEED. La IA detecta que propuestas con ingeniería de detalle + supervisión de obras tienen 35% mayor tasa de cierre en ${sgn[seg]}. Incluir estudio de eficiencia energética como valor agregado.`,
-  };
-  // Show static tip as fallback, then replace with LLM-generated insight if key is set
-  const tipEl = document.getElementById('tip');
-  if(!tipEl) return;
-  tipEl.textContent = tips[_svcKey]||tips.mant;
-  if (CONFIG.llm && CONFIG.llm.apiKey) {
-    const totalStr = document.getElementById('tt') ? document.getElementById('tt').textContent : '';
-    const clientName = document.getElementById('cn') ? document.getElementById('cn').value : 'Cliente';
-    const descr = document.getElementById('rd') ? document.getElementById('rd').value : '';
-    const llmSys = `Eres el motor de IA comercial de ${(CONFIG.nameA||'')+(CONFIG.nameB||'')} (${CONFIG.tagline||CONFIG.module||'empresa de servicios'}).
+  let cp = 75;
+  try { cp = getConvProb(svc, seg); } catch(e) { console.warn('[getConvProb]', e); }
+  _cotConvProb = cp;
+  const kvEl = document.getElementById('sc4-kv-conv');
+  if(kvEl) kvEl.textContent = cp + '%';
+
+  // Recomendación IA — siempre muestra algo
+  try {
+    const segLabel = sgn[seg] || seg || 'este segmento';
+    const tips = {
+      mant: `Segmento ${segLabel} con alta recurrencia histórica (2.3 contratos/año promedio). La IA recomienda proponer contrato anual de mantención con 8% descuento para asegurar ingresos recurrentes y mejorar tasa de cierre estimada en ${cp}%.`,
+      inst: `Proyecto de instalación en ${segLabel}. La IA detecta oportunidad de incluir plan de mantención preventiva semestral como servicio complementario, proyectando +18% de ingreso adicional. Destacar certificación ASHRAE y garantía ${(CONFIG.nameA||'')+(CONFIG.nameB||'')} como diferenciadores.`,
+      virt: `Mantenimiento virtual con plataforma SGClima + Cool Automation IoC. La IA proyecta reducción de visitas presenciales en 60% y ahorro operacional de 22% para clientes del segmento ${segLabel}. NPS promedio clientes con este servicio: 78.`,
+      ener: `SGClima garantiza ahorro mínimo 15% en consumo energético de clima. La IA calcula ROI a 18 meses para ${segLabel} basado en benchmark sectorial. Incluir informe de ROI proyectado a 3 años acelera significativamente la decisión de compra.`,
+      aire: `Demanda en ${segLabel} creció 340% desde 2021. Variables críticas detectadas: CO₂ >800 ppm, HR fuera de rango 40–60%, TVOC elevado. La IA recomienda incluir estación MyInBiot + informe normativo como diferenciador frente a competencia.`,
+      ing: `Proyecto de ingeniería con potencial de certificación LEED. La IA detecta que propuestas con ingeniería de detalle + supervisión de obras tienen 35% mayor tasa de cierre en ${segLabel}. Incluir estudio de eficiencia energética como valor agregado.`,
+    };
+    const tipEl = document.getElementById('tip');
+    if (tipEl) {
+      // Usar svc (variable global) como clave del tip — fix de _svcKey undefined
+      tipEl.textContent = tips[svc] || tips.mant;
+      if (CONFIG.llm && CONFIG.llm.apiKey) {
+        const totalStr = (document.getElementById('tt') || {}).textContent || '';
+        const clientName = (document.getElementById('cn') || {}).value || 'Cliente';
+        const descr = (document.getElementById('rd') || {}).value || '';
+        const llmSys = `Eres el motor de IA comercial de ${(CONFIG.nameA||'')+(CONFIG.nameB||'')} (${CONFIG.tagline||CONFIG.module||'empresa de servicios'}).
 Genera UN insight comercial breve (2-3 oraciones) para el ejecutivo de ventas, en español.
 El insight debe ser específico, accionable y mencionar datos concretos. NO empieces con "El modelo" o "IA detecta".
 Sé directo como un asesor comercial experto en HVAC.`;
-    const llmUser = `Cliente: ${clientName}
-Segmento: ${sgn[seg]||seg}
+        const llmUser = `Cliente: ${clientName}
+Segmento: ${segLabel}
 Servicio: ${sn[svc]||svc}
 Sistema: ${sysLabel[sys]||sys}
 Descripción: ${descr}
 Prob. conversión estimada: ${cp}%
 Monto estimado: ${totalStr}`;
-    tipEl.style.opacity = '0.5';
-    _llmCall(llmSys, llmUser).then(r => {
-      if (r) { tipEl.textContent = r; tipEl.style.opacity = '1'; }
-      else { tipEl.style.opacity = '1'; }
-    }).catch(()=>{ tipEl.style.opacity='1'; });
+        tipEl.style.opacity = '0.5';
+        _llmCall(llmSys, llmUser).then(r => {
+          if (r) { tipEl.textContent = r; tipEl.style.opacity = '1'; }
+          else { tipEl.style.opacity = '1'; }
+        }).catch(() => { tipEl.style.opacity = '1'; });
+      }
+    }
+  } catch(e) { console.warn('[tip generation]', e); }
+}
+function recalcQt(){
+  const fmtN = n=>'$'+Math.round(n).toLocaleString('es-CL');
+  let sub=0;
+  document.querySelectorAll('#qbody tr').forEach(row=>{
+    const qEl=row.querySelector('.qt-qty');
+    const uEl=row.querySelector('.qt-unit');
+    const totEl=row.querySelector('.qt-total');
+    if(!qEl||!uEl||!totEl) return;
+    const q=parseInt((qEl.value||qEl.textContent).replace(/\D/g,''))||0;
+    const u=parseInt((uEl.value||uEl.textContent).replace(/\./g,'').replace(/[^0-9]/g,''))||0;
+    const t=q*u; sub+=t;
+    totEl.textContent=fmtN(t);
+  });
+  const _ivaPct=CONFIG.cotizacion?.iva??19;
+  const iva=Math.round(sub*(_ivaPct/100));
+  document.getElementById('ts').textContent=fmtN(sub);
+  document.getElementById('ti').textContent=fmtN(iva);
+  document.getElementById('tt').textContent=fmtN(sub+iva);
+}
+function _qtSetBtnMode(editing){
+  const btn=document.getElementById('qt-toggle-btn');
+  const lblEdit=document.getElementById('qt-lbl-edit');
+  const lblSave=document.getElementById('qt-lbl-save');
+  if(!btn) return;
+  if(editing){
+    btn.style.background='var(--teal)';
+    btn.style.color='#fff';
+    btn.style.border='none';
+    btn.style.fontWeight='700';
+    btn.style.boxShadow='0 2px 6px rgba(0,0,0,.15)';
+    if(lblEdit){lblEdit.style.display='none';}
+    if(lblSave){lblSave.style.display='inline-flex';}
+  } else {
+    btn.style.background='var(--bg)';
+    btn.style.color='var(--t2)';
+    btn.style.border='1px solid var(--border)';
+    btn.style.fontWeight='inherit';
+    btn.style.boxShadow='none';
+    if(lblEdit){lblEdit.style.display='inline-flex';}
+    if(lblSave){lblSave.style.display='none';}
   }
 }
+function _qtExitEdit(save){
+  if(save) recalcQt();
+  _qtSetBtnMode(false);
+  document.querySelectorAll('#qbody .qt-qty,#qbody .qt-unit,#qbody .qt-name,#qbody .qt-desc').forEach(i=>{
+    i.setAttribute('readonly','');
+    i.style.background='transparent';i.style.border='none';i.style.borderRadius='0';i.style.padding='2px 0';
+  });
+  document.querySelectorAll('#qbody .qt-edit-only').forEach(c=>c.style.display='none');
+  document.querySelectorAll('th.qt-edit-only').forEach(c=>c.style.display='none');
+  document.getElementById('qt-add-wrap').style.display='none';
+  if(save) toast('Cotización actualizada','green');
+}
+function toggleQtEdit(){
+  const btn=document.getElementById('qt-toggle-btn');
+  const isEditing=btn && btn.dataset.mode==='edit';
+  if(isEditing){ _qtExitEdit(true); btn.dataset.mode=''; return; }
+  // Enter edit mode
+  if(btn) btn.dataset.mode='edit';
+  _qtSetBtnMode(true);
+  document.querySelectorAll('#qbody .qt-qty,#qbody .qt-unit,#qbody .qt-name,#qbody .qt-desc').forEach(i=>{
+    i.removeAttribute('readonly');
+    i.style.background='var(--bg)';i.style.border='1px solid var(--border2)';i.style.borderRadius='5px';i.style.padding='5px 8px';
+  });
+  document.querySelectorAll('#qbody .qt-qty,#qbody .qt-unit').forEach(i=>i.style.padding='5px 6px');
+  document.querySelectorAll('#qbody .qt-edit-only').forEach(c=>c.style.display='');
+  document.querySelectorAll('th.qt-edit-only').forEach(c=>c.style.display='');
+  document.getElementById('qt-add-wrap').style.display='flex';
+}
+function addQtRow(){
+  const inpS='font-family:inherit;font-size:inherit;border:1px solid var(--border);border-radius:4px;background:var(--bg);width:100%;outline:none;color:inherit;padding:2px 6px';
+  const numS='font-family:inherit;font-size:inherit;border:1px solid var(--border);border-radius:4px;background:var(--bg);width:100%;outline:none;text-align:right;color:var(--t3);padding:2px 6px';
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+    <td>
+      <div class="iname"><input class="qt-name" type="text" value="Nuevo ítem" style="${inpS};font-weight:700"></div>
+      <div class="idesc"><input class="qt-desc" type="text" value="Descripción" style="${inpS};font-size:11px;color:var(--t3)"></div>
+    </td>
+    <td class="c"><input class="qt-qty" type="number" value="1" min="1" oninput="recalcQt()" style="${inpS};text-align:center;width:48px"></td>
+    <td class="r"><input class="qt-unit" type="number" value="0" min="0" oninput="recalcQt()" style="${numS};width:100px"></td>
+    <td class="r qt-total">$0</td>
+    <td class="qt-edit-only" style="padding:2px;vertical-align:middle">
+      <button onclick="this.closest('tr').remove();recalcQt()" style="border:none;background:none;cursor:pointer;color:var(--t4);font-size:18px;padding:0 4px;line-height:1;border-radius:4px" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--t4)'" title="Eliminar fila">×</button>
+    </td>`;
+  document.getElementById('qbody').appendChild(tr);
+  tr.querySelector('.qt-name').focus();
+  tr.querySelector('.qt-name').select();
+  recalcQt();
+}
+
 function _buildEmailData(){
   const sn={mant:'Mantenimiento de Clima',inst:'Instalaciones de Clima',ing:'Ingeniería de Proyectos',virt:'Mantenimiento Virtual',ener:'Eficiencia Energética · SGClima',aire:'Calidad del Aire'};
   const sgn2={hotel:'Hotelería y Gastronomía',edu:'Centros de Formación',of:'Oficinas',ret:'Retail',con:'Construcción y Arquitectura',pub:'Mercado Público'};
@@ -5004,15 +5456,25 @@ function _buildEmailData(){
   document.querySelectorAll('#qbody tr').forEach((r,i)=>{
     const cells=r.querySelectorAll('td');
     if(cells.length>=4){
-      const desc=(cells[0].querySelector('.iname')?.textContent||'').replace('✦ IA','').trim();
-      const qty=cells[1].textContent.trim();
+      const nameEl=cells[0].querySelector('.qt-name');
+      const desc=(nameEl ? (nameEl.value||nameEl.textContent) : (cells[0].querySelector('.iname')?.textContent||'')).replace('✦ IA','').trim();
+      const qEl=cells[1].querySelector('.qt-qty');
+      const qty=qEl ? (qEl.value||qEl.textContent).trim() : cells[1].textContent.trim();
       const tot=cells[3].textContent.trim();
       const bg=i%2===0?'#ffffff':'#f8fafb';
       itemsRows+=`<tr style="background:${bg}"><td style="padding:10px 14px;font-size:13px;color:#252530;border-bottom:1px solid #eef0f3">${desc}</td><td style="text-align:center;padding:10px 8px;font-size:13px;color:#737380;border-bottom:1px solid #eef0f3;width:40px">${qty}</td><td style="text-align:right;padding:10px 14px;font-size:13px;font-weight:700;color:#252530;border-bottom:1px solid #eef0f3;white-space:nowrap">${tot}</td></tr>`;
     }
   });
+  // Totales incluidos en itemsRows para evitar truncamiento en EmailJS
+  const sub2=document.getElementById('ts').textContent||'—';
+  const iva2=document.getElementById('ti').textContent||'—';
+  const tot2=document.getElementById('tt').textContent||'—';
+  itemsRows+=`<tr><td colspan="3" style="padding:0"></td></tr>`;
+  itemsRows+=`<tr><td style="padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">Subtotal</td><td></td><td style="text-align:right;padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">${sub2}</td></tr>`;
+  itemsRows+=`<tr><td style="padding:4px 14px;font-size:13px;color:#555555">IVA (19%)</td><td></td><td style="text-align:right;padding:4px 14px;font-size:13px;color:#555555">${iva2}</td></tr>`;
+  itemsRows+=`<tr><td style="padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">TOTAL</td><td></td><td style="text-align:right;padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">${tot2}</td></tr>`;
   return {toEmail,toName,total,sub,iva,tipText,itemsRows,
-    servicio:sn[svc]||svc,segmento:sgn2[seg]||seg};
+    servicio:sn[svc]||svc,segmento:sgn2[seg]||seg,svcKey:svc};
 }
 
 async function go4(){
@@ -5022,25 +5484,36 @@ async function go4(){
   const btn=document.querySelector('#screen3 .btn-primary');
   if(!btn){ toast('Error interno: botón no encontrado','red'); return; }
   btn.disabled=true; btn.textContent='Enviando...';
-  const company=(CONFIG.nameA||'Nex')+(CONFIG.nameB||'Clima');
+  const company=(CONFIG.nameA||'Nex')+(CONFIG.nameB!=null&&CONFIG.nameB!==''?CONFIG.nameB:'');
 
-  // Feature 3: Generate personalized email intro with LLM (if key available)
+  // Feature 3: Mensaje personalizado — LLM si hay API key, template dinámico si no
   let emailIntro = '';
   if (CONFIG.llm && CONFIG.llm.apiKey) {
     btn.textContent = 'Redactando email…';
-    const eSys = `Eres el redactor de emails comerciales de ${company} (${CONFIG.tagline||CONFIG.module||'empresa de servicios'}).
-Escribe un párrafo introductorio breve (3-4 oraciones) y personalizado para acompañar una cotización.
-Tono profesional y cercano. En español. Sin saludo ni firma — solo el párrafo del cuerpo.`;
-    const eUser = `Cliente: ${d.toName}
-Segmento: ${d.segmento}
-Servicio: ${d.servicio}
-Total cotización: ${d.total}
-Insight IA: ${d.tipText}`;
-    emailIntro = await _llmCall(eSys, eUser) || '';
+    const eSys = `Eres el redactor de emails comerciales de ${company}.
+Escribe UN párrafo corto (máximo 200 caracteres) DIRIGIDO AL CLIENTE para acompañar una cotización.
+Motiva a contratar, tono profesional, en español. Sin saludo ni firma.`;
+    const eUser = `Cliente: ${d.toName} | Servicio: ${d.servicio} | Segmento: ${d.segmento}`;
+    const _raw = await _llmCall(eSys, eUser) || '';
+    emailIntro = _raw.substring(0, 220).trim();
     btn.textContent = 'Enviando...';
+  }
+  // Fallback: personalización por template si no hay intro generada por IA
+  if (!emailIntro) {
+    const _svcBenefits = {
+      mant: 'mantener sus equipos de climatización en óptimas condiciones, evitar fallas costosas y prolongar la vida útil de su inversión',
+      inst: 'contar con una instalación certificada que garantiza confort, eficiencia energética y cumplimiento normativo desde el primer día',
+      virt: 'reducir hasta un 60% las visitas presenciales, con monitoreo continuo de sus sistemas 24/7 desde cualquier lugar',
+      ener: 'reducir su consumo energético en clima en un 15% o más, con un retorno de inversión medible en los primeros 18 meses',
+      aire: 'mejorar la calidad del aire interior de sus espacios, protegiendo la salud de sus colaboradores y clientes con tecnología certificada',
+      ing: 'respaldar su proyecto con ingeniería de detalle, certificaciones ASHRAE y supervisión especializada que aseguran resultados a largo plazo',
+    };
+    const _benefit = _svcBenefits[d.svcKey] || `mejorar la eficiencia de sus sistemas de clima`;
+    emailIntro = `Adjuntamos la cotización de ${d.servicio} para ${d.toName||'su empresa'}. Este servicio le permitirá ${_benefit}. Quedamos disponibles para coordinar los próximos pasos.`;
   }
 
   emailjs.send('service_oa9hbgk','template_1hljlkf',{
+    subject:         'Cotización '+qId+' · '+company,
     to_email:        d.toEmail,
     to_name:         d.toName,
     cot_id:          qId,
@@ -5051,23 +5524,26 @@ Insight IA: ${d.tipText}`;
     subtotal:        d.sub,
     iva:             d.iva,
     total:           d.total,
-    tip:             d.tipText,
+    tip:             '',
     email_intro:     emailIntro,
     name:            company,
     company_name:    company,
     company_email:   CONFIG.email    || '',
     company_location:CONFIG.location || '',
-    company_since:   CONFIG.since    || '',
+    company_since:   (CONFIG.since||'').replace(/^Desde\s+/i,''),
     company_tagline: CONFIG.tagline  || '',
-    company_logo:    CONFIG.logoUrl  || '',
-    company_dark:    '#' + (CONFIG.colors.dark || '252530'),
+    company_logo:    CONFIG.logoUrl || '',
+    company_dark:    '#' + (CONFIG.colors.dark  || '252530'),
+    company_teal:    '#' + (CONFIG.colors.teal  || '1e95a6'),
     email:           CONFIG.email    || ''
   }).then(()=>{
     // KPIs dinámicos en screen 4
     const elapsed=_cotStartTime?Math.round((Date.now()-_cotStartTime)/1000):null;
-    const minStr=elapsed?Math.floor(elapsed/60)+' min '+(elapsed%60)+' seg':'8 min';
-    document.querySelectorAll('.cot-kv')[0].textContent=minStr;
-    document.getElementById('kv-conv').textContent=_cotConvProb+'%';
+    const minStr=elapsed?(Math.floor(elapsed/60)+' min '+(elapsed%60)+' seg'):'—';
+    const kvTiempo=document.getElementById('kv-tiempo');
+    const kvConv=document.getElementById('sc4-kv-conv');
+    if(kvTiempo) kvTiempo.textContent=minStr;
+    if(kvConv) kvConv.textContent=_cotConvProb+'%';
     setNav(3,'done'); setNav(4,'active'); cShow(4);
     btn.disabled=false; btn.textContent='Enviar al cliente →';
 
@@ -5093,6 +5569,7 @@ Insight IA: ${d.tipText}`;
         estado: 'Enviada',
         vence: venceStr,
         tip: d.tipText,
+        email: d.toEmail,
         created: Date.now()
       };
       PIPELINE.unshift(newRow);
@@ -5107,8 +5584,203 @@ Insight IA: ${d.tipText}`;
   });
 }
 
-function downloadPDF(){
+// Helper: convierte cualquier imagen a PNG data URI para compatibilidad en jsPDF.
+// - WEBP data URI → PNG (WEBP no es formato PDF nativo)
+// - URL externa (GitHub, CDN) → intenta con CORS; si falla, devuelve la URL
+//   original para que jsPDF la use directamente (funcionaba antes de este helper).
+function _logoToPng(src){
+  return new Promise(res=>{
+    if(!src){ res(null); return; }
+    const img=new Image();
+    img.crossOrigin='anonymous'; // permite toDataURL() en imágenes cross-origin con CORS
+    img.onload=()=>{
+      try{
+        const c=document.createElement('canvas');
+        c.width=img.naturalWidth||200; c.height=img.naturalHeight||80;
+        c.getContext('2d').drawImage(img,0,0);
+        res(c.toDataURL('image/png'));
+      }catch(e){
+        // Canvas tainted (CORS no disponible) — devolver src original
+        // jsPDF puede manejar URLs directamente igual que antes
+        res(src);
+      }
+    };
+    img.onerror=()=>res(null);
+    img.src=src;
+  });
+}
+
+// ══════════════════════════════════════════════════
+//  ACCIONES DE PIPELINE DESDE MODAL
+// ══════════════════════════════════════════════════
+function duplicateRow(id){
+  const r=PIPELINE.find(x=>x.id===id);
+  if(!r){ toast('Cotización no encontrada','warn'); return; }
+  const newId=_genQId();
+  const newRow={...r, id:newId, estado:'Borrador', created:Date.now()};
+  PIPELINE.unshift(newRow);
+  savePipelineToStorage();
+  if(typeof renderAll==='function') renderAll();
+  if(typeof renderTable2==='function') renderTable2();
+  _closeModalPanel();
+  toast('Cotización duplicada como '+newId,'green');
+}
+
+async function downloadModalPDF(id){
+  const r=PIPELINE.find(x=>x.id===id);
+  if(!r){ toast('Cotización no encontrada','warn'); return; }
+  if(!window.jspdf||!window.jspdf.jsPDF){ toast('PDF aún cargando, intenta en un momento','warn'); return; }
+  const _logoPng=await _logoToPng(CONFIG.logoSrc);
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const W=210; const M=18; const CW=W-M*2;
+  let y=0;
+  function _h(hex){ return [parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)]; }
+  const teal=_h(CONFIG.colors.teal); const orange=_h(CONFIG.colors.orange); const dark=_h(CONFIG.colors.dark);
+  const nameA=CONFIG.nameA||'Nex'; const nameB=CONFIG.nameB||'';
+  const companyFull=nameA+nameB;
+  // Header bar
+  pdf.setFillColor(...dark); pdf.rect(0,0,W,28,'F');
+  pdf.setFillColor(...teal); pdf.rect(0,28,W,3,'F');
+  if(_logoPng){
+    const _pdfFmt=_logoPng.startsWith('data:image/png')?'PNG':_logoPng.startsWith('data:image/jp')?'JPEG':'PNG';
+    try{ pdf.addImage(_logoPng,_pdfFmt,M,6,18,14,'','FAST'); }catch(e){
+      pdf.setTextColor(...teal); pdf.setFontSize(18); pdf.setFont('helvetica','bold');
+      pdf.text(nameA,M,18);
+      pdf.setTextColor(...orange); pdf.text(nameB,M+pdf.getTextWidth(nameA),18);
+    }
+    pdf.setTextColor(180,180,200); pdf.setFontSize(9); pdf.setFont('helvetica','normal');
+    pdf.text('Plataforma IA · Cotización Profesional',M+22,18);
+  } else {
+    pdf.setTextColor(...teal); pdf.setFontSize(18); pdf.setFont('helvetica','bold');
+    pdf.text(nameA,M,18);
+    const nw=pdf.getTextWidth(nameA);
+    pdf.setTextColor(...orange); pdf.text(nameB,M+nw,18);
+    pdf.setTextColor(180,180,200); pdf.setFontSize(9); pdf.setFont('helvetica','normal');
+    pdf.text('Plataforma IA · Cotización Profesional',M+nw+pdf.getTextWidth(nameB)+6,18);
+  }
+  y=38;
+  // Quote ID banner
+  pdf.setFillColor(230,246,248); pdf.roundedRect(M,y,CW,18,3,3,'F');
+  pdf.setDrawColor(...teal); pdf.setLineWidth(.6); pdf.line(M,y,M,y+18);
+  pdf.setTextColor(...teal); pdf.setFontSize(14); pdf.setFont('helvetica','bold');
+  pdf.text(r.id,M+5,y+7);
+  pdf.setTextColor(115,115,128); pdf.setFontSize(8); pdf.setFont('helvetica','normal');
+  const _fmtDP=ts=>{if(!ts)return'—';const d=new Date(ts);const mo=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];return String(d.getDate()).padStart(2,'0')+' '+mo[d.getMonth()]+' '+d.getFullYear();};
+  pdf.text(`${r.svc}  ·  ${r.seg}  ·  ${_fmtDP(r.created)}`,M+5,y+14);
+  y+=25;
+  // Client
+  pdf.setTextColor(37,37,48); pdf.setFontSize(11); pdf.setFont('helvetica','bold');
+  pdf.text('Estimado/a '+r.cliente,M,y);
+  if(r.email){ pdf.setFontSize(9); pdf.setFont('helvetica','normal'); pdf.setTextColor(115,115,128); pdf.text(r.email,M,y+6); y+=16; } else { y+=10; }
+  // Details table
+  pdf.setFillColor(240,243,246); pdf.rect(M,y,CW,8,'F');
+  pdf.setTextColor(115,115,128); pdf.setFontSize(8); pdf.setFont('helvetica','bold');
+  pdf.text('DETALLE',M+3,y+5.5); pdf.text('VALOR',M+CW-3,y+5.5,{align:'right'});
+  y+=8;
+  const fields=[['Servicio',r.svc],['Sistema',r.sys],['Segmento',r.seg],['Estado',r.estado],['Vencimiento',r.vence||'—']];
+  fields.forEach((f,i)=>{
+    if(i%2===0){pdf.setFillColor(255,255,255);}else{pdf.setFillColor(248,250,251);}
+    pdf.rect(M,y,CW,9,'F');
+    pdf.setDrawColor(238,240,243); pdf.setLineWidth(.3); pdf.line(M,y+9,M+CW,y+9);
+    pdf.setFont('helvetica','normal'); pdf.setTextColor(115,115,128); pdf.setFontSize(9);
+    pdf.text(f[0],M+3,y+6);
+    pdf.setFont('helvetica','bold'); pdf.setTextColor(37,37,48);
+    pdf.text(String(f[1]),M+CW-3,y+6,{align:'right'});
+    y+=9;
+  });
+  y+=6;
+  // Totals
+  const _ivaPct=CONFIG.cotizacion?.iva??19;
+  const subAmt=Math.round(r.monto/(1+_ivaPct/100));
+  const ivaAmt=r.monto-subAmt;
+  pdf.setDrawColor(221,228,234); pdf.setLineWidth(.4); pdf.line(M,y,M+CW,y); y+=5;
+  pdf.setFont('helvetica','normal'); pdf.setTextColor(115,115,128); pdf.setFontSize(9);
+  pdf.text('Subtotal',M+3,y); pdf.text('$'+subAmt.toLocaleString('es-CL'),M+CW-3,y,{align:'right'}); y+=6;
+  pdf.text('IVA ('+_ivaPct+'%)',M+3,y); pdf.text('$'+ivaAmt.toLocaleString('es-CL'),M+CW-3,y,{align:'right'}); y+=6;
+  pdf.setFillColor(...dark); pdf.roundedRect(M,y,CW,12,2,2,'F');
+  pdf.setTextColor(180,200,210); pdf.setFontSize(9); pdf.setFont('helvetica','normal');
+  pdf.text('TOTAL (IVA incluido)',M+4,y+7.5);
+  pdf.setTextColor(...teal); pdf.setFontSize(13); pdf.setFont('helvetica','bold');
+  pdf.text('$'+r.monto.toLocaleString('es-CL'),M+CW-4,y+8,{align:'right'});
+  y+=18;
+  // AI tip
+  if(r.tip){
+    pdf.setDrawColor(221,228,234); pdf.setLineWidth(.3); pdf.line(M,y,M+CW,y); y+=5;
+    pdf.setFillColor(230,246,248); pdf.roundedRect(M,y,CW,7,2,2,'F');
+    pdf.setTextColor(30,149,166); pdf.setFontSize(7.5); pdf.setFont('helvetica','bold');
+    pdf.text('✦ Insight IA',M+3,y+4.5); y+=8;
+    pdf.setFont('helvetica','normal'); pdf.setTextColor(70,70,90); pdf.setFontSize(8);
+    const tipLines=pdf.splitTextToSize(r.tip,CW-6);
+    pdf.text(tipLines.slice(0,3),M+3,y); y+=tipLines.slice(0,3).length*5+4;
+  }
+  // Conditions + footer
+  pdf.setDrawColor(221,228,234); pdf.setLineWidth(.3); pdf.line(M,y,M+CW,y); y+=6;
+  pdf.setTextColor(115,115,128); pdf.setFontSize(8); pdf.setFont('helvetica','normal');
+  pdf.text('Condiciones: '+(CONFIG.cotizacion?.condiciones||'Validez 30 días · Pago 30 días factura · Ejecución 5 días hábiles'),M,y); y+=5;
+  pdf.text('Generado por el Motor IA '+companyFull+' · '+CONFIG.email,M,y);
+  pdf.setFillColor(...dark); pdf.rect(0,285,W,12,'F');
+  pdf.setTextColor(100,120,140); pdf.setFontSize(8); pdf.setFont('helvetica','normal');
+  pdf.text(companyFull+' · '+(CONFIG.since||''),W/2,291,{align:'center'});
+  pdf.setTextColor(...teal); pdf.text(CONFIG.email||'',W/2,296,{align:'center'});
+  pdf.save(r.id+'-'+companyFull+'.pdf');
+  toast('PDF descargado','green');
+}
+
+function sendModalEmail(id){
+  const r=PIPELINE.find(x=>x.id===id);
+  if(!r){ toast('Cotización no encontrada','warn'); return; }
+  if(!r.email){ toast('Email de contacto no disponible · Solo cotizaciones generadas desde el Cotizador IA tienen email guardado','warn'); return; }
+  const company=(CONFIG.nameA||'Nex')+(CONFIG.nameB||'');
+  const _ivaPct=CONFIG.cotizacion?.iva??19;
+  const subAmt=Math.round(r.monto/(1+_ivaPct/100));
+  const ivaAmt=r.monto-subAmt;
+  const itemsRows=
+    `<tr><td style="padding:10px 14px;font-size:13px;color:#252530;border-bottom:1px solid #eef0f3">${r.svc} — ${r.sys}</td><td style="text-align:center;padding:10px 8px;font-size:13px;color:#737380;border-bottom:1px solid #eef0f3;width:40px">1</td><td style="text-align:right;padding:10px 14px;font-size:13px;font-weight:700;color:#252530;border-bottom:1px solid #eef0f3;white-space:nowrap">$${subAmt.toLocaleString('es-CL')}</td></tr>`+
+    `<tr><td colspan="3" style="padding:0"></td></tr>`+
+    `<tr><td style="padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">Subtotal</td><td></td><td style="text-align:right;padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">$${subAmt.toLocaleString('es-CL')}</td></tr>`+
+    `<tr><td style="padding:4px 14px;font-size:13px;color:#555555">IVA (${_ivaPct}%)</td><td></td><td style="text-align:right;padding:4px 14px;font-size:13px;color:#555555">$${ivaAmt.toLocaleString('es-CL')}</td></tr>`+
+    `<tr><td style="padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">TOTAL</td><td></td><td style="text-align:right;padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">$${r.monto.toLocaleString('es-CL')}</td></tr>`;
+  const btn=document.getElementById('modal-send-btn');
+  const svgSend='<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" style="margin-right:4px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+  if(btn){ btn.disabled=true; btn.textContent='Enviando…'; }
+  emailjs.send('service_oa9hbgk','template_1hljlkf',{
+    subject:'Cotización '+r.id+' · '+company,
+    to_email:r.email,
+    to_name:r.cliente,
+    cot_id:r.id,
+    servicio:r.svc,
+    segmento:r.seg,
+    fecha:new Date().toLocaleDateString('es-CL',{year:'numeric',month:'long',day:'numeric'}),
+    items_rows:itemsRows,
+    subtotal:'$'+subAmt.toLocaleString('es-CL'),
+    iva:'$'+ivaAmt.toLocaleString('es-CL'),
+    total:'$'+r.monto.toLocaleString('es-CL'),
+    tip:'',
+    email_intro:'Adjuntamos el resumen de la cotización '+r.id+' para '+r.cliente+'. El servicio de '+r.svc+' incluye '+r.sys+'. Quedamos disponibles para coordinar los próximos pasos.',
+    name:company,
+    company_name:company,
+    company_email:CONFIG.email||'',
+    company_location:CONFIG.location||'',
+    company_since:(CONFIG.since||'').replace(/^Desde\s+/i,''),
+    company_tagline:CONFIG.tagline||'',
+    company_logo:CONFIG.logoUrl||'',
+    company_dark:'#'+(CONFIG.colors.dark||'252530'),
+    company_teal:'#'+(CONFIG.colors.teal||'1e95a6'),
+    email:CONFIG.email||''
+  }).then(()=>{
+    if(btn){ btn.disabled=false; btn.innerHTML=svgSend+'Enviar al cliente'; }
+    toast('Cotización reenviada a '+r.email,'green');
+  }).catch(err=>{
+    console.error('[sendModalEmail]',err);
+    toast('Error al enviar — verifica el email de contacto','red');
+    if(btn){ btn.disabled=false; btn.innerHTML=svgSend+'Enviar al cliente'; }
+  });
+}
+
+async function downloadPDF(){
   const d=_buildEmailData();
+  const _logoPng=await _logoToPng(CONFIG.logoSrc);
   const {jsPDF}=window.jspdf;
   const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
   const W=210; const M=18; const CW=W-M*2;
@@ -5117,7 +5789,7 @@ function downloadPDF(){
   // Leer colores desde CONFIG
   function _h(hex){ return [parseInt(hex.substr(0,2),16),parseInt(hex.substr(2,2),16),parseInt(hex.substr(4,2),16)]; }
   const teal=_h(CONFIG.colors.teal); const orange=_h(CONFIG.colors.orange); const dark=_h(CONFIG.colors.dark);
-  const nameA=CONFIG.nameA||'Nex'; const nameB=CONFIG.nameB||'Clima';
+  const nameA=CONFIG.nameA||'Nex'; const nameB=CONFIG.nameB||'';
   const companyFull=nameA+nameB;
 
   // Header bar
@@ -5126,11 +5798,10 @@ function downloadPDF(){
   pdf.setFillColor(...teal);
   pdf.rect(0,28,W,3,'F');
 
-  // Logo imagen o texto
-  if(CONFIG.logoSrc){
-    // Detectar tipo real de imagen desde el data URI para evitar error de jsPDF
-    const _imgType=(src=>{const m=src.match(/^data:image\/(\w+)/i);if(!m)return'PNG';const t=m[1].toUpperCase();return(t==='JPEG'||t==='JPG')?'JPEG':(t==='WEBP'?'WEBP':t);} )(CONFIG.logoSrc);
-    try{ pdf.addImage(CONFIG.logoSrc,_imgType,M,6,18,14,'','FAST'); } catch(e){
+  // Logo imagen o texto — convertido a PNG si era WEBP; URL si viene de CDN/GitHub
+  if(_logoPng){
+    const _pdfFmt=_logoPng.startsWith('data:image/png')?'PNG':_logoPng.startsWith('data:image/jp')?'JPEG':'PNG';
+    try{ pdf.addImage(_logoPng,_pdfFmt,M,6,18,14,'','FAST'); } catch(e){
       pdf.setTextColor(...teal); pdf.setFontSize(18); pdf.setFont('helvetica','bold');
       pdf.text(nameA,M,18);
       pdf.setTextColor(...orange); pdf.text(nameB,M+pdf.getTextWidth(nameA),18);
@@ -5183,9 +5854,12 @@ function downloadPDF(){
   document.querySelectorAll('#qbody tr').forEach((r,i)=>{
     const cells=r.querySelectorAll('td');
     if(cells.length<4) return;
-    const desc=(cells[0].querySelector('.iname')?.textContent||'').replace('✦ IA','').trim();
-    const subdesc=(cells[0].querySelector('.idesc')?.textContent||'').trim();
-    const qty=cells[1].textContent.trim();
+    const nameEl=cells[0].querySelector('.qt-name');
+    const descEl=cells[0].querySelector('.qt-desc');
+    const desc=(nameEl?(nameEl.value||nameEl.textContent):(cells[0].querySelector('.iname')?.textContent||'')).replace('✦ IA','').trim();
+    const subdesc=(descEl?(descEl.value||descEl.textContent):(cells[0].querySelector('.idesc')?.textContent||'')).trim();
+    const qEl=cells[1].querySelector('.qt-qty');
+    const qty=(qEl?(qEl.value||qEl.textContent):cells[1].textContent).trim();
     const tot=cells[3].textContent.trim();
     const rowH=subdesc?14:9;
     if(i%2===0){ pdf.setFillColor(255,255,255); } else { pdf.setFillColor(248,250,251); }
@@ -5230,19 +5904,6 @@ function downloadPDF(){
   pdf.text(d.total,M+CW-4,y+8,{align:'right'});
   y+=18;
 
-  // AI tip
-  if(y>245) { pdf.addPage(); y=20; }
-  pdf.setFillColor(253,241,234);
-  pdf.roundedRect(M,y,CW,30,2,2,'F');
-  pdf.setDrawColor(...orange); pdf.setLineWidth(.8);
-  pdf.line(M,y,M,y+30);
-  pdf.setTextColor(...orange); pdf.setFontSize(7.5); pdf.setFont('helvetica','bold');
-  pdf.text('✦ RECOMENDACIÓN IA · '+companyFull.toUpperCase(),M+5,y+6);
-  pdf.setTextColor(37,37,48); pdf.setFontSize(8.5); pdf.setFont('helvetica','normal');
-  const tipLines=pdf.splitTextToSize(d.tipText,CW-10);
-  pdf.text(tipLines.slice(0,3),M+5,y+12);
-  y+=36;
-
   // Conditions
   pdf.setDrawColor(221,228,234); pdf.setLineWidth(.3);
   pdf.line(M,y,M+CW,y); y+=6;
@@ -5263,7 +5924,7 @@ function downloadPDF(){
   toast('PDF descargado','green');
 }
 function back1(){ setNav(3,null); setNav(2,null); setNav(1,'active'); cShow(1); }
-function newQ(){ _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
+function newQ(){ _cotStartTime=Date.now(); _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
 </script>
 <div class="save-confirm-backdrop" id="saveConfirmBackdrop" style="position:fixed;inset:0;z-index:1199;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s" onclick="hideSaveConfirm()"></div>
 <div class="save-confirm" id="saveConfirm">
