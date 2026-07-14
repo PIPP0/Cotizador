@@ -1261,15 +1261,15 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
       <div class="login-sub" id="login-tagline">Plataforma IA · Comercial</div>
     </div>
     <div class="login-body">
-      <div class="login-err" id="login-err">Usuario o contraseña incorrectos</div>
+      <div class="login-err" id="login-err">Usuario no encontrado</div>
       <div class="login-field">
         <label>Usuario</label>
-        <input type="text" id="login-user" autocomplete="username" value="admin" onkeydown="if(event.key==='Enter')doLogin()">
+        <input type="text" id="login-user" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <div class="login-field">
         <label>Contraseña</label>
         <div style="position:relative">
-          <input type="password" id="login-pass" autocomplete="current-password" value="Lisit" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding-right:40px;box-sizing:border-box">
+          <input type="password" id="login-pass" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;padding-right:40px;box-sizing:border-box">
           <button type="button" onclick="(function(){var i=document.getElementById('login-pass');var b=document.getElementById('pass-eye');i.type=i.type==='password'?'text':'password';b.innerHTML=i.type==='password'?'<path d=\'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24\'/><line x1=\'1\' y1=\'1\' x2=\'23\' y2=\'23\'/>':'<path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'/><circle cx=\'12\' cy=\'12\' r=\'3\'/>'})()" id="pass-eye-btn" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:#9590a8;display:flex;align-items:center">
             <svg id="pass-eye" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8'/><circle cx='12' cy='12' r='3'/></svg>
           </button>
