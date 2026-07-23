@@ -3450,7 +3450,7 @@ function saveConfigToStorage() {
     }
     // Guardar en Firebase (sincroniza con todos los dispositivos)
     if (_fbDb) {
-      _fbDb.ref('config').set(slim).catch(e => console.warn('[Firebase] save error:', e));
+      _fbDb.ref('config/' + _CLIENT_ID).set(slim).catch(e => console.warn('[Firebase] save error:', e));
     }
   } catch(e) { console.warn('[CFG] save error:', e); }
 }
@@ -3459,7 +3459,7 @@ window.addEventListener('beforeunload', saveConfigToStorage);
 // Listener en tiempo real — aplica cambios de admin a todos los dispositivos conectados
 function _syncFromFirebase() {
   if (!_fbDb) return;
-  _fbDb.ref('config').on('value', snapshot => {
+  _fbDb.ref('config/' + _CLIENT_ID).on('value', snapshot => {
     const r = snapshot.val();
     if (!r) return;
     ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => { if (r[k] !== undefined) CONFIG[k] = r[k]; });
