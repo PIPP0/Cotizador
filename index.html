@@ -2456,6 +2456,8 @@ function applyConfig() {
   if (_chatWelcome) _chatWelcome.innerHTML = `¡Hola! Soy el asistente IA de <strong>${_co}</strong>. Tengo acceso al pipeline, cotizaciones y configuración. Puedes preguntarme: <em>¿cuál es mi cliente más rentable?</em>, <em>¿qué cotizaciones vencen esta semana?</em>, <em>¿cómo mejorar mi tasa de conversión?</em>`;
   // Actualizar IDs de demo en feed de actividad y alertas usando prefijo de marca actual
   const _ai1=document.getElementById('alert-demo-id'); if(_ai1) _ai1.textContent=_demoId(575);
+  // Re-renderizar pipeline/feed para reflejar el prefijo actual en _displayId()
+  try { if(typeof renderAll==='function') renderAll(); } catch(e){}
 }
 
 // ─── Dynamic renderers ───────────────────────────────────────────────
