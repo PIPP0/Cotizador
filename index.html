@@ -4801,6 +4801,16 @@ window.addEventListener('load',()=>{
       PIPELINE.length = 0;
       _getPipelineDemo().forEach(r => PIPELINE.push(r));
     }
+    // Migrar prefijos de IDs al nombre actual de la empresa
+    const _curPrefix = ((CONFIG.nameA||'COT')+(CONFIG.nameB||'')).replace(/\s+/g,'').substring(0,6).toUpperCase();
+    let _needsMigration = false;
+    PIPELINE.forEach(r => {
+      if (r.id && /^[A-Z]{2,8}-\d+$/.test(r.id) && !r.id.startsWith(_curPrefix + '-')) {
+        r.id = _curPrefix + '-' + r.id.split('-').slice(1).join('-');
+        _needsMigration = true;
+      }
+    });
+    if (_needsMigration) savePipelineToStorage();
   } catch(e){}
 
   try { initFirebase(); } catch(e) { console.warn('[init] firebase:', e); }
