@@ -3777,6 +3777,14 @@ function savePipelineToStorage() {
   }
 }
 
+// Muestra el ID con el prefijo de la empresa actual, sin mutar el dato
+function _displayId(id) {
+  if (!id) return id;
+  if (!/^[A-Z]{2,8}-/.test(id)) return id;
+  const num = id.replace(/^[A-Z]{2,8}-/, '');
+  return _demoId(num);
+}
+
 function _migrateIdPrefix(rows) {
   const prefix = ((CONFIG.nameA||'COT')+(CONFIG.nameB||'')).replace(/\s+/g,'').substring(0,6).toUpperCase();
   let changed = false;
@@ -4008,7 +4016,7 @@ function renderActivityFeed() {
     // Evento de creación
     if (r.created) {
       events.push({ ts: r.created, ic:'fi-t', svg:SVG.activity,
-        main:`Cotización <strong>${r.id}</strong> registrada — ${r.svc}`,
+        main:`Cotización <strong>${_displayId(r.id)}</strong> registrada — ${r.svc}`,
         time:`${_agoStr(r.created)} · ${r.cliente}` });
     }
     // Evento de cambio de estado (si existe lastModified y es posterior a created)
@@ -4016,7 +4024,7 @@ function renderActivityFeed() {
       const icon = r.estado==='Ganada' ? 'fi-gr' : r.estado==='Perdida' ? 'fi-o' : 'fi-t';
       const svg  = r.estado==='Ganada' ? SVG.check : r.estado==='Perdida' ? SVG.warn : SVG.activity;
       events.push({ ts: r.lastModified, ic:icon, svg,
-        main:`<strong>${r.id}</strong> → <strong>${r.estado}</strong>`,
+        main:`<strong>${_displayId(r.id)}</strong> → <strong>${r.estado}</strong>`,
         time:`${_agoStr(r.lastModified)} · ${r.cliente}` });
     }
   });
@@ -4444,7 +4452,7 @@ function renderTableInto(tableId, rows){
       const probClr   = r.estado==='Ganada' ? 'var(--green)' : r.estado==='Perdida' ? 'var(--red)' : probColor(liveProb);
       return `
       <tr onclick="openModal('${r.id}')">
-        <td><span class="cot-id">${r.id}</span></td>
+        <td><span class="cot-id">${_displayId(r.id)}</span></td>
         <td><div class="cot-name">${r.cliente}</div><div class="cot-sub">${r.seg}</div></td>
         <td><div class="cot-name" style="font-size:12px">${r.svc}</div><div class="cot-sub">${r.sys}</div></td>
         <td><div class="amt" style="color:${r.monto>20000000?'var(--orange)':'var(--teal)'}">${fmtMonto(r.monto)}</div></td>
@@ -4514,7 +4522,7 @@ function cycleStatus(id){
   r.lastModified=Date.now();
   savePipelineToStorage();
   renderAll(); renderTable2();
-  toast(`${r.id} → ${r.estado}`,'blue');
+  toast(`${_displayId(r.id)} → ${r.estado}`,'blue');
 }
 function deleteRow(id){
   _confirm(`¿Eliminar la cotización ${id}? Esta acción no se puede deshacer.`, ()=>{
@@ -4540,7 +4548,7 @@ function openModal(id){
   const r=PIPELINE.find(x=>x.id===id);
   if(!r) return;
   _modalId = id;
-  document.getElementById('modal-title').textContent=r.id;
+  document.getElementById('modal-title').textContent=_displayId(r.id);
   document.getElementById('modal-sub').textContent=`${r.cliente} · ${r.svc}`;
   const statusOpts=STATUSES.map(s=>`<option${s===r.estado?' selected':''}>${s}</option>`).join('');
   const _ivaPctM=CONFIG.cotizacion?.iva??19;
