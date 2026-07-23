@@ -2091,6 +2091,13 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 // Capturar referencia al propio script para reconstruir el archivo al descargar
 const _selfScript = document.currentScript;
 // ══════════════════════════════════════════════════
+//  MULTI-TENANT — cliente por URL (?c=nombre)
+// ══════════════════════════════════════════════════
+const _CLIENT_ID    = (new URLSearchParams(window.location.search).get('c') || 'default').toLowerCase().replace(/[^a-z0-9_-]/g,'');
+const _spcKey       = 'spc_'      + _CLIENT_ID;
+const _spcLogoKey   = 'spc_logo_' + _CLIENT_ID;
+
+// ══════════════════════════════════════════════════
 //  CONFIG — personalización SaaS
 // ══════════════════════════════════════════════════
 // @@CONFIG-START
@@ -2196,7 +2203,7 @@ let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 // ─── Restauración INMEDIATA de colores + logo desde localStorage ────
 (function() {
   try {
-    const raw = localStorage.getItem('spc');
+    const raw = localStorage.getItem(_spcKey);
     if (raw) {
       const sv = JSON.parse(raw);
       if (sv.colors) { CONFIG.colors.teal = sv.colors.teal || CONFIG.colors.teal; CONFIG.colors.orange = sv.colors.orange || CONFIG.colors.orange; CONFIG.colors.dark = sv.colors.dark || CONFIG.colors.dark; }
@@ -2211,7 +2218,7 @@ let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
       if (sv.segments) CONFIG.segments = sv.segments;
       if (sv.sidebarServices) CONFIG.sidebarServices = sv.sidebarServices;
     }
-    const logo = localStorage.getItem('spc_logo');
+    const logo = localStorage.getItem(_spcLogoKey);
     if (logo) { CONFIG.logoSrc = logo; applyLogoToDOM(); }
     const t = CONFIG.colors.teal.replace('#','');
     const o = CONFIG.colors.orange.replace('#','');
@@ -3415,8 +3422,8 @@ function initFirebase() {
 
 function saveConfigToStorage() {
   try {
-    if (CONFIG.logoSrc) { localStorage.setItem('spc_logo', CONFIG.logoSrc); }
-    else { localStorage.removeItem('spc_logo'); }
+    if (CONFIG.logoSrc) { localStorage.setItem(_spcLogoKey, CONFIG.logoSrc); }
+    else { localStorage.removeItem(_spcLogoKey); }
     const slim = {
       nameA: CONFIG.nameA, nameB: CONFIG.nameB, module: CONFIG.module,
       tagline: CONFIG.tagline, dashsub: CONFIG.dashsub, email: CONFIG.email,
@@ -3435,7 +3442,7 @@ function saveConfigToStorage() {
       convOverride: CONFIG.convOverride
     };
     try {
-      localStorage.setItem('spc', JSON.stringify(slim));
+      localStorage.setItem(_spcKey,JSON.stringify(slim));
     } catch(qe) {
       if (qe.name === 'QuotaExceededError' || qe.code === 22) {
         toast('Almacenamiento lleno — algunos cambios no se guardaron localmente', 'warn');
@@ -3465,8 +3472,8 @@ function _syncFromFirebase() {
     if (r.clientFields) CONFIG.clientFields = r.clientFields;
     if (r.logoSrc !== undefined) {
       CONFIG.logoSrc = r.logoSrc;
-      if (r.logoSrc) localStorage.setItem('spc_logo', r.logoSrc);
-      else localStorage.removeItem('spc_logo');
+      if (r.logoSrc) localStorage.setItem(_spcLogoKey, r.logoSrc);
+      else localStorage.removeItem(_spcLogoKey);
     }
     if (r.logoUrl !== undefined) CONFIG.logoUrl = r.logoUrl;
     if (r.cotizacion) CONFIG.cotizacion = {...(CONFIG.cotizacion||{}), ...r.cotizacion};
@@ -3476,7 +3483,7 @@ function _syncFromFirebase() {
     if (r.convRef) CONFIG.convRef = {...(CONFIG.convRef||{}), ...r.convRef};
     if (r.convOverride) CONFIG.convOverride = {...(CONFIG.convOverride||{}), ...r.convOverride};
     if (r.convTable && !r.convOverride) CONFIG.convOverride = {...r.convTable};
-    localStorage.setItem('spc', JSON.stringify(r));
+    localStorage.setItem(_spcKey,JSON.stringify(r));
     _applyDynamicColors();
     try { applyConfig(); } catch(e) {}
     try { applyLogoToDOM(); } catch(e) {}
@@ -3486,7 +3493,7 @@ function _syncFromFirebase() {
 
 function loadConfigFromStorage() {
   try {
-    const raw = localStorage.getItem('spc');
+    const raw = localStorage.getItem(_spcKey);
     if (!raw) return false;
     const sv = JSON.parse(raw);
     ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => { if (sv[k] !== undefined) CONFIG[k] = sv[k]; });
@@ -3521,7 +3528,7 @@ function loadConfigFromStorage() {
     // Solo cargar logo guardado si los colores son de este cliente (no legacy)
     const _savedTeal = (sv.colors?.teal||'').toLowerCase().replace('#','');
     const _legacyBrand = _savedTeal === '1e95a6';
-    CONFIG.logoSrc = _legacyBrand ? (DEFAULT_CONFIG.logoSrc||null) : (localStorage.getItem('spc_logo') || null);
+    CONFIG.logoSrc = _legacyBrand ? (DEFAULT_CONFIG.logoSrc||null) : (localStorage.getItem(_spcLogoKey) || null);
     _applyDynamicColors();
     return true;
   } catch(e) { console.warn('[CFG] load error:', e); return false; }
@@ -3595,8 +3602,8 @@ function resetConfig() {
     'Se borrarán todos los cambios de marca, colores, servicios y usuarios. La plataforma volverá a los valores de fábrica.',
     () => {
       CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
-      localStorage.removeItem('spc');
-      localStorage.removeItem('spc_logo');
+      localStorage.removeItem(_spcKey);
+      localStorage.removeItem(_spcLogoKey);
       const el = document.getElementById('_dyn_colors');
       if (el) el.remove();
       applyConfig();
@@ -3756,7 +3763,7 @@ const PIPELINE_DEMO = [
 
 let PIPELINE = [...PIPELINE_DEMO.map(r=>({...r}))];
 
-function _plKey(){ return 'pipeline_'+((CONFIG.nameA||'')+(CONFIG.nameB||'empresa')).toLowerCase().replace(/\s+/g,''); }
+function _plKey(){ return 'pipeline_'+_CLIENT_ID+'_'+((CONFIG.nameA||'')+(CONFIG.nameB||'empresa')).toLowerCase().replace(/\s+/g,''); }
 function savePipelineToStorage() {
   try { localStorage.setItem(_plKey(), JSON.stringify(PIPELINE)); } catch(e){}
   if (_fbDb) {
@@ -6047,7 +6054,7 @@ let _chatOpen = false;
 let _chatHistory = [];
 
 // Clave de localStorage para el historial del chat (por empresa)
-function _chatKey(){ return 'chat_'+((CONFIG.nameA||'')+(CONFIG.nameB||'empresa')).toLowerCase().replace(/\s+/g,''); }
+function _chatKey(){ return 'chat_'+_CLIENT_ID+'_'+((CONFIG.nameA||'')+(CONFIG.nameB||'empresa')).toLowerCase().replace(/\s+/g,''); }
 
 // Guardar historial en localStorage
 function _saveChatHistory(){
