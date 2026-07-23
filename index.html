@@ -3750,7 +3750,8 @@ const STATUS_BADGE = {
 const _D=Date.now(), _DAY=86400000;
 // Los IDs de demo se generan dinámicamente para respetar el prefijo de la marca actual
 function _demoId(n){ return ((CONFIG.nameA||'COT')+(CONFIG.nameB||'')).replace(/\s+/g,'').substring(0,6).toUpperCase()+'-'+n; }
-const PIPELINE_DEMO = [
+function _getPipelineDemo(){
+  return [
   {id:_demoId(582),cliente:'Hotel Plaza Bosque',seg:'Hotelería y Gast.',svc:'Calidad del Aire',sys:'Estación MyInBiot + HEPA H14',monto:18400000,prob:88,estado:'En revisión',vence:'05 jul',tip:'Cliente hotelería con alta demanda calidad aire. Incluir informe normativo Minsal + variables CO₂/HR/PM como diferenciador.',created:_D-5*_DAY},
   {id:_demoId(581),cliente:'INACAP Santiago',seg:'Ctros. Formación',svc:'Mantenimiento de Clima',sys:'12× Daikin Split · SGClima integrado',monto:3200000,prob:81,estado:'Enviada',vence:'28 jul',tip:'Recurrencia histórica 2.3 contratos/año. Proponer contrato anual con 8% descuento para asegurar ingresos recurrentes.',created:_D-7*_DAY},
   {id:_demoId(579),cliente:'CBRE Chile',seg:'Oficinas',svc:'Eficiencia Energética',sys:'SGClima + Cool Automation IoC',monto:42600000,prob:80,estado:'Negociando',vence:'12 jul',tip:'Ahorro estimado 18–24% garantizado por SGClima. Incluir informe ROI 3 años para presentación a directorio.',created:_D-10*_DAY},
@@ -3759,21 +3760,22 @@ const PIPELINE_DEMO = [
   {id:_demoId(573),cliente:'Municipalidad Rancagua',seg:'Mercado Público',svc:'Mantenimiento Virtual',sys:'SGClima + ROBOTBAS RoomControl',monto:12100000,prob:73,estado:'Borrador',vence:'15 jul',tip:'Segmento Mercado Público: destacar eficiencia presupuestaria y cumplimiento normativo. Mantenimiento Virtual reduce visitas en 60%.',created:_D-21*_DAY},
   {id:_demoId(571),cliente:'Castro y Asociados',seg:'Construcción y Arq.',svc:'Instalaciones de Clima',sys:'VRV/VRF Daikin + Paneles Solares',monto:34200000,prob:84,estado:'Ganada',vence:'Cerrada',tip:'Ganada. Proyecto LEED completado. Historial positivo — proponer mantención anual y upsell SGClima en próxima reunión.',created:_D-28*_DAY},
   {id:_demoId(569),cliente:'Mall Costanera',seg:'Retail',svc:'Instalaciones de Clima',sys:'VRV Daikin 48HP × 2',monto:55800000,prob:58,estado:'Perdida',vence:'Cerrada',tip:'Perdida por precio. Revisar estructura de costos en segmento Retail. Considerar propuesta escalonada en próxima licitación.',created:_D-35*_DAY},
-];
+  ];
+}
 
-let PIPELINE = [...PIPELINE_DEMO.map(r=>({...r}))];
+let PIPELINE = _getPipelineDemo();
 
 function _plKey(){ return 'pipeline_'+_CLIENT_ID+'_'+((CONFIG.nameA||'')+(CONFIG.nameB||'empresa')).toLowerCase().replace(/\s+/g,''); }
 function savePipelineToStorage() {
   try { localStorage.setItem(_plKey(), JSON.stringify(PIPELINE)); } catch(e){}
   if (_fbDb) {
-    _fbDb.ref('pipeline').set(PIPELINE).catch(e => console.warn('[Firebase] pipeline save error:', e));
+    _fbDb.ref('pipeline/' + _CLIENT_ID).set(PIPELINE).catch(e => console.warn('[Firebase] pipeline save error:', e));
   }
 }
 
 function _syncPipelineFromFirebase() {
   if (!_fbDb) return;
-  _fbDb.ref('pipeline').on('value', snapshot => {
+  _fbDb.ref('pipeline/' + _CLIENT_ID).on('value', snapshot => {
     const r = snapshot.val();
     if (!r || !Array.isArray(r) || r.length === 0) return;
     PIPELINE.length = 0;
@@ -3788,7 +3790,7 @@ function resetDemoData(){
   _confirm('¿Restablecer los datos de ejemplo? Se perderán los datos importados.', ()=>{
     localStorage.removeItem(_plKey());
     PIPELINE.length = 0;
-    PIPELINE_DEMO.forEach(r => PIPELINE.push({...r}));
+    _getPipelineDemo().forEach(r => PIPELINE.push({...r}));
     savePipelineToStorage();
     renderTable();
     if(typeof renderTable2 === 'function') renderTable2();
@@ -4695,7 +4697,7 @@ function refreshData(){
 
   if(_fbDb){
     // Re-sync pipeline from Firebase then re-render
-    _fbDb.ref('pipeline').once('value').then(snapshot=>{
+    _fbDb.ref('pipeline/' + _CLIENT_ID).once('value').then(snapshot=>{
       try{
         const r=snapshot.val();
         if(r && Array.isArray(r) && r.length>0){
@@ -4785,6 +4787,7 @@ window.addEventListener('load',()=>{
   try { applyConfig(); } catch(e) { console.warn('[init] applyConfig:', e); }
 
   // Restaurar datos guardados localmente (con la clave correcta)
+  // Si no hay datos guardados, regenerar demo con el nombre de empresa correcto
   try {
     const saved = localStorage.getItem(_plKey());
     if(saved){
@@ -4793,6 +4796,10 @@ window.addEventListener('load',()=>{
         PIPELINE.length = 0;
         parsed.forEach(r => PIPELINE.push(r));
       }
+    } else {
+      // Primera vez: regenerar IDs con nameA actual (ya cargado de CONFIG)
+      PIPELINE.length = 0;
+      _getPipelineDemo().forEach(r => PIPELINE.push(r));
     }
   } catch(e){}
 
