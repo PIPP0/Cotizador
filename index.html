@@ -3773,6 +3773,18 @@ function savePipelineToStorage() {
   }
 }
 
+function _migrateIdPrefix(rows) {
+  const prefix = ((CONFIG.nameA||'COT')+(CONFIG.nameB||'')).replace(/\s+/g,'').substring(0,6).toUpperCase();
+  let changed = false;
+  rows.forEach(row => {
+    if (row.id && /^[A-Z]{2,8}-\d+$/.test(row.id) && !row.id.startsWith(prefix + '-')) {
+      row.id = prefix + '-' + row.id.split('-').slice(1).join('-');
+      changed = true;
+    }
+  });
+  return changed;
+}
+
 function _syncPipelineFromFirebase() {
   if (!_fbDb) return;
   _fbDb.ref('pipeline/' + _CLIENT_ID).on('value', snapshot => {
@@ -3780,7 +3792,9 @@ function _syncPipelineFromFirebase() {
     if (!r || !Array.isArray(r) || r.length === 0) return;
     PIPELINE.length = 0;
     r.forEach(row => PIPELINE.push(row));
-    localStorage.setItem(_plKey(), JSON.stringify(PIPELINE));
+    const changed = _migrateIdPrefix(PIPELINE);
+    if (changed) savePipelineToStorage();
+    else localStorage.setItem(_plKey(), JSON.stringify(PIPELINE));
     try { renderAll(); } catch(e) {}
     console.log('[Firebase] pipeline sincronizado (live):', r.length, 'filas');
   }, e => console.warn('[Firebase] pipeline sync error:', e));
@@ -4802,14 +4816,7 @@ window.addEventListener('load',()=>{
       _getPipelineDemo().forEach(r => PIPELINE.push(r));
     }
     // Migrar prefijos de IDs al nombre actual de la empresa
-    const _curPrefix = ((CONFIG.nameA||'COT')+(CONFIG.nameB||'')).replace(/\s+/g,'').substring(0,6).toUpperCase();
-    let _needsMigration = false;
-    PIPELINE.forEach(r => {
-      if (r.id && /^[A-Z]{2,8}-\d+$/.test(r.id) && !r.id.startsWith(_curPrefix + '-')) {
-        r.id = _curPrefix + '-' + r.id.split('-').slice(1).join('-');
-        _needsMigration = true;
-      }
-    });
+    const _needsMigration = _migrateIdPrefix(PIPELINE);
     if (_needsMigration) savePipelineToStorage();
   } catch(e){}
 
