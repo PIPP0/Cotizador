@@ -3583,16 +3583,13 @@ function saveCfgPanel() {
   // Confirmar logo pendiente si el usuario subió/quitó uno
   if (_pendingLogo !== undefined) { CONFIG.logoSrc = _pendingLogo; _pendingLogo = undefined; }
   applyLogoToDOM();
-  // Migrar IDs del pipeline al nuevo prefijo si cambió el nombre de empresa
-  const _idsMigrated = _migrateIdPrefix(PIPELINE);
-  if (_idsMigrated) savePipelineToStorage();
   saveConfigToStorage();
   try {
     applyConfig();
     rebuildSvcList();
     rebuildSegList();
     rebuildSbSvcList();
-    if (_idsMigrated) { try { renderAll(); } catch(e){} }
+    try { renderAll(); } catch(e){}
   } catch(e) {
     console.error('saveCfgPanel render error:', e);
   }
