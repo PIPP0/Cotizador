@@ -5631,7 +5631,7 @@ Motiva a contratar, tono profesional, en español. Sin saludo ni firma.`;
     company_location:CONFIG.location || '',
     company_since:   (CONFIG.since||'').replace(/^Desde\s+/i,''),
     company_tagline: CONFIG.tagline  || '',
-    company_logo:    CONFIG.logoUrl || '',
+    company_logo:    (CONFIG.logoUrl||'').startsWith('data:') ? '' : (CONFIG.logoUrl||''),
     company_dark:    '#' + (CONFIG.colors.dark  || '252530'),
     company_teal:    '#' + (CONFIG.colors.teal  || '1e95a6'),
     email:           CONFIG.email    || ''
@@ -5678,7 +5678,8 @@ Motiva a contratar, tono profesional, en español. Sin saludo ni firma.`;
     } catch(pe){ console.warn('[pipeline] error al guardar cotización:', pe); }
   }).catch(err=>{
     console.error('EmailJS error:',err);
-    toast('Error al enviar. Verifica el email ingresado.','red');
+    const detail = err?.text || err?.message || (typeof err==='string'?err:JSON.stringify(err));
+    toast('Error EmailJS: '+detail,'red');
     btn.disabled=false; btn.textContent='Enviar al cliente →';
   });
 }
@@ -5863,7 +5864,7 @@ function sendModalEmail(id){
     company_location:CONFIG.location||'',
     company_since:(CONFIG.since||'').replace(/^Desde\s+/i,''),
     company_tagline:CONFIG.tagline||'',
-    company_logo:CONFIG.logoUrl||'',
+    company_logo:(CONFIG.logoUrl||'').startsWith('data:') ? '' : (CONFIG.logoUrl||''),
     company_dark:'#'+(CONFIG.colors.dark||'252530'),
     company_teal:'#'+(CONFIG.colors.teal||'1e95a6'),
     email:CONFIG.email||''
@@ -5872,7 +5873,8 @@ function sendModalEmail(id){
     toast('Cotización reenviada a '+r.email,'green');
   }).catch(err=>{
     console.error('[sendModalEmail]',err);
-    toast('Error al enviar — verifica el email de contacto','red');
+    const detailM = err?.text || err?.message || (typeof err==='string'?err:JSON.stringify(err));
+    toast('Error EmailJS: '+detailM,'red');
     if(btn){ btn.disabled=false; btn.innerHTML=svgSend+'Enviar al cliente'; }
   });
 }
