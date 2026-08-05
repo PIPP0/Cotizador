@@ -2,6 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script>
+// Restaurar URL amigable cuando se llega desde ?c=cliente4
+(function(){
+  if(new URLSearchParams(location.search).get('_src')==='cliente4'){
+    history.replaceState(null,'','/Cotizador/?c=cliente4');
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NexEnergy – Licitaciones Energéticas</title>
 <style>

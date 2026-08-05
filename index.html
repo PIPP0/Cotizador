@@ -5,18 +5,7 @@
 <script>
 (function(){
   var p=new URLSearchParams(location.search).get('c');
-  if(p==='cliente4'){
-    // Ocultar todo el body inmediatamente sin navegar (document.open cambia la URL)
-    document.write('<style id="c4hide">body>*{display:none!important}body{margin:0;padding:0;overflow:hidden;background:#0f1117}</style>');
-    document.addEventListener('DOMContentLoaded',function(){
-      var f=document.createElement('iframe');
-      f.src='./concurso.html';
-      f.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:2147483647';
-      document.body.style.cssText='margin:0;padding:0;overflow:hidden';
-      document.body.innerHTML='';
-      document.body.appendChild(f);
-    });
-  }
+  if(p==='cliente4') window.location.replace('./concurso.html?_src=cliente4');
 })();
 </script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
