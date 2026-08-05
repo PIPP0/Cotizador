@@ -2,6 +2,16 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script>
+(function(){
+  var p=new URLSearchParams(location.search).get('c');
+  if(p==='cliente4'){
+    document.open();
+    document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;overflow:hidden}html,body{width:100%;height:100%}iframe{position:fixed;top:0;left:0;width:100%;height:100%;border:none}</style></head><body><iframe src="./concurso.html"></iframe></body></html>');
+    document.close();
+  }
+})();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title id="page-title">Dashboard IA</title>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -992,17 +1002,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 .ce-add-btn:hover{opacity:.85}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script>
-  // Redirect cliente4 → concursos NexEnergy
-  (function(){
-    const p = new URLSearchParams(window.location.search).get('c');
-    if(p === 'cliente4'){
-      document.open();
-      document.write('<style>*{margin:0;padding:0;box-sizing:border-box}html,body,iframe{width:100%;height:100%;border:none;display:block}</style><iframe src="./concurso.html" style="width:100%;height:100%;border:none"></iframe>');
-      document.close();
-    }
-  })();
-</script>
+
 </head>
 <body>
 <!-- SKELETON LOGIN: visible desde el primer pixel, reemplaza al preloader -->
