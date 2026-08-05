@@ -1,0 +1,1982 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NexEnergy – Licitaciones Energéticas</title>
+<style>
+:root{
+  --dark:#252530;--dark2:#1d1d27;--dark3:#323244;
+  --teal:#1a9e5c;--teal2:#147a46;--teal3:#3dbb7a;
+  --orange:#d46e3a;--bg:#f0f3f6;--surface:#fff;
+  --border:#dde4ea;--t1:#252530;--t2:#3d3d4f;--t3:#737380;--t4:#aaaabc;
+  --green:#0fa06a;--red:#d63b3b;--yellow:#e6a817;--blue:#3a7bd5;
+  --sidebar-w:240px;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif;}
+body{background:var(--bg);color:var(--t1);}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,var(--dark2) 0%,var(--dark) 50%,#3a2456 100%);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.login-box{background:var(--surface);border-radius:16px;padding:40px;width:380px;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo .brand{font-size:26px;font-weight:800;color:var(--teal);letter-spacing:-0.5px;}
+.login-logo .sub{font-size:12px;color:var(--t4);margin-top:2px;}
+.login-box h2{font-size:18px;color:var(--t1);margin-bottom:20px;text-align:center;}
+.form-field{margin-bottom:14px;}
+.form-field label{display:block;font-size:12px;font-weight:600;color:var(--t3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+.form-field input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--t1);outline:none;transition:border .2s;}
+.form-field input:focus{border-color:var(--teal);}
+.btn-login{width:100%;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;transition:background .2s;}
+.btn-login:hover{background:var(--teal2);}
+.login-err{color:var(--red);font-size:13px;text-align:center;min-height:18px;margin-top:8px;}
+.quick-access{margin-top:22px;border-top:1px solid var(--border);padding-top:20px;}
+.quick-access-label{font-size:10px;color:var(--t4);text-align:center;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px;font-weight:600;}
+.quick-btns{display:flex;gap:10px;}
+.quick-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:16px 10px 14px;border:1.5px solid var(--border);background:var(--surface);border-radius:12px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden;min-width:0;}
+.quick-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.08);}
+.quick-btn-icon{font-size:28px;line-height:1;}
+.quick-btn-role{font-size:12px;font-weight:800;white-space:nowrap;}
+.quick-btn-desc{font-size:10px;color:var(--t4);font-weight:500;white-space:nowrap;}
+.quick-btn.qb-admin{border-color:rgba(26,158,92,.25);}
+.quick-btn.qb-admin:hover{border-color:var(--teal);background:#f0fdf4;}
+.quick-btn.qb-admin .quick-btn-role{color:var(--teal);}
+.quick-btn.qb-eval{border-color:rgba(230,168,23,.25);}
+.quick-btn.qb-eval:hover{border-color:var(--yellow);background:#fffbf0;}
+.quick-btn.qb-eval .quick-btn-role{color:#b07d00;}
+.quick-btn.qb-post{border-color:rgba(15,160,106,.25);}
+.quick-btn.qb-post:hover{border-color:var(--green);background:#f0faf6;}
+.quick-btn.qb-post .quick-btn-role{color:var(--green);}
+
+/* ── APP SHELL ── */
+#app{display:none;min-height:100vh;}
+#app.visible{display:flex;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar-w);background:var(--dark);min-height:100vh;display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;}
+.sidebar-header{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,.07);}
+.sidebar-brand{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px;}
+.sidebar-brand span{color:var(--teal3);}
+.sidebar-sub{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;}
+.sidebar-role{margin-top:10px;display:inline-block;background:var(--teal);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;}
+.sidebar-role.rol-evaluador{background:var(--orange);}
+.sidebar-role.rol-postulante{background:var(--green);}
+
+.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;color:rgba(255,255,255,.55);font-size:13.5px;font-weight:500;border-left:3px solid transparent;transition:all .2s;}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,.05);}
+.nav-item.active{color:#fff;background:rgba(26,158,92,.15);border-left-color:var(--teal3);}
+.nav-item .icon{font-size:16px;width:20px;text-align:center;}
+
+.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,.07);}
+.user-info{display:flex;align-items:center;gap:10px;}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
+.user-name{font-size:13px;font-weight:600;color:rgba(255,255,255,.85);}
+.user-email{font-size:11px;color:rgba(255,255,255,.35);}
+.btn-logout{margin-top:12px;width:100%;padding:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(255,255,255,.5);font-size:12px;cursor:pointer;transition:all .2s;}
+.btn-logout:hover{background:rgba(214,59,59,.15);border-color:rgba(214,59,59,.3);color:#ff7b7b;}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:17px;font-weight:700;color:var(--t1);}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.badge-notif{background:var(--teal);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;}
+.content{padding:28px;flex:1;}
+
+/* ── STATS CARDS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--accent,var(--teal));}
+.stat-card .stat-label{font-size:11px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.stat-card .stat-val{font-size:34px;font-weight:800;color:var(--t1);margin:6px 0 2px;line-height:1;}
+.stat-card .stat-sub{font-size:12px;color:var(--t4);}
+.stat-card .stat-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:30px;opacity:.1;}
+
+/* ── SECTION CARD ── */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:20px;}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-hdr h3{font-size:15px;font-weight:700;color:var(--t1);}
+.sec-badge{font-size:11px;font-weight:700;background:#f0f3f6;color:var(--t3);padding:3px 8px;border-radius:20px;}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.tbl th{background:#f8f9fb;color:var(--t3);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.4px;padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);}
+.tbl td{padding:11px 12px;border-bottom:1px solid #f0f3f6;color:var(--t2);vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:#fafbfc;}
+
+/* ── BADGES ── */
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.badge-pendiente{background:#fff3e0;color:#e65100;}
+.badge-evaluacion{background:#e3f2fd;color:#1565c0;}
+.badge-evaluado{background:#e8f5e9;color:#2e7d32;}
+.badge-aprobado{background:#e8f5e9;color:#2e7d32;}
+.badge-rechazado{background:#ffebee;color:#c62828;}
+.badge-activo{background:rgba(15,160,106,.12);color:var(--green);}
+.badge-proximo{background:rgba(58,123,213,.12);color:var(--blue);}
+.badge-cerrado{background:#f5f5f5;color:var(--t4);}
+
+/* ── SCORE BAR ── */
+.score-bar-wrap{display:flex;align-items:center;gap:8px;}
+.score-bar{flex:1;height:7px;background:#eef0f6;border-radius:4px;overflow:hidden;}
+.score-bar-fill{height:100%;border-radius:4px;}
+.score-num{font-size:12px;font-weight:700;min-width:32px;text-align:right;}
+
+/* ── DONUT ── */
+.donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+.donut-svg{width:140px;height:140px;flex-shrink:0;}
+.donut-legend{display:flex;flex-direction:column;gap:10px;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:13px;}
+.legend-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+
+/* ── TIMELINE ── */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.tl-item{display:flex;gap:12px;padding:10px 0;position:relative;}
+.tl-item:not(:last-child)::after{content:'';position:absolute;left:15px;top:36px;bottom:-4px;width:1px;background:var(--border);}
+.tl-dot{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;z-index:1;}
+.tl-dot.green{background:var(--green);}
+.tl-dot.orange{background:var(--orange);}
+.tl-dot.blue{background:var(--blue);}
+.tl-body{flex:1;}
+.tl-title{font-size:13px;font-weight:600;color:var(--t1);}
+.tl-desc{font-size:12px;color:var(--t3);margin-top:2px;}
+.tl-time{font-size:11px;color:var(--t4);margin-top:2px;}
+
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+@media(max-width:900px){.two-col{grid-template-columns:1fr;}}
+
+/* ── FORMS ── */
+.field-group{margin-bottom:16px;}
+.field-group label{display:block;font-size:12px;font-weight:700;color:var(--t3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
+.field-group input,.field-group textarea,.field-group select{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--t1);outline:none;transition:border .2s;background:var(--surface);}
+.field-group input:focus,.field-group textarea:focus,.field-group select:focus{border-color:var(--teal);}
+.field-group textarea{resize:vertical;min-height:80px;}
+.btn{padding:10px 18px;border-radius:8px;border:none;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--teal);color:#fff;}
+.btn-primary:hover{background:var(--teal2);}
+.btn-secondary{background:var(--bg);border:1.5px solid var(--border);color:var(--t2);}
+.btn-secondary:hover{border-color:var(--teal);color:var(--teal);}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-ai{background:linear-gradient(135deg,#0a6030,#1a9e5c);color:#fff;}
+.btn-ai:hover{background:linear-gradient(135deg,#064e3b,#147a46);}
+
+/* ── EVAL ── */
+.eval-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden;}
+.eval-card-hdr{background:#f8f9fb;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+.eval-card-hdr h4{font-size:14px;font-weight:700;color:var(--t1);}
+.eval-card-body{padding:18px;}
+.criterion-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.criterion-name{flex:1;font-size:13px;font-weight:500;color:var(--t2);}
+.criterion-input{width:78px;border:1.5px solid var(--border);border-radius:8px;padding:7px 10px;font-size:14px;font-weight:700;color:var(--t1);text-align:center;outline:none;}
+.criterion-input:focus{border-color:var(--teal);}
+.criterion-max{font-size:11px;color:var(--t4);white-space:nowrap;}
+.ai-sug-btn{font-size:11px;color:#15803d;background:#f0fdf4;padding:3px 8px;border-radius:6px;cursor:pointer;border:1px solid #bbf7d0;white-space:nowrap;}
+.ai-sug-btn:hover{background:#dcfce7;}
+
+/* ── AI PANEL ── */
+.ai-panel{background:linear-gradient(135deg,#f5f3ff,#faf0ff);border:1px solid #bbf7d0;border-radius:12px;padding:18px;margin-top:16px;}
+.ai-panel h4{font-size:13px;font-weight:700;color:#15803d;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.ai-result{font-size:13px;color:var(--t2);line-height:1.6;white-space:pre-wrap;}
+
+/* ── STATUS BANNER ── */
+.status-banner{border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;font-size:14px;}
+.status-banner.warn{background:#fff8e1;border:1px solid #ffe082;color:#6d4c00;}
+.status-banner.ok{background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20;}
+.status-banner.info{background:#e3f2fd;border:1px solid #90caf9;color:#1a237e;}
+
+/* ── RANK NUM ── */
+.rank-num{width:28px;height:28px;border-radius:50%;background:var(--teal);color:#fff;font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;}
+.rank-num.gold{background:#f59e0b;}
+.rank-num.silver{background:#9ca3af;}
+.rank-num.bronze{background:#b45309;}
+
+/* ── PROGRESS ── */
+.progress-bar{height:8px;background:#eef0f6;border-radius:4px;overflow:hidden;margin-top:4px;}
+.progress-fill{height:100%;border-radius:4px;background:var(--teal);}
+
+/* ── STEPPER HORIZONTAL ── */
+.stepper{display:flex;align-items:flex-start;gap:0;margin:24px 0 8px;position:relative;}
+.step-item{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;}
+.step-item:not(:last-child)::after{content:'';position:absolute;top:22px;left:calc(50% + 22px);right:calc(-50% + 22px);height:3px;background:var(--border);z-index:0;transition:background .4s;}
+.step-item.done:not(:last-child)::after{background:var(--green);}
+.step-item.active:not(:last-child)::after{background:linear-gradient(to right,var(--teal),var(--border));}
+.step-dot{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;border:3px solid var(--border);background:var(--surface);position:relative;z-index:2;transition:all .3s;}
+.step-item.done .step-dot{background:var(--green);border-color:var(--green);color:#fff;}
+.step-item.active .step-dot{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 0 0 6px rgba(26,158,92,.15);}
+.step-item.pending .step-dot{background:var(--surface);border-color:var(--border);color:var(--t4);}
+.step-label{margin-top:10px;text-align:center;font-size:12px;font-weight:700;color:var(--t3);}
+.step-item.done .step-label{color:var(--green);}
+.step-item.active .step-label{color:var(--teal);}
+.step-sublabel{text-align:center;font-size:11px;color:var(--t4);margin-top:2px;max-width:90px;}
+.step-item.active .step-sublabel{color:var(--t3);}
+
+/* ── POSTULACIÓN STATUS CARD ── */
+.post-status-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px;}
+.post-status-card-hero{padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.post-status-card-info{flex:1;}
+.post-status-card-title{font-size:16px;font-weight:800;color:var(--t1);margin-bottom:3px;}
+.post-status-card-sub{font-size:12px;color:var(--t4);}
+.post-status-card-score{text-align:right;flex-shrink:0;}
+.post-status-card-steps{padding:0 24px 24px;border-top:1px solid var(--border);}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border-radius:14px;width:620px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.35);}
+.modal-hdr{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:1;}
+.modal-hdr h3{font-size:16px;font-weight:700;}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--t4);line-height:1;padding:4px;}
+.modal-close:hover{color:var(--t1);}
+.modal-body{padding:24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:var(--surface);}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:48px 24px;color:var(--t4);}
+.empty-state .icon{font-size:40px;margin-bottom:12px;}
+.empty-state p{font-size:14px;}
+
+/* ── ALERT ── */
+.alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:14px;display:flex;align-items:flex-start;gap:8px;line-height:1.4;}
+.alert-warn{background:#fff8e1;border:1px solid #ffe082;color:#6d4c00;}
+.alert-info{background:#e3f2fd;border:1px solid #90caf9;color:#1a237e;}
+.alert-success{background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20;}
+
+/* ── CONFIG ── */
+.config-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:16px;}
+.config-section h4{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.range-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.range-row label{flex:1;font-size:13px;color:var(--t2);}
+.range-row input[type=range]{flex:2;accent-color:var(--teal);}
+.range-val{font-weight:700;color:var(--teal);min-width:30px;text-align:right;font-size:14px;}
+
+/* ── CHIP ── */
+.chip{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid;}
+.chip-purple{border-color:#bbf7d0;background:#f0fdf4;color:#15803d;}
+
+/* ── CONCURSO CARDS GRID ── */
+.concurso-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-top:4px;}
+.conc-card{background:var(--surface);border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column;}
+.conc-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.1);}
+.conc-card-hero{height:150px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.conc-card-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.05),rgba(0,0,0,.35));}
+.conc-card-hero-icon{font-size:64px;line-height:1;position:relative;z-index:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));}
+.conc-card-status{position:absolute;top:12px;right:12px;z-index:2;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.3px;}
+.conc-card-status.activo{background:rgba(15,160,106,.9);color:#fff;}
+.conc-card-status.cerrado{background:rgba(0,0,0,.5);color:rgba(255,255,255,.8);}
+.conc-card-status.proximo{background:rgba(58,123,213,.9);color:#fff;}
+.conc-card-cat{position:absolute;top:12px;left:12px;z-index:2;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;letter-spacing:.3px;backdrop-filter:blur(4px);}
+.conc-card-ya{position:absolute;bottom:10px;left:12px;z-index:2;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(15,160,106,.95);color:#fff;}
+.conc-card-body{padding:18px;flex:1;display:flex;flex-direction:column;}
+.conc-card-title{font-size:15px;font-weight:800;color:var(--t1);line-height:1.3;margin-bottom:6px;}
+.conc-card-desc{font-size:12px;color:var(--t3);line-height:1.5;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.conc-card-stats{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+.conc-stat{display:flex;flex-direction:column;gap:1px;}
+.conc-stat-label{font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.4px;}
+.conc-stat-val{font-size:13px;font-weight:700;color:var(--t1);}
+.conc-card-footer{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--border);padding-top:14px;}
+.conc-card-posts{font-size:12px;color:var(--t4);}
+.btn-postular{padding:9px 20px;border-radius:8px;background:var(--teal);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn-postular:hover{background:var(--teal2);transform:scale(1.02);}
+.btn-postular:disabled{background:#e0e0e0;color:#aaa;cursor:not-allowed;transform:none;}
+.btn-postular.ya-postulado{background:#e8f5e9;color:var(--green);border:1.5px solid #a5d6a7;}
+.btn-postular.ya-postulado:hover{background:#d4edda;transform:none;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px;}
+
+/* ── FILTER CHIPS ── */
+.filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.filter-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--t3);font-size:13px;font-weight:600;cursor:pointer;transition:all .18s;white-space:nowrap;user-select:none;}
+.filter-chip:hover{border-color:var(--teal);color:var(--teal);background:#f0fdf4;}
+.filter-chip.active{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 2px 8px rgba(26,158,92,.25);}
+.filter-chip .chip-count{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.25);font-size:11px;font-weight:800;}
+.filter-chip:not(.active) .chip-count{background:var(--bg);color:var(--t3);}
+.filter-chip.active .chip-count{background:rgba(255,255,255,.28);color:#fff;}
+
+/* ── EVAL PEND CARDS ── */
+.ep-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:18px;}
+.ep-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s;}
+.ep-card:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,0,0,.09);}
+.ep-card-accent{height:5px;}
+.ep-card-body{padding:20px;flex:1;display:flex;flex-direction:column;gap:12px;}
+.ep-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.ep-card-title{font-size:16px;font-weight:800;color:var(--t1);line-height:1.3;}
+.ep-card-budget{flex-shrink:0;text-align:right;}
+.ep-card-budget-val{font-size:18px;font-weight:800;color:var(--teal);}
+.ep-card-budget-lbl{font-size:10px;color:var(--t4);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+.ep-card-concurso{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--t3);background:var(--bg);padding:4px 10px;border-radius:20px;width:fit-content;}
+.ep-card-desc{font-size:13px;color:var(--t2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.ep-card-pills{display:flex;gap:8px;flex-wrap:wrap;}
+.ep-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--t2);background:#f4f6f9;border:1px solid var(--border);padding:5px 10px;border-radius:8px;font-weight:500;}
+.ep-card-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafbfc;}
+.ep-card-date{font-size:11px;color:var(--t4);}
+.btn-eval{padding:10px 22px;border-radius:10px;background:var(--teal);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.btn-eval:hover{background:var(--teal2);transform:scale(1.02);}
+
+/* ── MIS EVAL CARDS ── */
+.me-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;}
+.me-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:box-shadow .2s;}
+.me-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.08);}
+.me-card-top{padding:18px 20px 14px;}
+.me-card-title{font-size:14px;font-weight:800;color:var(--t1);margin-bottom:6px;line-height:1.3;}
+.me-card-score-row{display:flex;align-items:center;gap:12px;}
+.me-score-circle{width:52px;height:52px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border:3px solid;}
+.me-score-num{font-size:17px;font-weight:900;line-height:1;}
+.me-score-denom{font-size:9px;opacity:.6;font-weight:600;}
+.me-card-comment{font-size:12px;color:var(--t3);line-height:1.5;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.me-card-footer{padding:10px 20px;background:#fafbfc;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.me-card-date{font-size:11px;color:var(--t4);}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="brand">Nex<span>Energy</span></div>
+      <div class="sub">Plataforma de Licitaciones Energéticas · NexEnergy</div>
+    </div>
+    <h2>Iniciar Sesión</h2>
+    <div class="form-field">
+      <label>Email</label>
+      <input type="email" id="lg-email" placeholder="usuario@dominio.cl">
+    </div>
+    <div class="form-field">
+      <label>Contraseña</label>
+      <input type="password" id="lg-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Ingresar</button>
+    <div class="login-err" id="lg-err"></div>
+    <div class="quick-access">
+      <div class="quick-access-label">Acceso rápido · contraseña: chile</div>
+      <div class="quick-btns">
+        <button class="quick-btn qb-admin" onclick="demoLogin('admin')">
+          <span class="quick-btn-icon">👑</span>
+          <span class="quick-btn-role">Admin</span>
+          <span class="quick-btn-desc">Gestión total</span>
+        </button>
+        <button class="quick-btn qb-eval" onclick="demoLogin('evaluador')">
+          <span class="quick-btn-icon">⚖️</span>
+          <span class="quick-btn-role">Evaluador</span>
+          <span class="quick-btn-desc">Evaluar proyectos</span>
+        </button>
+        <button class="quick-btn qb-post" onclick="demoLogin('postulante')">
+          <span class="quick-btn-icon">🏆</span>
+          <span class="quick-btn-role">Concursante</span>
+          <span class="quick-btn-desc">Mis postulaciones</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP ═══════════════ -->
+<div id="app">
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">Com<span>Cursos</span></div>
+      <div class="sidebar-sub">Concursos Públicos · cliente4</div>
+      <div class="sidebar-role" id="sb-role-badge">–</div>
+    </div>
+    <div class="sidebar-nav" id="sidebar-nav"></div>
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="sb-avatar">U</div>
+        <div>
+          <div class="user-name" id="sb-name">–</div>
+          <div class="user-email" id="sb-email">–</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">↩ Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-right">
+        <span style="font-size:12px;color:var(--t4)" id="topbar-date"></span>
+      </div>
+    </div>
+    <div class="content" id="main-content"></div>
+  </main>
+</div>
+
+<!-- ═══ MODAL: DETALLE ═══ -->
+<div class="modal-overlay" id="modal-detalle">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3 id="modal-det-title">Detalle</h3>
+      <button class="modal-close" onclick="closeModal('modal-detalle')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-det-body"></div>
+    <div class="modal-footer" id="modal-det-footer"></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: EVALUACIÓN ═══ -->
+<div class="modal-overlay" id="modal-eval">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3>Evaluar Postulación</h3>
+      <button class="modal-close" onclick="closeModal('modal-eval')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-eval-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-eval')">Cancelar</button>
+      <button class="btn btn-ai btn-sm" onclick="pedirSugerenciaIA()">✨ Sugerir con IA</button>
+      <button class="btn btn-primary btn-sm" onclick="guardarEvaluacion()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: IA RANKING ═══ -->
+<div class="modal-overlay" id="modal-ia-rank">
+  <div class="modal" style="width:700px">
+    <div class="modal-hdr">
+      <h3>✨ Análisis IA – Ranking de Proyectos</h3>
+      <button class="modal-close" onclick="closeModal('modal-ia-rank')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-ia-body">
+      <div style="color:#15803d;font-style:italic;font-size:13px">Analizando proyectos…</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-ia-rank')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  FIREBASE CONFIG
+// ══════════════════════════════════════
+const FB_CFG={
+  apiKey:"AIzaSyDemo",
+  databaseURL:"https://lisit-cotizador-default-rtdb.firebaseio.com",
+  projectId:"lisit-cotizador"
+};
+const DB_PATH="nexenergy_conc";
+
+// ══════════════════════════════════════
+//  DEMO SESSIONS
+// ══════════════════════════════════════
+const DEMO={
+  admin:     {uid:'demo_admin', email:'admin@nexenergy.io',       nombre:'Administrador',    org:'NexEnergy', rol:'admin',      pass:'chile'},
+  evaluador: {uid:'demo_eval',  email:'evaluador@nexenergy.io',   nombre:'Ing. Carlos Rojas',org:'NexEnergy', rol:'evaluador',  pass:'chile'},
+  postulante:{uid:'demo_post',  email:'contacto@energysol.cl',   nombre:'EnergySol SpA',    org:'EnergySol', rol:'postulante', pass:'chile'}
+};
+
+// ══════════════════════════════════════
+//  SEED DATA
+// ══════════════════════════════════════
+const SEED_CONCS={
+  "conc001":{
+    id:"conc001",titulo:"Licitación IoT Monitoreo Energético – Hospitales",
+    descripcion:"NexEnergy busca proveedores de sistemas IoT para monitoreo en tiempo real de consumos energéticos (electricidad, gas, agua) en establecimientos hospitalarios de la red pública. Se requiere plataforma con dashboard, alertas y reportes automáticos mensuales.",
+    categoria:"Monitoreo y Control",monto_max:55000000,
+    fecha_apertura:"2026-07-01",fecha_cierre:"2026-08-20",estado:"activo",
+    requisitos:"Empresa con al menos 3 años en proyectos IoT energéticos. Certificación en instalaciones de uso médico. Soporte técnico 24/7 garantizado contractualmente.",
+    criterios:[{nombre:"Ahorro energético proyectado",peso:30},{nombre:"Innovación tecnológica",peso:25},{nombre:"Experiencia del equipo",peso:25},{nombre:"Viabilidad e implementación",peso:20}],
+    creado_en:Date.now()-30*864e5
+  },
+  "conc002":{
+    id:"conc002",titulo:"Fondo Energías Renovables Solar 2026",
+    descripcion:"Licitación para diseño, suministro e instalación de sistemas fotovoltaicos de autoconsumo en instalaciones del sector público y privado. NexEnergy actúa como integrador y busca socios tecnológicos con experiencia en instalaciones de 50kWp o más.",
+    categoria:"Energías Renovables",monto_max:80000000,
+    fecha_apertura:"2026-06-01",fecha_cierre:"2026-09-15",estado:"activo",
+    requisitos:"Empresa instaladora certificada SEC. Experiencia mínima en 5 proyectos fotovoltaicos industriales. Garantía de producción mínima garantizada por 5 años.",
+    criterios:[{nombre:"Ahorro energético proyectado",peso:30},{nombre:"Innovación tecnológica",peso:25},{nombre:"Experiencia del equipo",peso:25},{nombre:"Viabilidad e implementación",peso:20}],
+    creado_en:Date.now()-45*864e5
+  },
+  "conc003":{
+    id:"conc003",titulo:"Control y Gestión HVAC – Educación Municipal",
+    descripcion:"Proyecto de control centralizado y optimización de sistemas HVAC en liceos municipales de la Región Metropolitana y Región del Maule. Incluye instalación de controladores inteligentes, integración con BMS existente y capacitación al personal técnico municipal.",
+    categoria:"Control y Gestión de Equipos",monto_max:42000000,
+    fecha_apertura:"2026-05-01",fecha_cierre:"2026-07-15",estado:"cerrado",
+    requisitos:"Ingeniería en climatización certificada. Experiencia en proyectos educacionales municipales. Protocolo de instalación fuera de horario lectivo obligatorio.",
+    criterios:[{nombre:"Ahorro energético proyectado",peso:30},{nombre:"Innovación tecnológica",peso:25},{nombre:"Experiencia del equipo",peso:25},{nombre:"Viabilidad e implementación",peso:20}],
+    creado_en:Date.now()-60*864e5
+  },
+  "conc004":{
+    id:"conc004",titulo:"Reporting Energético Edificios Públicos – MOP",
+    descripcion:"Implementación de plataforma de reporting energético para 45 edificios del Ministerio de Obras Públicas. El sistema debe generar informes automáticos bajo estándar ISO 50001, con medición de indicadores de desempeño energético y proyecciones de ahorro.",
+    categoria:"Reporting",monto_max:35000000,
+    fecha_apertura:"2026-06-15",fecha_cierre:"2026-09-01",estado:"activo",
+    requisitos:"Plataforma compatible con estándar ISO 50001. Experiencia en proyectos con entidades del Estado. Capacidad de integración con sistemas ERP gubernamentales.",
+    criterios:[{nombre:"Ahorro energético proyectado",peso:30},{nombre:"Innovación tecnológica",peso:25},{nombre:"Experiencia del equipo",peso:25},{nombre:"Viabilidad e implementación",peso:20}],
+    creado_en:Date.now()-40*864e5
+  },
+  "conc005":{
+    id:"conc005",titulo:"Eficiencia Energética Hotelería – SERNATUR",
+    descripcion:"Programa de eficiencia energética para cadenas hoteleras en zonas turísticas prioritarias (Patagonia, Norte Grande, Zona Central). NexEnergy busca socios para diagnóstico, implementación de medidas de eficiencia y certificación de ahorros.",
+    categoria:"Eficiencia Energética",monto_max:28000000,
+    fecha_apertura:"2026-07-15",fecha_cierre:"2026-10-01",estado:"activo",
+    requisitos:"Experiencia en auditorías energéticas hoteleras. Acreditación como Auditor Energético ante el Ministerio de Energía. Portfolio de al menos 3 proyectos hoteleros.",
+    criterios:[{nombre:"Ahorro energético proyectado",peso:30},{nombre:"Innovación tecnológica",peso:25},{nombre:"Experiencia del equipo",peso:25},{nombre:"Viabilidad e implementación",peso:20}],
+    creado_en:Date.now()-20*864e5
+  },
+  "conc006":{
+    id:"conc006",titulo:"Plataforma Inteligencia Energética – Retail",
+    descripcion:"Desarrollo de solución de inteligencia energética para cadenas de retail con múltiples sucursales. Se busca plataforma centralizada con análisis predictivo de consumos, detección de anomalías y recomendaciones automáticas de optimización.",
+    categoria:"Monitoreo y Control",monto_max:65000000,
+    fecha_apertura:"2026-09-01",fecha_cierre:"2026-11-30",estado:"próximo",
+    requisitos:"Plataforma probada en retail con mínimo 10 sucursales. Capacidad de integración con sistemas POS y SCADA. API abierta documentada para integraciones futuras.",
+    criterios:[{nombre:"Ahorro energético proyectado",peso:30},{nombre:"Innovación tecnológica",peso:25},{nombre:"Experiencia del equipo",peso:25},{nombre:"Viabilidad e implementación",peso:20}],
+    creado_en:Date.now()-10*864e5
+  },
+  "conc007":{
+    id:"conc007",titulo:"Monitoreo Energético Industrial – Minería y Construcción",
+    descripcion:"Sistema de monitoreo energético para faenas mineras y proyectos de construcción de gran envergadura. Medición de consumos en puntos críticos, generación diésel, consumo de agua industrial y emisiones. Tablero de control ejecutivo en tiempo real.",
+    categoria:"Monitoreo y Control",monto_max:90000000,
+    fecha_apertura:"2026-03-01",fecha_cierre:"2026-06-30",estado:"cerrado",
+    requisitos:"Experiencia certificada en minería o construcción pesada. Equipos con clasificación Ex para zonas ATEX. Soporte en terreno con tiempo de respuesta máximo 4 horas.",
+    criterios:[{nombre:"Ahorro energético proyectado",peso:30},{nombre:"Innovación tecnológica",peso:25},{nombre:"Experiencia del equipo",peso:25},{nombre:"Viabilidad e implementación",peso:20}],
+    creado_en:Date.now()-90*864e5
+  }
+};
+
+const SEED_POSTS={
+  // ── 5 EVALUADAS ───────────────────────────────────────────────
+  "post001":{
+    id:"post001",concurso_id:"conc001",
+    postulante_uid:"uid_e1",postulante_nombre:"TechSense IoT SpA",postulante_email:"contacto@techsense.cl",postulante_org:"TechSense IoT SpA",
+    titulo:"Sistema IoT Monitoreo Consumos Hospital del Norte",
+    descripcion:"Plataforma IoT de monitoreo energético en tiempo real para el Hospital del Norte de Antofagasta. Red de 120 nodos de medición distribuidos en 8 edificaciones. Dashboard ejecutivo con alertas automáticas y reportes ISO 50001 mensuales. Reducción estimada del 22% en consumo eléctrico.",
+    presupuesto:52000000,equipo:"3 ingenieros eléctricos, 2 técnicos IoT, 1 especialista salud, 1 desarrolladora BI",experiencia:"6 años en proyectos IoT hospitalarios. Contratos activos con Clínica Las Condes y Hospital San Borja.",
+    estado:"evaluado",puntaje_total:91,enviado_en:Date.now()-22*864e5,
+    evaluaciones:{"demo_eval":{uid:"demo_eval",puntajes:{c0:28,c1:23,c2:22,c3:18},comentario:"Solución robusta con validación clínica real. Alto ahorro proyectado y equipo con track record comprobado en sector hospitalario.",total:91,fecha:Date.now()-6*864e5}}
+  },
+  "post002":{
+    id:"post002",concurso_id:"conc002",
+    postulante_uid:"uid_e2",postulante_nombre:"SolarPro Instalaciones",postulante_email:"info@solarpro.cl",postulante_org:"SolarPro Instalaciones",
+    titulo:"Plataforma Solar 180kWp con Almacenamiento BESS",
+    descripcion:"Instalación de sistema fotovoltaico de 180kWp con almacenamiento en baterías LiFePO4 de 200kWh para empresa manufacturera en la RM. Sistema de gestión energética inteligente que optimiza el autoconsumo y reduce cargos de potencia en un 35%.",
+    presupuesto:74000000,equipo:"2 ingenieros SEC, 4 técnicos certificados, 1 especialista BESS, 1 gestor de proyecto",experiencia:"8 años en instalaciones fotovoltaicas. 23 proyectos industriales sobre 50kWp. Premio ACESOL 2025.",
+    estado:"evaluado",puntaje_total:87,enviado_en:Date.now()-20*864e5,
+    evaluaciones:{"demo_eval":{uid:"demo_eval",puntajes:{c0:26,c1:22,c2:21,c3:18},comentario:"Propuesta técnica sólida con tecnología BESS diferenciadora. Equipo certificado y experiencia industrial comprobada.",total:87,fecha:Date.now()-5*864e5}}
+  },
+  "post003":{
+    id:"post003",concurso_id:"conc003",
+    postulante_uid:"uid_e3",postulante_nombre:"ClimaControl Ingeniería",postulante_email:"info@climacontrol.cl",postulante_org:"ClimaControl Ingeniería",
+    titulo:"Control Centralizado HVAC 14 Liceos Municipales",
+    descripcion:"Implementación de sistema BMS centralizado para control y monitoreo de equipos HVAC en 14 liceos municipales de Santiago. Controladores inteligentes Siemens Desigo CC, integración con curvas de ocupación escolar y optimización automática de setpoints. Ahorro proyectado 28% en climatización.",
+    presupuesto:38000000,equipo:"2 ingenieros en climatización, 3 técnicos BMS, 1 especialista Siemens, 1 coordinador municipal",experiencia:"7 años en proyectos BMS educacionales. Contratos activos con SLEP Santiago Poniente y SLEP Barrancas.",
+    estado:"evaluado",puntaje_total:94,enviado_en:Date.now()-35*864e5,
+    evaluaciones:{"uid_eval2":{uid:"uid_eval2",puntajes:{c0:29,c1:24,c2:23,c3:18},comentario:"Propuesta extraordinaria. Mayor ahorro proyectado del concurso. Equipo con experiencia directa en liceos municipales.",total:94,fecha:Date.now()-12*864e5}}
+  },
+  "post004":{
+    id:"post004",concurso_id:"conc004",
+    postulante_uid:"uid_e4",postulante_nombre:"EnerData Analytics SpA",postulante_email:"hola@enerdata.cl",postulante_org:"EnerData Analytics SpA",
+    titulo:"Dashboard Reporting ISO 50001 para MOP",
+    descripcion:"Plataforma de reporting energético compatible con ISO 50001 para 45 edificios del Ministerio de Obras Públicas. Integración con medidores inteligentes existentes, generación automática de informes ejecutivos, cálculo de indicadores de desempeño energético (IDE) y proyecciones de ahorro basadas en machine learning.",
+    presupuesto:32000000,equipo:"2 data scientists, 1 ingeniero energético ISO 50001, 2 desarrolladores, 1 consultor MOP",experiencia:"5 años en reporting energético sector público. Certificación ISO 50001 Lead Auditor. Contrato activo con MINVU.",
+    estado:"evaluado",puntaje_total:88,enviado_en:Date.now()-28*864e5,
+    evaluaciones:{"demo_eval":{uid:"demo_eval",puntajes:{c0:27,c1:22,c2:21,c3:18},comentario:"Plataforma madura con experiencia comprobada en sector público. La integración ML para proyecciones es un diferenciador clave.",total:88,fecha:Date.now()-9*864e5}}
+  },
+  "post005":{
+    id:"post005",concurso_id:"conc005",
+    postulante_uid:"uid_e5",postulante_nombre:"GreenStay Consultores",postulante_email:"equipo@greenstay.cl",postulante_org:"GreenStay Consultores",
+    titulo:"Eficiencia Energética Hotel Patagonia Premium",
+    descripcion:"Diagnóstico energético completo e implementación de medidas de eficiencia en 3 hoteles boutique de la Patagonia chilena. Reemplazo de climatización, iluminación LED inteligente, recuperación de calor en cocinas y sistema de monitoreo en tiempo real. Ahorro proyectado de 31% en consumo total.",
+    presupuesto:25000000,equipo:"1 auditor energético MINEN, 2 ingenieros climatización, 1 arquitecto sustentable, 1 coordinadora SERNATUR",experiencia:"4 años en eficiencia energética hotelera. 8 hoteles intervenidos. Certificación Green Globe para 3 establecimientos.",
+    estado:"evaluado",puntaje_total:83,enviado_en:Date.now()-18*864e5,
+    evaluaciones:{"uid_eval2":{uid:"uid_eval2",puntajes:{c0:25,c1:21,c2:20,c3:17},comentario:"Propuesta bien estructurada con impacto ambiental real. Certificación Green Globe es un diferenciador valioso para el segmento.",total:83,fecha:Date.now()-4*864e5}}
+  },
+  // ── 3 EN EVALUACIÓN ────────────────────────────────────────────
+  "post006":{
+    id:"post006",concurso_id:"conc001",
+    postulante_uid:"uid_e6",postulante_nombre:"SmartGrid Tecnologías",postulante_email:"info@smartgrid.cl",postulante_org:"SmartGrid Tecnologías",
+    titulo:"Red IoT Monitoreo Energético Hospital Regional",
+    descripcion:"Sistema de monitoreo energético basado en protocolo Modbus TCP/IP y MQTT para Hospital Regional de Rancagua. 85 puntos de medición con pasarela IoT redundante, dashboard en tiempo real y sistema de alertas por correo y WhatsApp. Integración con sistema de mantención hospitalaria.",
+    presupuesto:48000000,equipo:"2 ingenieros eléctricos, 3 técnicos IoT, 1 especialista protocolos industriales, 1 dev",experiencia:"5 años en automatización industrial y hospitalaria. Contratos en Hospital de Talca y Clínica Bíobío.",
+    estado:"en_evaluacion",puntaje_total:null,enviado_en:Date.now()-12*864e5,evaluaciones:{}
+  },
+  "post007":{
+    id:"post007",concurso_id:"conc002",
+    postulante_uid:"uid_e7",postulante_nombre:"SunTech Energía SpA",postulante_email:"info@suntech.cl",postulante_org:"SunTech Energía SpA",
+    titulo:"Sistema Fotovoltaico 250kWp con Seguidor Solar",
+    descripcion:"Instalación de planta fotovoltaica de 250kWp con seguidores de dos ejes para maximizar captación solar en zona norte. Incluye sistema de almacenamiento BESS 300kWh, inversor de red con inyección a baja tensión y plataforma de monitoreo en tiempo real con garantía de producción.",
+    presupuesto:78000000,equipo:"3 ingenieros SEC, 5 técnicos certificados, 1 especialista SCADA, 1 coordinador EPC",experiencia:"9 años en proyectos fotovoltaicos. 31 instalaciones. Mayor instalador certificado Tier 1 en Coquimbo y Atacama.",
+    estado:"en_evaluacion",puntaje_total:null,enviado_en:Date.now()-8*864e5,evaluaciones:{}
+  },
+  "post008":{
+    id:"post008",concurso_id:"conc004",
+    postulante_uid:"uid_e8",postulante_nombre:"EnviroReport SpA",postulante_email:"ventas@enviroreport.cl",postulante_org:"EnviroReport SpA",
+    titulo:"Plataforma Reporting Energético Multi-sede",
+    descripcion:"Sistema de reporting energético cloud para organizaciones con múltiples sedes. Conectores nativos para medidores Schneider, ABB y Siemens. Generación automática de reportes ISO 50001, ENERGIE y huella de carbono Scope 2. Dashboard ejecutivo con semáforo de desempeño por sede.",
+    presupuesto:29000000,equipo:"2 desarrolladores cloud, 1 ingeniero energético, 1 data analyst, 1 especialista normativa",experiencia:"4 años en soluciones SaaS para gestión energética. 18 clientes corporativos activos.",
+    estado:"en_evaluacion",puntaje_total:null,enviado_en:Date.now()-10*864e5,evaluaciones:{}
+  },
+  // ── 2 POSTULACIONES DEMO ───────────────────────────────────────
+  "post009":{
+    id:"post009",concurso_id:"conc001",
+    postulante_uid:"demo_post",postulante_nombre:"EnergySol SpA",postulante_email:"contacto@energysol.cl",postulante_org:"EnergySol",
+    titulo:"Sistema Monitoreo Energético Integral – Hospital Público",
+    descripcion:"Plataforma IoT para monitoreo integral de consumos energéticos en establecimiento hospitalario de mediana complejidad. Instalación de 60 nodos de medición, gateway redundante con conectividad 4G/WiFi, dashboard en tiempo real y reportes automáticos. ROI estimado en 18 meses.",
+    presupuesto:42000000,equipo:"2 ingenieros eléctricos, 2 técnicos IoT, 1 desarrolladora web, 1 especialista médico",experiencia:"3 años en monitoreo energético. Proyecto piloto activo en Clínica RedSalud. Alianza con Schneider Electric.",
+    estado:"pendiente",puntaje_total:null,enviado_en:Date.now()-3*864e5,evaluaciones:{}
+  },
+  "post010":{
+    id:"post010",concurso_id:"conc002",
+    postulante_uid:"demo_post",postulante_nombre:"EnergySol SpA",postulante_email:"contacto@energysol.cl",postulante_org:"EnergySol",
+    titulo:"Instalación Solar 80kWp Edificio Corporativo",
+    descripcion:"Diseño e instalación de sistema fotovoltaico de 80kWp en cubierta de edificio corporativo en Las Condes. Módulos monocristalinos Tier 1, inversor SMA Sunny Tripower, sistema de monitoreo SolarEdge y gestión dinámica de autoconsumo. Ahorro proyectado de $4.2M anuales.",
+    presupuesto:38000000,equipo:"1 ingeniero SEC, 3 técnicos instaladores, 1 coordinador obra, 1 gestor energético",experiencia:"4 años en instalaciones fotovoltaicas comerciales. 11 proyectos completados. Certificación ACESOL vigente.",
+    estado:"en_evaluacion",puntaje_total:null,enviado_en:Date.now()-8*864e5,evaluaciones:{}
+  },
+  "post011":{
+    id:"post011",concurso_id:"conc007",
+    postulante_uid:"uid_e11",postulante_nombre:"IndustrialIoT Ltda.",postulante_email:"info@industrialiot.cl",postulante_org:"IndustrialIoT Ltda.",
+    titulo:"Monitoreo Energético Faena Minera – Norte Grande",
+    descripcion:"Sistema de monitoreo energético para faena minera en la Región de Antofagasta. 200 puntos de medición en plantas de proceso, generación diésel y servicios auxiliares. Plataforma con análisis predictivo de fallas y optimización de carga en generadores. Reducción estimada 18% en consumo diésel.",
+    presupuesto:85000000,equipo:"3 ingenieros eléctricos mineros, 2 técnicos Ex-ATEX, 1 data scientist, 1 jefe proyecto",experiencia:"6 años en proyectos mineros. Contratos activos en División El Salvador y Minera Escondida. Certificación ATEX.",
+    estado:"pendiente",puntaje_total:null,enviado_en:Date.now()-1*864e5,evaluaciones:{}
+  }
+};
+
+const SEED_SETTINGS={
+  api_key:"",
+  ranking_params:"Priorizar proyectos con mayor ahorro energético proyectado y cuantificable. Valorar innovación tecnológica aplicada al sector energético chileno. Considerar experiencia comprobada en proyectos similares y viabilidad de implementación en plazos definidos.",
+  ranking_ctx:"Plataforma de Licitaciones Energéticas – NexEnergy. Gestión de proyectos de eficiencia energética, monitoreo IoT, energías renovables y control de equipos para los sectores hospitalario, educacional, retail, hotelería y minería.",
+  criterios:[
+    {nombre:"Ahorro energético proyectado",peso:30},
+    {nombre:"Innovación tecnológica",peso:25},
+    {nombre:"Experiencia del equipo",peso:25},
+    {nombre:"Viabilidad e implementación",peso:20}
+  ]
+};
+
+// ══════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════
+let _session=null,_db=null,_auth=null;
+let _allConcs={},_allPosts={},_settings={};
+let _activeNav=null,_evalTarget=null;
+
+// ══════════════════════════════════════
+//  FIREBASE (lazy load)
+// ══════════════════════════════════════
+(function loadFB(){
+  const sdks=[
+    'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
+    'https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js',
+    'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js'
+  ];
+  let n=0;
+  sdks.forEach(src=>{
+    const s=document.createElement('script');
+    s.src=src;
+    s.onload=s.onerror=()=>{ if(++n===sdks.length) connectFB(); };
+    document.head.appendChild(s);
+  });
+})();
+
+function connectFB(){
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(FB_CFG);
+    _db=firebase.database();
+    try{
+      _auth=firebase.auth();
+      _auth.onAuthStateChanged(u=>{ if(!_session&&u) bootApp(); });
+    }catch(e){_auth=null;}
+  }catch(e){_db=null;}
+}
+
+// ══════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════
+function doLogin(){
+  const email=document.getElementById('lg-email').value.trim();
+  const pass=document.getElementById('lg-pass').value;
+  const demo=Object.values(DEMO).find(s=>s.email===email&&s.pass===pass);
+  if(demo){_setSession(demo);bootApp();return;}
+  document.getElementById('lg-err').textContent='Credenciales incorrectas.';
+}
+
+function demoLogin(key){
+  const s=DEMO[key];if(!s)return;
+  _setSession(s);bootApp();
+}
+
+function _setSession(s){
+  _session={...s};
+  try{sessionStorage.setItem('cc_s',JSON.stringify(s));}catch(e){}
+}
+
+function doLogout(){
+  _session=null;
+  try{sessionStorage.removeItem('cc_s');}catch(e){}
+  if(_auth)try{_auth.signOut();}catch(e){}
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('lg-err').textContent='';
+  document.getElementById('lg-pass').value='';
+}
+
+// restore on reload
+(function restoreSession(){
+  try{
+    const s=sessionStorage.getItem('cc_s');
+    if(s)_session=JSON.parse(s);
+  }catch(e){}
+})();
+
+// ══════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════
+function bootApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  // date
+  document.getElementById('topbar-date').textContent=new Date().toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long'});
+  // sidebar user
+  document.getElementById('sb-name').textContent=_session.nombre;
+  document.getElementById('sb-email').textContent=_session.email;
+  document.getElementById('sb-avatar').textContent=(_session.nombre||'U')[0].toUpperCase();
+  const rb=document.getElementById('sb-role-badge');
+  rb.textContent=rolLabel(_session.rol);
+  rb.className='sidebar-role rol-'+_session.rol;
+  buildSidebar();
+  subscribeFB();
+}
+
+function rolLabel(r){return{admin:'Administrador',evaluador:'Evaluador',postulante:'Postulante'}[r]||r;}
+
+// ══════════════════════════════════════
+//  SIDEBAR
+// ══════════════════════════════════════
+const NAV={
+  admin:[
+    {id:'dashboard',icon:'📊',label:'Dashboard'},
+    {id:'postulaciones',icon:'📋',label:'Postulaciones'},
+    {id:'concursos',icon:'🏆',label:'Concursos'},
+    {id:'evaluadores',icon:'👥',label:'Evaluadores'},
+    {id:'configuracion',icon:'⚙️',label:'Configuración'},
+  ],
+  evaluador:[
+    {id:'pendientes',icon:'⏳',label:'Por Evaluar'},
+    {id:'mis-eval',icon:'✅',label:'Mis Evaluaciones'},
+  ],
+  postulante:[
+    {id:'concursos-post',icon:'🏆',label:'Concursos Disponibles'},
+    {id:'mi-postulacion',icon:'📝',label:'Mis Postulaciones'},
+    {id:'estado',icon:'🔎',label:'Estado'},
+  ]
+};
+
+function buildSidebar(){
+  const items=NAV[_session.rol]||NAV.postulante;
+  document.getElementById('sidebar-nav').innerHTML=items.map(it=>
+    `<div class="nav-item" id="nav-${it.id}" onclick="navTo('${it.id}')"><span class="icon">${it.icon}</span>${it.label}</div>`
+  ).join('');
+  navTo(items[0].id);
+}
+
+function navTo(id){
+  _activeNav=id;
+  // Reset filtros al cambiar de sección
+  if(id==='mi-postulacion') _miPostFiltro='todas';
+  if(id==='estado') _estadoFiltro='todas';
+  if(id==='mis-eval') _misEvalFiltro='todas';
+  if(id==='pendientes') _evalPendOrden='fecha-desc';
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const el=document.getElementById('nav-'+id);
+  if(el)el.classList.add('active');
+  const allItems=Object.values(NAV).flat();
+  const item=allItems.find(i=>i.id===id);
+  document.getElementById('topbar-title').textContent=item?item.label:id;
+  renderView(id);
+}
+
+// ══════════════════════════════════════
+//  FIREBASE SUBSCRIBE
+// ══════════════════════════════════════
+function subscribeFB(){
+  // Siempre cargar seed inmediatamente para render inicial
+  _allConcs=JSON.parse(JSON.stringify(SEED_CONCS));
+  _allPosts=JSON.parse(JSON.stringify(SEED_POSTS));
+  _settings=JSON.parse(JSON.stringify(SEED_SETTINGS));
+  renderView(_activeNav);
+
+  // Firebase puede sobreescribir si tiene datos reales
+  if(!_db)return;
+  try{
+    _db.ref(`${DB_PATH}/postulaciones`).on('value',snap=>{
+      const v=snap.val();
+      if(v&&Object.keys(v).length>0){_allPosts=v;renderView(_activeNav);}
+    });
+    _db.ref(`${DB_PATH}/concursos`).on('value',snap=>{
+      const v=snap.val();
+      if(v&&Object.keys(v).length>0){_allConcs=v;renderView(_activeNav);}
+    });
+    _db.ref(`${DB_PATH}/settings`).once('value').then(snap=>{
+      const v=snap.val();
+      if(v)_settings=v;
+    }).catch(()=>{});
+  }catch(e){}
+}
+
+function useSeed(){
+  _allConcs=JSON.parse(JSON.stringify(SEED_CONCS));
+  _allPosts=JSON.parse(JSON.stringify(SEED_POSTS));
+  _settings=JSON.parse(JSON.stringify(SEED_SETTINGS));
+  renderView(_activeNav);
+}
+
+// ══════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════
+const posts=()=>Object.values(_allPosts);
+const concs=()=>Object.values(_allConcs);
+
+function estadoBadge(e){
+  const m={pendiente:'badge-pendiente',en_evaluacion:'badge-evaluacion',evaluado:'badge-evaluado',aprobado:'badge-aprobado',rechazado:'badge-rechazado',activo:'badge-activo','próximo':'badge-proximo',cerrado:'badge-cerrado'};
+  const l={pendiente:'Pendiente',en_evaluacion:'En Evaluación',evaluado:'Evaluado',aprobado:'Aprobado',rechazado:'Rechazado',activo:'Activo','próximo':'Próximo',cerrado:'Cerrado'};
+  return`<span class="badge ${m[e]||'badge-pendiente'}">${l[e]||e}</span>`;
+}
+
+function fmtDate(ts){if(!ts)return'–';return new Date(ts).toLocaleDateString('es-CL',{day:'2-digit',month:'short',year:'numeric'});}
+function fmtMoney(n){return'$'+Number(n).toLocaleString('es-CL');}
+function ago(ts){const d=Math.floor((Date.now()-ts)/864e5);return d===0?'Hoy':d===1?'Ayer':`Hace ${d} días`;}
+function scoreColor(s){if(s>=85)return'var(--green)';if(s>=70)return'var(--teal)';if(s>=50)return'var(--yellow)';return'var(--red)';}
+
+function donutSVG(data){
+  const total=data.reduce((s,d)=>s+d.value,0);
+  if(!total)return'<svg width="140" height="140" viewBox="0 0 140 140"><circle cx="70" cy="70" r="50" fill="none" stroke="#eee" stroke-width="20"/><text x="70" y="74" text-anchor="middle" font-size="14" fill="var(--t4)">Sin datos</text></svg>';
+  const r=50,cx=70,cy=70,circ=2*Math.PI*r;
+  let offset=0,paths='';
+  data.forEach(d=>{
+    const dash=(d.value/total)*circ,gap=circ-dash;
+    paths+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${d.color}" stroke-width="20" stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}" stroke-dashoffset="${(-(offset/total)*circ).toFixed(1)}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    offset+=d.value;
+  });
+  return`<svg viewBox="0 0 140 140" class="donut-svg">${paths}<text x="70" y="66" text-anchor="middle" font-size="22" font-weight="800" fill="var(--t1)">${total}</text><text x="70" y="82" text-anchor="middle" font-size="11" fill="var(--t3)">total</text></svg>`;
+}
+
+// ══════════════════════════════════════
+//  VIEW ROUTER
+// ══════════════════════════════════════
+function renderView(id){
+  if(!id)return;
+  const mc=document.getElementById('main-content');
+  const rol=_session?.rol;
+  switch(id){
+    case'dashboard':   mc.innerHTML=vAdminDash();break;
+    case'postulaciones':mc.innerHTML=vAdminPosts();break;
+    case'concursos':   mc.innerHTML=vConcursos();break;
+    case'evaluadores': mc.innerHTML=vEvaluadores();break;
+    case'configuracion':mc.innerHTML=vConfig();break;
+    case'ranking':     mc.innerHTML=vRanking();break;
+    case'pendientes':  mc.innerHTML=vEvalPend();break;
+    case'mis-eval':    mc.innerHTML=vMisEval();break;
+    case'concursos-post':mc.innerHTML=vConcursosPost();break;
+    case'mi-postulacion':mc.innerHTML=vMiPost();break;
+    case'nueva':       mc.innerHTML=vNuevaPost();break;
+    case'estado':      mc.innerHTML=vEstado();break;
+    default:           mc.innerHTML=`<div class="empty-state"><div class="icon">🚧</div><p>Vista en construcción</p></div>`;
+  }
+}
+
+// ══════════════════════════════════════
+//  ADMIN DASHBOARD
+// ══════════════════════════════════════
+function vAdminDash(){
+  const all=posts(),tot=all.length;
+  const eval_=all.filter(p=>p.estado==='evaluado').length;
+  const pend=all.filter(p=>p.estado==='pendiente').length;
+  const enEval=all.filter(p=>p.estado==='en_evaluacion').length;
+  const concActivos=concs().filter(c=>c.estado==='activo').length;
+  const ranked=[...all].filter(p=>p.puntaje_total!=null).sort((a,b)=>b.puntaje_total-a.puntaje_total);
+
+  const donutData=[
+    {label:'Evaluadas',value:eval_,color:'var(--green)'},
+    {label:'En Evaluación',value:enEval,color:'var(--blue)'},
+    {label:'Pendientes',value:pend,color:'var(--yellow)'}
+  ].filter(d=>d.value>0);
+
+  const rankRows=ranked.slice(0,5).map((p,i)=>{
+    const cls=['gold','silver','bronze'][i]||'';
+    const pct=p.puntaje_total;
+    return`<tr>
+      <td><div class="rank-num ${cls}">${i+1}</div></td>
+      <td><div style="font-weight:600;font-size:13px">${p.titulo}</div><div style="font-size:11px;color:var(--t4)">${p.postulante_org}</div></td>
+      <td>${estadoBadge(p.estado)}</td>
+      <td><div class="score-bar-wrap"><div class="score-bar"><div class="score-bar-fill" style="width:${pct}%;background:${scoreColor(pct)}"></div></div><span class="score-num" style="color:${scoreColor(pct)}">${pct}</span></div></td>
+      <td><button class="btn btn-secondary btn-sm" onclick="openDetalle('${p.id}')">Ver</button></td>
+    </tr>`;
+  }).join('');
+
+  const recent=[...all].sort((a,b)=>b.enviado_en-a.enviado_en).slice(0,4);
+  const tlHtml=recent.map(p=>`
+    <div class="tl-item">
+      <div class="tl-dot ${p.estado==='evaluado'?'green':p.estado==='en_evaluacion'?'blue':''}">${p.estado==='evaluado'?'✅':p.estado==='en_evaluacion'?'🔍':'📋'}</div>
+      <div class="tl-body">
+        <div class="tl-title">${p.titulo}</div>
+        <div class="tl-desc">${p.postulante_org} · ${estadoBadge(p.estado)}</div>
+        <div class="tl-time">${ago(p.enviado_en)}</div>
+      </div>
+    </div>`).join('');
+
+  return`
+<div class="stats-grid">
+  <div class="stat-card" style="--accent:var(--teal)"><div class="stat-label">Postulaciones</div><div class="stat-val">${tot}</div><div class="stat-sub">Total recibidas</div><div class="stat-icon">📋</div></div>
+  <div class="stat-card" style="--accent:var(--green)"><div class="stat-label">Evaluadas</div><div class="stat-val">${eval_}</div><div class="stat-sub">${tot?Math.round(eval_/tot*100):0}% del total</div><div class="stat-icon">✅</div></div>
+  <div class="stat-card" style="--accent:var(--blue)"><div class="stat-label">En Evaluación</div><div class="stat-val">${enEval}</div><div class="stat-sub">En proceso</div><div class="stat-icon">🔍</div></div>
+  <div class="stat-card" style="--accent:var(--yellow)"><div class="stat-label">Pendientes</div><div class="stat-val">${pend}</div><div class="stat-sub">Sin revisar</div><div class="stat-icon">⏳</div></div>
+  <div class="stat-card" style="--accent:var(--orange)"><div class="stat-label">Concursos</div><div class="stat-val">${concActivos}</div><div class="stat-sub">Activos</div><div class="stat-icon">🏆</div></div>
+</div>
+<div class="two-col">
+  <div class="section-card">
+    <div class="section-hdr"><h3>🏅 Ranking Actual</h3><button class="btn btn-ai btn-sm" onclick="abrirIARanking()">✨ Análisis IA</button></div>
+    ${ranked.length>0?`<table class="tbl"><thead><tr><th>#</th><th>Proyecto</th><th>Estado</th><th>Puntaje</th><th></th></tr></thead><tbody>${rankRows}</tbody></table>`:`<div class="empty-state"><div class="icon">📊</div><p>Sin evaluaciones aún</p></div>`}
+  </div>
+  <div>
+    <div class="section-card" style="margin-bottom:20px">
+      <div class="section-hdr"><h3>📈 Estado de Postulaciones</h3></div>
+      <div class="donut-wrap">
+        ${donutSVG(donutData)}
+        <div class="donut-legend">
+          ${donutData.map(d=>`<div class="legend-item"><div class="legend-dot" style="background:${d.color}"></div><span style="font-weight:700">${d.value}</span>&nbsp;<span style="color:var(--t3);font-size:12px">${d.label}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="section-card">
+      <div class="section-hdr"><h3>🕐 Actividad Reciente</h3></div>
+      <div class="timeline">${tlHtml}</div>
+    </div>
+  </div>
+</div>`;
+}
+
+// ══════════════════════════════════════
+//  EJECUTIVO DASHBOARD
+// ══════════════════════════════════════
+function vEjecDash(){
+  const all=posts(),tot=all.length;
+  const eval_=all.filter(p=>p.estado==='evaluado').length;
+  const pct=tot?Math.round(eval_/tot*100):0;
+  const ranked=[...all].filter(p=>p.puntaje_total!=null).sort((a,b)=>b.puntaje_total-a.puntaje_total);
+
+  const rows=ranked.map((p,i)=>`<tr>
+    <td><div class="rank-num ${['gold','silver','bronze'][i]||''}">${i+1}</div></td>
+    <td><div style="font-weight:600">${p.titulo}</div><div style="font-size:11px;color:var(--t4)">${p.postulante_org}</div></td>
+    <td style="font-weight:700;color:${scoreColor(p.puntaje_total)}">${p.puntaje_total}/100</td>
+    <td><div class="score-bar"><div class="score-bar-fill" style="width:${p.puntaje_total}%;background:${scoreColor(p.puntaje_total)}"></div></div></td>
+  </tr>`).join('');
+
+  return`
+<div class="stats-grid">
+  <div class="stat-card" style="--accent:var(--teal)"><div class="stat-label">Total</div><div class="stat-val">${tot}</div><div class="stat-sub">Postulaciones</div><div class="stat-icon">📋</div></div>
+  <div class="stat-card" style="--accent:var(--green)"><div class="stat-label">Evaluadas</div><div class="stat-val">${eval_}</div><div class="stat-sub">${pct}% completado</div><div class="stat-icon">✅</div></div>
+  <div class="stat-card" style="--accent:var(--blue)"><div class="stat-label">Progreso</div><div class="stat-val">${pct}%</div><div class="stat-sub"><div class="progress-bar" style="margin-top:8px"><div class="progress-fill" style="width:${pct}%"></div></div></div></div>
+</div>
+<div class="section-card">
+  <div class="section-hdr"><h3>🏅 Ranking de Proyectos Evaluados</h3><button class="btn btn-ai btn-sm" onclick="abrirIARanking()">✨ Análisis IA</button></div>
+  ${ranked.length>0?`<table class="tbl"><thead><tr><th>#</th><th>Proyecto</th><th>Puntaje</th><th>Barra</th></tr></thead><tbody>${rows}</tbody></table>`:`<div class="empty-state"><div class="icon">⏳</div><p>Sin evaluaciones completadas aún</p></div>`}
+</div>`;
+}
+
+// ══════════════════════════════════════
+//  ADMIN POSTULACIONES
+// ══════════════════════════════════════
+function vAdminPosts(){
+  const all=posts();
+  const rows=all.map(p=>`<tr>
+    <td><div style="font-weight:600;font-size:13px">${p.titulo}</div><div style="font-size:11px;color:var(--t4)">${p.postulante_nombre} · ${p.postulante_org}</div></td>
+    <td style="font-size:12px;color:var(--t3)">${fmtDate(p.enviado_en)}</td>
+    <td>${estadoBadge(p.estado)}</td>
+    <td style="font-weight:700;color:${p.puntaje_total!=null?scoreColor(p.puntaje_total):'var(--t4)'}">${p.puntaje_total!=null?p.puntaje_total+'/100':'–'}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-secondary btn-sm" style="margin-right:4px" onclick="openDetalle('${p.id}')">Ver</button>
+      ${p.estado!=='evaluado'?`<button class="btn btn-primary btn-sm" onclick="openEval('${p.id}')">Evaluar</button>`:''}
+    </td>
+  </tr>`).join('');
+
+  return`<div class="section-card">
+    <div class="section-hdr"><h3>Todas las Postulaciones</h3><span class="sec-badge">${all.length} total</span></div>
+    <table class="tbl"><thead><tr><th>Proyecto / Postulante</th><th>Fecha</th><th>Estado</th><th>Puntaje</th><th>Acciones</th></tr></thead><tbody>${rows}</tbody></table>
+  </div>`;
+}
+
+function vEjecPosts(){
+  const all=posts();
+  const rows=all.map(p=>`<tr>
+    <td><div style="font-weight:600;font-size:13px">${p.titulo}</div><div style="font-size:11px;color:var(--t4)">${fmtDate(p.enviado_en)}</div></td>
+    <td>${estadoBadge(p.estado)}</td>
+    <td style="font-weight:700;color:${p.puntaje_total!=null?scoreColor(p.puntaje_total):'var(--t4)'}">${p.puntaje_total!=null?p.puntaje_total+'/100':'–'}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-secondary btn-sm" style="margin-right:4px" onclick="openDetalle('${p.id}')">Ver</button>
+      ${p.estado!=='evaluado'?`<button class="btn btn-primary btn-sm" onclick="openEval('${p.id}')">Evaluar</button>`:''}
+    </td>
+  </tr>`).join('');
+
+  return`
+  <div class="alert alert-warn" style="margin-bottom:16px"><span>🔒</span> <b>Evaluación ciega:</b> la identidad de los postulantes no se muestra para garantizar la objetividad del proceso.</div>
+  <div class="section-card">
+    <div class="section-hdr"><h3>Postulaciones Recibidas</h3><span class="sec-badge">${all.length} total</span></div>
+    <table class="tbl"><thead><tr><th>Proyecto</th><th>Estado</th><th>Puntaje</th><th>Acciones</th></tr></thead><tbody>${rows}</tbody></table>
+  </div>`;
+}
+
+// ══════════════════════════════════════
+//  CONCURSOS (ADMIN)
+// ══════════════════════════════════════
+function vConcursos(){
+  const all=concs();
+  const cards=all.map(c=>{
+    const th=CONC_THEME[c.id]||DEFAULT_THEME;
+    const numPosts=posts().filter(p=>p.concurso_id===c.id).length;
+    const statusLabel={activo:'Activo',cerrado:'Cerrado','próximo':'Próximo'}[c.estado]||c.estado;
+    const statusCls={activo:'activo',cerrado:'cerrado','próximo':'proximo'}[c.estado]||'cerrado';
+    return`<div class="conc-card">
+      <div class="conc-card-hero" style="background:${th.grad}">
+        <span class="conc-card-hero-icon">${th.icon}</span>
+        <span class="conc-card-cat">${c.categoria||'Concurso'}</span>
+        <span class="conc-card-status ${statusCls}">${statusLabel}</span>
+      </div>
+      <div class="conc-card-body">
+        <div class="conc-card-title">${c.titulo}</div>
+        <div class="conc-card-desc">${c.descripcion}</div>
+        <div class="conc-card-stats">
+          <div class="conc-stat"><span class="conc-stat-label">Monto máx.</span><span class="conc-stat-val">${fmtMoney(c.monto_max)}</span></div>
+          <div class="conc-stat"><span class="conc-stat-label">Cierre</span><span class="conc-stat-val">${c.fecha_cierre}</span></div>
+          <div class="conc-stat"><span class="conc-stat-label">Postulaciones</span><span class="conc-stat-val" style="color:${numPosts>0?'var(--teal)':'var(--t4)'}">${numPosts}</span></div>
+        </div>
+        <div class="conc-card-footer">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">${(c.criterios||[]).slice(0,2).map(cr=>`<span class="chip chip-purple" style="font-size:10px">${cr.nombre.split(' ')[0]} ${cr.peso}%</span>`).join('')}${c.criterios&&c.criterios.length>2?`<span class="chip chip-purple" style="font-size:10px">+${c.criterios.length-2}</span>`:''}</div>
+          <button class="btn btn-secondary btn-sm" onclick="">Gestionar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return`
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
+  <div><div style="font-size:20px;font-weight:800">Concursos</div><div style="font-size:13px;color:var(--t3);margin-top:2px">${all.length} concursos · ${all.filter(c=>c.estado==='activo').length} activos</div></div>
+  <button class="btn btn-primary btn-sm">+ Nuevo Concurso</button>
+</div>
+<div class="concurso-grid">${cards}</div>`;
+}
+
+// ══════════════════════════════════════
+//  EVALUADORES
+// ══════════════════════════════════════
+function vEvaluadores(){
+  const allPosts=posts();
+  const total=allPosts.length;
+  // calcular por evaluador
+  const evalInfo={
+    "demo_eval":{nombre:'Ing. Carlos Rojas',email:'evaluador@nexenergy.io',uid:'demo_eval'},
+    "uid_eval2":{nombre:'Dra. María Fuentes',email:'maria.fuentes@lisit.cl',uid:'uid_eval2'}
+  };
+  Object.keys(evalInfo).forEach(uid=>{
+    const done=allPosts.filter(p=>(p.evaluaciones||{})[uid]).length;
+    evalInfo[uid].completadas=done;
+    evalInfo[uid].asignadas=total;
+    evalInfo[uid].promedio=done>0?Math.round(allPosts.filter(p=>(p.evaluaciones||{})[uid]).reduce((s,p)=>s+p.evaluaciones[uid].total,0)/done):0;
+  });
+
+  const rows=Object.values(evalInfo).map(e=>`<tr>
+    <td><div style="font-weight:600">${e.nombre}</div><div style="font-size:11px;color:var(--t4)">${e.email}</div></td>
+    <td style="font-weight:700">${e.asignadas}</td>
+    <td style="font-weight:700;color:var(--green)">${e.completadas}</td>
+    <td>${e.asignadas?`<div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="width:100px;margin:0"><div class="progress-fill" style="width:${Math.round(e.completadas/e.asignadas*100)}%"></div></div><span style="font-size:12px;color:var(--t3)">${Math.round(e.completadas/e.asignadas*100)}%</span></div>`:'-'}</td>
+    <td style="font-weight:700;color:${scoreColor(e.promedio)}">${e.completadas>0?e.promedio+'/100':'–'}</td>
+    <td>${estadoBadge(e.completadas>0?'activo':'pendiente')}</td>
+  </tr>`).join('');
+
+  const totalEval=allPosts.filter(p=>p.estado==='evaluado').length;
+  return`
+  <div class="stats-grid" style="margin-bottom:20px">
+    <div class="stat-card" style="--accent:var(--teal)"><div class="stat-label">Evaluadores</div><div class="stat-val">2</div><div class="stat-sub">Asignados al concurso</div><div class="stat-icon">👥</div></div>
+    <div class="stat-card" style="--accent:var(--green)"><div class="stat-label">Proyectos Evaluados</div><div class="stat-val">${totalEval}</div><div class="stat-sub">de ${total} total</div><div class="stat-icon">✅</div></div>
+    <div class="stat-card" style="--accent:var(--blue)"><div class="stat-label">Evaluaciones</div><div class="stat-val">${allPosts.reduce((s,p)=>s+Object.keys(p.evaluaciones||{}).length,0)}</div><div class="stat-sub">Completadas en total</div><div class="stat-icon">📋</div></div>
+  </div>
+  <div class="section-card">
+    <div class="section-hdr"><h3>Evaluadores Asignados</h3><button class="btn btn-primary btn-sm">+ Agregar Evaluador</button></div>
+    <table class="tbl"><thead><tr><th>Evaluador</th><th>Asignadas</th><th>Completadas</th><th>Progreso</th><th>Prom. Puntaje</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table>
+  </div>`;
+}
+
+// ══════════════════════════════════════
+//  CONFIGURACIÓN
+// ══════════════════════════════════════
+function vConfig(){
+  const s=_settings||SEED_SETTINGS;
+  const crit=(s.criterios||SEED_SETTINGS.criterios);
+  const critHtml=crit.map((c,i)=>`
+    <div class="range-row">
+      <label>${c.nombre}</label>
+      <input type="range" min="0" max="50" value="${c.peso}" oninput="document.getElementById('rv${i}').textContent=this.value">
+      <div class="range-val" id="rv${i}">${c.peso}</div>
+    </div>`).join('');
+
+  return`
+<div class="config-section">
+  <h4>🔑 API Key – Google Gemini</h4>
+  <div class="alert alert-info" style="margin-bottom:12px"><span>ℹ️</span> Necesaria para funciones de IA. Obtén tu key gratuita en <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--teal);font-weight:600">aistudio.google.com/apikey</a>. Se guarda localmente.</div>
+  <div class="field-group"><label>API Key</label><input type="password" id="cfg-apikey" value="${s.api_key||''}" placeholder="AIzaSy…"></div>
+  <button class="btn btn-primary btn-sm" onclick="saveApiKey()">Guardar API Key</button>
+  <button class="btn btn-secondary btn-sm" style="margin-left:8px" onclick="testGeminiKey()">Probar conexión</button>
+</div>
+<div class="config-section">
+  <h4>🏅 Parámetros de Ranking IA</h4>
+  <div class="alert alert-info" style="margin-bottom:12px"><span>ℹ️</span> La IA usará estos parámetros para analizar y rankear proyectos.</div>
+  <div class="field-group"><label>Contexto del Concurso</label><textarea id="cfg-ctx" rows="2">${s.ranking_ctx||''}</textarea></div>
+  <div class="field-group"><label>Parámetros de Evaluación</label><textarea id="cfg-params" rows="4">${s.ranking_params||''}</textarea></div>
+  <button class="btn btn-primary btn-sm" onclick="saveRankingParams()">Guardar Parámetros</button>
+</div>
+<div class="config-section">
+  <h4>📊 Pesos de Criterios de Evaluación</h4>
+  ${critHtml}
+  <button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="toast('Pesos guardados')">Guardar Pesos</button>
+</div>`;
+}
+
+function saveApiKey(){
+  const k=document.getElementById('cfg-apikey')?.value?.trim();
+  if(!k)return;
+  _settings.api_key=k;
+  if(_db)_db.ref(`${DB_PATH}/settings/api_key`).set(k);
+  toast('API Key guardada ✅');
+}
+
+async function testGeminiKey(){
+  const k=document.getElementById('cfg-apikey')?.value?.trim()||_settings?.api_key||'';
+  if(!k){toast('Ingresa una API Key primero','warn');return;}
+  toast('Probando conexión con Gemini…');
+  try{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${k}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{role:'user',parts:[{text:'Responde solo: OK'}]}],generationConfig:{maxOutputTokens:5}})
+    });
+    const j=await r.json();
+    if(j.error)toast('❌ '+j.error.message,'warn');
+    else toast('✅ Gemini conectado correctamente');
+  }catch(e){toast('❌ Error: '+e.message,'warn');}
+}
+
+function saveRankingParams(){
+  const p=document.getElementById('cfg-params')?.value;
+  const c=document.getElementById('cfg-ctx')?.value;
+  _settings.ranking_params=p;_settings.ranking_ctx=c;
+  if(_db){
+    _db.ref(`${DB_PATH}/settings/ranking_params`).set(p);
+    _db.ref(`${DB_PATH}/settings/ranking_ctx`).set(c);
+  }
+  toast('Parámetros guardados ✅');
+}
+
+// ══════════════════════════════════════
+//  RANKING (EJECUTIVO)
+// ══════════════════════════════════════
+function vRanking(){
+  const ranked=[...posts()].filter(p=>p.puntaje_total!=null).sort((a,b)=>b.puntaje_total-a.puntaje_total);
+  const rows=ranked.map((p,i)=>`<tr>
+    <td><div class="rank-num ${['gold','silver','bronze'][i]||''}">${i+1}</div></td>
+    <td><div style="font-weight:600">${p.titulo}</div><div style="font-size:11px;color:var(--t4)">${p.postulante_org}</div></td>
+    <td style="font-weight:700;color:${scoreColor(p.puntaje_total)}">${p.puntaje_total}/100</td>
+    <td style="min-width:140px"><div class="score-bar"><div class="score-bar-fill" style="width:${p.puntaje_total}%;background:${scoreColor(p.puntaje_total)}"></div></div></td>
+    <td><button class="btn btn-secondary btn-sm" onclick="openDetalle('${p.id}')">Ver</button></td>
+  </tr>`).join('');
+
+  return`<div class="section-card">
+    <div class="section-hdr"><h3>Ranking de Postulaciones</h3><button class="btn btn-ai btn-sm" onclick="abrirIARanking()">✨ Análisis IA</button></div>
+    ${ranked.length>0?`<table class="tbl"><thead><tr><th>#</th><th>Proyecto</th><th>Puntaje</th><th>Barra</th><th></th></tr></thead><tbody>${rows}</tbody></table>`:`<div class="empty-state"><div class="icon">⏳</div><p>Sin evaluaciones completadas</p></div>`}
+  </div>`;
+}
+
+// ══════════════════════════════════════
+//  EVALUADOR: PENDIENTES
+// ══════════════════════════════════════
+function vEvalPend(){
+  const allP=posts();
+  let pend=allP.filter(p=>!(p.evaluaciones||{})[_session.uid]);
+  const done=allP.filter(p=>(p.evaluaciones||{})[_session.uid]).length;
+  const pct=allP.length?Math.round(done/allP.length*100):0;
+
+  // Ordenar (default: más reciente primero)
+  if(_evalPendOrden==='fecha-desc') pend=[...pend].sort((a,b)=>b.enviado_en-a.enviado_en);
+  else if(_evalPendOrden==='fecha-asc') pend=[...pend].sort((a,b)=>a.enviado_en-b.enviado_en);
+  else if(_evalPendOrden==='monto-desc') pend=[...pend].sort((a,b)=>b.presupuesto-a.presupuesto);
+
+  const ACCENTS=[
+    'linear-gradient(90deg,#064e3b,#1a9e5c)',
+    'linear-gradient(90deg,#064e3b,#059669)',
+    'linear-gradient(90deg,#0c4a6e,#0284c7)',
+    'linear-gradient(90deg,#7c2d12,#ea580c)',
+    'linear-gradient(90deg,#1e1b4b,#3730a3)',
+    'linear-gradient(90deg,#831843,#db2777)',
+    'linear-gradient(90deg,#134e4a,#0d9488)',
+  ];
+
+  const ordenBar=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+    <span style="font-size:12px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap">Ordenar por:</span>
+    ${[
+      {key:'fecha-desc',label:'📅 Más reciente'},
+      {key:'fecha-asc', label:'📅 Más antiguo'},
+      {key:'monto-desc',label:'💰 Mayor monto'},
+    ].map(o=>`<button class="filter-chip${_evalPendOrden===o.key?' active':''}" onclick="setEvalPendOrden('${o.key}')">${o.label}</button>`).join('')}
+  </div>`;
+
+  const cards=pend.map((p,i)=>{
+    const accent=ACCENTS[i%ACCENTS.length];
+    const teamShort=p.equipo.split(',').length+' integrantes';
+    return`<div class="ep-card">
+      <div class="ep-card-accent" style="background:${accent}"></div>
+      <div class="ep-card-body">
+        <div class="ep-card-top">
+          <div style="flex:1"><div class="ep-card-title">${p.titulo}</div></div>
+          <div class="ep-card-budget">
+            <div class="ep-card-budget-val">${fmtMoney(p.presupuesto)}</div>
+            <div class="ep-card-budget-lbl">Presupuesto</div>
+          </div>
+        </div>
+        <div class="ep-card-desc">${p.descripcion}</div>
+        <div class="ep-card-pills">
+          <span class="ep-pill">👥 ${teamShort}</span>
+          <span class="ep-pill">📅 ${p.experiencia}</span>
+        </div>
+      </div>
+      <div class="ep-card-footer">
+        <div class="ep-card-date">📅 Recibido el ${fmtDate(p.enviado_en)}</div>
+        <button class="btn-eval" onclick="openEval('${p.id}')">⚖️ Evaluar →</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  return`
+<div style="display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap">
+  <div class="stat-card" style="--accent:var(--yellow);flex:1;min-width:150px">
+    <div class="stat-label">Por Evaluar</div><div class="stat-val">${pend.length}</div><div class="stat-sub">Pendientes</div><div class="stat-icon">⏳</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--green);flex:1;min-width:150px">
+    <div class="stat-label">Completadas</div><div class="stat-val">${done}</div><div class="stat-sub">Finalizadas</div><div class="stat-icon">✅</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--teal);flex:1;min-width:150px">
+    <div class="stat-label">Progreso</div><div class="stat-val">${pct}%</div>
+    <div class="stat-sub"><div class="progress-bar" style="margin-top:8px"><div class="progress-fill" style="width:${pct}%"></div></div></div>
+  </div>
+</div>
+<div class="alert alert-warn" style="margin-bottom:14px"><span>🔒</span> <b>Evaluación ciega:</b> la identidad de los postulantes está oculta.</div>
+${ordenBar}
+${pend.length>0?`<div class="ep-grid">${cards}</div>`:`<div class="empty-state" style="padding:48px"><div class="icon">🎉</div><p style="font-size:16px;font-weight:700;margin-bottom:6px">¡Evaluaciones al día!</p><p>No tienes proyectos pendientes.</p></div>`}`;
+}
+
+// ══════════════════════════════════════
+//  EVALUADOR: MIS EVALUACIONES
+// ══════════════════════════════════════
+function vMisEval(){
+  const allDone=posts().filter(p=>(p.evaluaciones||{})[_session.uid]);
+  // Siempre más reciente primero
+  const sorted=[...allDone].sort((a,b)=>{
+    const fa=(a.evaluaciones[_session.uid]||{}).fecha||0;
+    const fb=(b.evaluaciones[_session.uid]||{}).fecha||0;
+    return fb-fa;
+  });
+
+  const counts={
+    todas:sorted.length,
+    alto: sorted.filter(p=>p.evaluaciones[_session.uid].total>=85).length,
+    medio:sorted.filter(p=>{const t=p.evaluaciones[_session.uid].total;return t>=70&&t<85;}).length,
+    bajo: sorted.filter(p=>p.evaluaciones[_session.uid].total<70).length,
+  };
+
+  const filterBar=`<div class="filter-bar" style="margin-bottom:18px">
+    ${[
+      {key:'todas',label:'Todas',        icon:'📋'},
+      {key:'alto', label:'Alto ≥85',     icon:'🟢'},
+      {key:'medio',label:'Medio 70–84',  icon:'🟡'},
+      {key:'bajo', label:'Bajo <70',     icon:'🔴'},
+    ].map(f=>`<button class="filter-chip${_misEvalFiltro===f.key?' active':''}" onclick="setMisEvalFiltro('${f.key}')">
+      ${f.icon} ${f.label}<span class="chip-count">${counts[f.key]}</span>
+    </button>`).join('')}
+  </div>`;
+
+  let filtered=sorted;
+  if(_misEvalFiltro==='alto')  filtered=sorted.filter(p=>p.evaluaciones[_session.uid].total>=85);
+  else if(_misEvalFiltro==='medio') filtered=sorted.filter(p=>{const t=p.evaluaciones[_session.uid].total;return t>=70&&t<85;});
+  else if(_misEvalFiltro==='bajo')  filtered=sorted.filter(p=>p.evaluaciones[_session.uid].total<70);
+
+  const avg=sorted.length?Math.round(sorted.reduce((s,p)=>s+p.evaluaciones[_session.uid].total,0)/sorted.length):0;
+
+  const cards=filtered.map(p=>{
+    const ev=p.evaluaciones[_session.uid];
+    const sc=ev.total;
+    const col=scoreColor(sc);
+    const th=CONC_THEME[p.concurso_id]||DEFAULT_THEME;
+    const rangeLbl=sc>=85?'Alto':sc>=70?'Medio':'Bajo';
+    const rangeCls=sc>=85?'badge-evaluado':sc>=70?'badge-evaluacion':'badge-pendiente';
+    return`<div class="me-card">
+      <div style="height:5px;background:${th.grad}"></div>
+      <div class="me-card-top">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px">
+          <div class="me-card-title" style="margin-bottom:0">${p.titulo}</div>
+          <span class="badge ${rangeCls}" style="flex-shrink:0">${rangeLbl}</span>
+        </div>
+        <div class="me-card-score-row">
+          <div class="me-score-circle" style="border-color:${col};background:${col}18">
+            <div class="me-score-num" style="color:${col}">${sc}</div>
+            <div class="me-score-denom" style="color:${col}">/100</div>
+          </div>
+          <div class="me-card-comment">${ev.comentario||'Sin comentario registrado.'}</div>
+        </div>
+      </div>
+      <div class="me-card-footer">
+        <span class="me-card-date">📅 ${fmtDate(ev.fecha)}</span>
+        <button class="btn btn-secondary btn-sm" onclick="openDetalle('${p.id}')">Ver detalle</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const emptyF=filtered.length===0?`<div class="empty-state" style="padding:36px"><div class="icon">🔍</div><p>Sin evaluaciones en esta categoría.</p></div>`:'';
+
+  return`
+<div style="display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap">
+  <div class="stat-card" style="--accent:var(--green);flex:1;min-width:150px">
+    <div class="stat-label">Completadas</div><div class="stat-val">${sorted.length}</div><div class="stat-sub">Proyectos evaluados</div><div class="stat-icon">✅</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--teal);flex:1;min-width:150px">
+    <div class="stat-label">Puntaje Promedio</div><div class="stat-val" style="color:${scoreColor(avg)}">${avg}</div><div class="stat-sub">Sobre 100 puntos</div><div class="stat-icon">📊</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--green);flex:1;min-width:150px">
+    <div class="stat-label">Destacados</div><div class="stat-val">${counts.alto}</div><div class="stat-sub">Puntaje ≥ 85</div><div class="stat-icon">🏆</div>
+  </div>
+</div>
+${filterBar}
+${emptyF}
+${sorted.length===0?`<div class="empty-state" style="padding:48px"><div class="icon">📝</div><p style="font-size:15px;font-weight:600">Aún no has evaluado proyectos</p></div>`:filtered.length>0?`<div class="me-grid">${cards}</div>`:''}`;
+}
+
+// ══════════════════════════════════════
+//  CONCURSO CARD CONFIG
+// ══════════════════════════════════════
+const CONC_THEME={
+  "conc001":{grad:"linear-gradient(135deg,#064e3b,#047857,#1a9e5c)",icon:"⚡"},
+  "conc002":{grad:"linear-gradient(135deg,#713f12,#b45309,#fbbf24)",icon:"☀️"},
+  "conc003":{grad:"linear-gradient(135deg,#1e3a5f,#1d4ed8,#60a5fa)",icon:"🏫"},
+  "conc004":{grad:"linear-gradient(135deg,#164e63,#0891b2,#22d3ee)",icon:"📊"},
+  "conc005":{grad:"linear-gradient(135deg,#3d1a00,#b45309,#f97316)",icon:"🏨"},
+  "conc006":{grad:"linear-gradient(135deg,#1e1b4b,#4338ca,#818cf8)",icon:"🛒"},
+  "conc007":{grad:"linear-gradient(135deg,#1c1917,#44403c,#a8a29e)",icon:"⛏️"}
+};
+const DEFAULT_THEME={grad:"linear-gradient(135deg,#374151,#6b7280)",icon:"📋"};
+
+// ══════════════════════════════════════
+//  POSTULANTE: CONCURSOS DISPONIBLES
+// ══════════════════════════════════════
+function vConcursosPost(){
+  const all=concs();
+  const misPost=posts().filter(p=>p.postulante_uid===_session.uid);
+  const yaPostule=id=>misPost.some(p=>p.concurso_id===id);
+  const activos=all.filter(c=>c.estado==='activo').length;
+
+  const cards=all.map(c=>{
+    const yp=yaPostule(c.id);
+    const abierto=c.estado==='activo';
+    const th=CONC_THEME[c.id]||DEFAULT_THEME;
+    const numPosts=posts().filter(p=>p.concurso_id===c.id).length;
+    const statusLabel={activo:'Activo',cerrado:'Cerrado','próximo':'Próximo'}[c.estado]||c.estado;
+    const statusCls={activo:'activo',cerrado:'cerrado','próximo':'proximo'}[c.estado]||'cerrado';
+
+    let cta='';
+    if(yp){
+      cta=`<button class="btn-postular ya-postulado" onclick="navTo('mi-postulacion')">✅ Ya postulaste</button>`;
+    } else if(abierto){
+      cta=`<button class="btn-postular" onclick="abrirFormulario('${c.id}')">Postular →</button>`;
+    } else {
+      cta=`<button class="btn-postular" disabled>${c.estado==='próximo'?'Próximamente':'Cerrado'}</button>`;
+    }
+
+    return`<div class="conc-card">
+      <div class="conc-card-hero" style="background:${th.grad}">
+        <span class="conc-card-hero-icon">${th.icon}</span>
+        <span class="conc-card-cat">${c.categoria||'Concurso'}</span>
+        <span class="conc-card-status ${statusCls}">${statusLabel}</span>
+        ${yp?`<span class="conc-card-ya">✓ Postulaste</span>`:''}
+      </div>
+      <div class="conc-card-body">
+        <div class="conc-card-title">${c.titulo}</div>
+        <div class="conc-card-desc">${c.descripcion}</div>
+        <div class="conc-card-stats">
+          <div class="conc-stat"><span class="conc-stat-label">Monto máx.</span><span class="conc-stat-val">${fmtMoney(c.monto_max)}</span></div>
+          <div class="conc-stat"><span class="conc-stat-label">Cierre</span><span class="conc-stat-val">${c.fecha_cierre}</span></div>
+          <div class="conc-stat"><span class="conc-stat-label">Postulaciones</span><span class="conc-stat-val">${numPosts}</span></div>
+        </div>
+        <div class="conc-card-footer">
+          <span class="conc-card-posts">${c.criterios?c.criterios.length+' criterios':''}</span>
+          ${cta}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return`
+<div style="margin-bottom:22px;display:flex;align-items:flex-end;justify-content:space-between">
+  <div>
+    <div style="font-size:20px;font-weight:800;color:var(--t1);margin-bottom:3px">Concursos Disponibles</div>
+    <div style="font-size:13px;color:var(--t3)">${all.length} concursos · <span style="color:var(--green);font-weight:600">${activos} abiertos</span> para postulación</div>
+  </div>
+</div>
+<div class="concurso-grid">${cards}</div>`;
+}
+
+let _concursoSeleccionado=null;
+let _miPostFiltro='todas';
+let _estadoFiltro='todas';
+let _misEvalFiltro='todas';
+let _evalPendOrden='fecha-desc';
+
+function setMiPostFiltro(f){_miPostFiltro=f;renderView('mi-postulacion');}
+function setEstadoFiltro(f){_estadoFiltro=f;renderView('estado');}
+function setMisEvalFiltro(f){_misEvalFiltro=f;renderView('mis-eval');}
+function setEvalPendOrden(o){_evalPendOrden=o;renderView('pendientes');}
+
+function abrirFormulario(concursoId){
+  _concursoSeleccionado=concursoId;
+  // Ir a nav "nueva" (se maneja dentro de renderView)
+  // Agregamos el nav item si no existe y navegamos
+  const items=NAV[_session.rol]||[];
+  if(!items.find(i=>i.id==='nueva')){
+    items.push({id:'nueva',icon:'➕',label:'Postular'});
+    document.getElementById('sidebar-nav').innerHTML+=`<div class="nav-item" id="nav-nueva" onclick="navTo('nueva')"><span class="icon">➕</span>Postular</div>`;
+  }
+  navTo('nueva');
+}
+
+// ══════════════════════════════════════
+//  POSTULANTE: MIS POSTULACIONES
+// ══════════════════════════════════════
+function vMiPost(){
+  // Ordenar: más reciente primero
+  const mine=[...posts().filter(p=>p.postulante_uid===_session.uid)].sort((a,b)=>b.enviado_en-a.enviado_en);
+  if(!mine.length)return`<div class="empty-state" style="padding:60px">
+    <div class="icon">📝</div>
+    <p style="font-size:16px;font-weight:600;margin-bottom:8px">Aún no tienes postulaciones</p>
+    <p style="margin-bottom:20px;color:var(--t3)">Revisa los concursos disponibles y postula.</p>
+    <button class="btn btn-primary" onclick="navTo('concursos-post')">🏆 Ver concursos disponibles</button>
+  </div>`;
+
+  const counts={
+    todas:mine.length,
+    pendiente:mine.filter(p=>p.estado==='pendiente').length,
+    en_evaluacion:mine.filter(p=>p.estado==='en_evaluacion').length,
+    evaluado:mine.filter(p=>p.estado==='evaluado').length,
+  };
+
+  const filterBar=`<div class="filter-bar" style="margin-bottom:18px">
+    ${[
+      {key:'todas',        label:'Todas',         icon:'📋'},
+      {key:'pendiente',    label:'Pendientes',    icon:'⏳'},
+      {key:'en_evaluacion',label:'En Evaluación', icon:'🔍'},
+      {key:'evaluado',     label:'Evaluadas',     icon:'✅'},
+    ].map(f=>`<button class="filter-chip${_miPostFiltro===f.key?' active':''}" onclick="setMiPostFiltro('${f.key}')">
+      ${f.icon} ${f.label}<span class="chip-count">${counts[f.key]}</span>
+    </button>`).join('')}
+  </div>`;
+
+  const filtered=_miPostFiltro==='todas'?mine:mine.filter(p=>p.estado===_miPostFiltro);
+
+  const cards=filtered.map(p=>{
+    const ev=Object.values(p.evaluaciones||{})[0];
+    const conc=_allConcs[p.concurso_id];
+    const th=CONC_THEME[p.concurso_id]||DEFAULT_THEME;
+    const sc=p.puntaje_total;
+    const teamShort=p.equipo.split(',').length+' integrantes';
+    return`<div class="ep-card">
+      <div class="ep-card-accent" style="background:${th.grad}"></div>
+      <div class="ep-card-body">
+        <div class="ep-card-top">
+          <div style="flex:1">
+            <div style="font-size:11px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;display:flex;align-items:center;gap:6px">
+              <span>${th.icon}</span>${conc?conc.titulo:'–'}
+            </div>
+            <div class="ep-card-title">${p.titulo}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+            ${estadoBadge(p.estado)}
+            ${sc!=null?`<div style="text-align:right"><div style="font-size:22px;font-weight:900;color:${scoreColor(sc)};line-height:1">${sc}</div><div style="font-size:10px;color:var(--t4);font-weight:700">/100 pts</div></div>`:''}
+          </div>
+        </div>
+        <div class="ep-card-desc">${p.descripcion}</div>
+        <div class="ep-card-pills">
+          <span class="ep-pill">💰 ${fmtMoney(p.presupuesto)}</span>
+          <span class="ep-pill">👥 ${teamShort}</span>
+          <span class="ep-pill">📅 ${p.experiencia}</span>
+        </div>
+        ${ev&&ev.comentario?`<div style="background:#f0fdf4;border-radius:10px;padding:12px 14px;border-left:3px solid var(--teal);margin-top:4px"><div style="font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">💬 Retroalimentación</div><div style="font-size:13px;color:var(--t2);line-height:1.5">${ev.comentario}</div></div>`:''}
+      </div>
+      <div class="ep-card-footer">
+        <div class="ep-card-date">📅 Enviado el ${fmtDate(p.enviado_en)}</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ai btn-sm" onclick="checkFormIAById('${p.id}')">✨ Verificar IA</button>
+        </div>
+      </div>
+      <div id="ia-check-${p.id}"></div>
+    </div>`;
+  }).join('');
+
+  const emptyFiltered=filtered.length===0?`<div class="empty-state" style="padding:36px"><div class="icon">🔍</div><p>No tienes postulaciones en esta categoría.</p></div>`:'';
+
+  return`
+<div style="display:flex;gap:14px;margin-bottom:22px;flex-wrap:wrap">
+  <div class="stat-card" style="--accent:var(--teal);flex:1;min-width:140px">
+    <div class="stat-label">Postulaciones</div><div class="stat-val">${mine.length}</div><div class="stat-sub">En total</div><div class="stat-icon">📋</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--yellow);flex:1;min-width:140px">
+    <div class="stat-label">Pendientes</div><div class="stat-val">${counts.pendiente}</div><div class="stat-sub">En espera de revisión</div><div class="stat-icon">⏳</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--blue);flex:1;min-width:140px">
+    <div class="stat-label">En Evaluación</div><div class="stat-val">${counts.en_evaluacion}</div><div class="stat-sub">Siendo revisadas</div><div class="stat-icon">🔍</div>
+  </div>
+  <div class="stat-card" style="--accent:var(--green);flex:1;min-width:140px">
+    <div class="stat-label">Evaluadas</div><div class="stat-val">${counts.evaluado}</div><div class="stat-sub">Con resultado</div><div class="stat-icon">✅</div>
+  </div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+  <div style="font-size:14px;font-weight:700;color:var(--t1)">Mis Postulaciones</div>
+  <button class="btn btn-primary btn-sm" onclick="navTo('concursos-post')">+ Postular a otro concurso</button>
+</div>
+${filterBar}
+${emptyFiltered}
+${filtered.length>0?`<div class="ep-grid">${cards}</div>`:''}`;
+}
+
+// ══════════════════════════════════════
+//  POSTULANTE: NUEVA POSTULACIÓN
+// ══════════════════════════════════════
+function vNuevaPost(){
+  const concId=_concursoSeleccionado;
+  const conc=concId?_allConcs[concId]:concs().find(c=>c.estado==='activo');
+  if(!conc)return`<div class="empty-state"><div class="icon">🏆</div><p>No hay concursos activos en este momento.</p><button class="btn btn-secondary" style="margin-top:16px" onclick="navTo('concursos-post')">Ver todos los concursos</button></div>`;
+
+  return`<div class="section-card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <button class="btn btn-secondary btn-sm" onclick="navTo('concursos-post')">← Volver</button>
+      <h3 style="font-size:15px;font-weight:700">Nueva Postulación</h3>
+    </div>
+    <div class="alert alert-info" style="margin:14px 0">
+      <span>🏆</span>
+      <div><b>${conc.titulo}</b> · Cierre: <b>${conc.fecha_cierre}</b> · Monto máximo: <b>${fmtMoney(conc.monto_max)}</b></div>
+    </div>
+    <div class="field-group"><label>Título del Proyecto *</label><input type="text" id="np-titulo" placeholder="Nombre descriptivo de tu propuesta"></div>
+    <div class="field-group"><label>Descripción del Proyecto *</label><textarea id="np-desc" rows="4" placeholder="Describe el problema que resuelves y tu propuesta de solución..."></textarea></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="field-group"><label>Presupuesto Solicitado (CLP) *</label><input type="number" id="np-presupuesto" placeholder="0"></div>
+      <div class="field-group"><label>Experiencia Relevante *</label><input type="text" id="np-exp" placeholder="Ej: 3 años en proyectos de tecnología"></div>
+    </div>
+    <div class="field-group"><label>Equipo de Trabajo *</label><textarea id="np-equipo" rows="2" placeholder="Integrantes y roles del equipo..."></textarea></div>
+    <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+      <button class="btn btn-ai" onclick="checkFormIANew()">✨ Verificar completitud con IA</button>
+      <button class="btn btn-primary" onclick="enviarPost('${conc.id}')">Enviar Postulación →</button>
+    </div>
+    <div id="ia-check-new"></div>
+  </div>`;
+}
+
+// ══════════════════════════════════════
+//  POSTULANTE: ESTADO
+// ══════════════════════════════════════
+function vEstado(){
+  const mine=posts().filter(p=>p.postulante_uid===_session.uid);
+  if(!mine.length)return`<div class="empty-state" style="padding:60px">
+    <div class="icon">🔎</div>
+    <p style="font-size:15px;font-weight:600;margin-bottom:8px">Sin postulaciones registradas</p>
+    <button class="btn btn-primary" style="margin-top:12px" onclick="navTo('concursos-post')">🏆 Ver concursos disponibles</button>
+  </div>`;
+
+  const stepsDef=[
+    {key:'enviado',   icon:'📨', label:'Enviada',       sublabel:'Recibida'},
+    {key:'revision',  icon:'🔍', label:'En Revisión',   sublabel:'Verificación'},
+    {key:'evaluacion',icon:'⚖️', label:'Evaluación',    sublabel:'Panel evaluador'},
+    {key:'resultado', icon:'🏆', label:'Resultado',      sublabel:'Comunicación'},
+  ];
+
+  function getStepState(key, p){
+    const ev=Object.values(p.evaluaciones||{})[0];
+    switch(key){
+      case'enviado':   return{cls:'done',  sub:fmtDate(p.enviado_en)};
+      case'revision':  return p.estado==='pendiente'?{cls:'active',sub:'En espera'}:{cls:'done',sub:'Completado'};
+      case'evaluacion':return p.estado==='evaluado'?{cls:'done',sub:'Completado'}:p.estado==='en_evaluacion'?{cls:'active',sub:'En proceso'}:{cls:'pending',sub:'Pendiente'};
+      case'resultado': return p.estado==='evaluado'?{cls:'done',sub:ev?fmtDate(ev.fecha):'Listo'}:{cls:'pending',sub:'Pendiente'};
+    }
+  }
+
+  function pctBar(p){
+    if(p.estado==='pendiente') return 5;
+    if(p.estado==='en_evaluacion') return 65;
+    if(p.estado==='evaluado') return 100;
+    return 15;
+  }
+
+  const statCounts={
+    todas:mine.length,
+    pendiente:mine.filter(p=>p.estado==='pendiente').length,
+    en_evaluacion:mine.filter(p=>p.estado==='en_evaluacion').length,
+    evaluado:mine.filter(p=>p.estado==='evaluado').length,
+  };
+  const statFiltros=[
+    {key:'todas',      label:'Todas',         icon:'📋'},
+    {key:'pendiente',  label:'Pendientes',    icon:'⏳'},
+    {key:'en_evaluacion',label:'En Evaluación',icon:'🔍'},
+    {key:'evaluado',   label:'Evaluadas',     icon:'✅'},
+  ];
+  const estadoFilterBar=`<div class="filter-bar">
+    ${statFiltros.map(f=>`<button class="filter-chip${_estadoFiltro===f.key?' active':''}" onclick="setEstadoFiltro('${f.key}')">
+      ${f.icon} ${f.label}<span class="chip-count">${statCounts[f.key]}</span>
+    </button>`).join('')}
+  </div>`;
+
+  const filteredMine=_estadoFiltro==='todas'?mine:mine.filter(p=>p.estado===_estadoFiltro);
+
+  const cards=filteredMine.map(p=>{
+    const conc=_allConcs[p.concurso_id];
+    const th=CONC_THEME[p.concurso_id]||DEFAULT_THEME;
+    const ev=Object.values(p.evaluaciones||{})[0];
+    const pct=pctBar(p);
+
+    const stepHtml=stepsDef.map(s=>{
+      const st=getStepState(s.key,p);
+      return`<div class="step-item ${st.cls}">
+        <div class="step-dot">${st.cls==='done'?'✓':st.cls==='active'?s.icon:'○'}</div>
+        <div class="step-label">${s.label}</div>
+        <div class="step-sublabel">${st.sub}</div>
+      </div>`;
+    }).join('');
+
+    const scoreHtml=p.puntaje_total!=null?`
+      <div style="text-align:center">
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Puntaje</div>
+        <div style="font-size:28px;font-weight:800;color:#fff;line-height:1">${p.puntaje_total}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6)">/100</div>
+      </div>`:`<div style="text-align:center"><div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px">Estado</div><div style="margin-top:4px">${estadoBadge(p.estado)}</div></div>`;
+
+    return`<div class="post-status-card">
+      <div class="post-status-card-hero" style="background:${th.grad}">
+        <div class="post-status-card-info">
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${conc?conc.categoria:''} · ${conc?conc.titulo:'–'}</div>
+          <div class="post-status-card-title" style="color:#fff">${p.titulo}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:3px">Enviado el ${fmtDate(p.enviado_en)} · ${fmtMoney(p.presupuesto)}</div>
+        </div>
+        ${scoreHtml}
+      </div>
+      <div style="height:5px;background:rgba(0,0,0,.07);overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${p.estado==='evaluado'?'var(--green)':'var(--teal)'};transition:width .6s ease"></div>
+      </div>
+      <div class="post-status-card-steps">
+        <div class="stepper">${stepHtml}</div>
+        ${ev&&ev.comentario?`<div style="margin-top:12px;background:#f8f9fb;border-radius:10px;padding:12px 16px;border-left:3px solid var(--teal)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Comentario del evaluador</div><div style="font-size:13px;color:var(--t2);line-height:1.5">${ev.comentario}</div></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  const emptyEstado=filteredMine.length===0?`<div class="empty-state" style="padding:40px"><div class="icon">🔍</div><p>No hay postulaciones en esta categoría.</p></div>`:'';
+
+  return`
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+  <div>
+    <div style="font-size:20px;font-weight:800">Estado de mis Postulaciones</div>
+    <div style="font-size:13px;color:var(--t3);margin-top:2px">${mine.length} postulación${mine.length!==1?'es':''} registrada${mine.length!==1?'s':''}</div>
+  </div>
+  <button class="btn btn-primary btn-sm" onclick="navTo('concursos-post')">+ Postular a otro concurso</button>
+</div>
+${estadoFilterBar}
+${emptyEstado}${cards}`;
+}
+
+// ══════════════════════════════════════
+//  ENVIAR POSTULACIÓN
+// ══════════════════════════════════════
+function enviarPost(concursoId){
+  const titulo=document.getElementById('np-titulo')?.value?.trim();
+  const desc=document.getElementById('np-desc')?.value?.trim();
+  const pres=parseInt(document.getElementById('np-presupuesto')?.value||0);
+  const exp=document.getElementById('np-exp')?.value?.trim();
+  const equipo=document.getElementById('np-equipo')?.value?.trim();
+  if(!titulo||!desc||!pres||!exp||!equipo){toast('Completa todos los campos requeridos','warn');return;}
+  const id='post_'+Date.now();
+  const np={
+    id,concurso_id:concursoId||'conc001',
+    postulante_uid:_session.uid,postulante_nombre:_session.nombre,
+    postulante_email:_session.email,postulante_org:_session.org,
+    titulo,descripcion:desc,presupuesto:pres,experiencia:exp,equipo,
+    estado:'pendiente',puntaje_total:null,enviado_en:Date.now(),evaluaciones:{}
+  };
+  _allPosts[id]=np;
+  if(_db)_db.ref(`${DB_PATH}/postulaciones/${id}`).set(np);
+  _concursoSeleccionado=null;
+  toast('Postulación enviada exitosamente ✅');
+  navTo('mi-postulacion');
+}
+
+// ══════════════════════════════════════
+//  DETALLE MODAL
+// ══════════════════════════════════════
+function openDetalle(id){
+  const p=_allPosts[id];if(!p)return;
+  const isEval=_session?.rol==='evaluador';
+  document.getElementById('modal-det-title').textContent=p.titulo;
+  const ev=Object.values(p.evaluaciones||{})[0];
+  document.getElementById('modal-det-body').innerHTML=`
+    ${isEval?`<div class="alert alert-warn"><span>🔒</span> Evaluación ciega — identidad oculta.</div>`:`
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:4px">POSTULANTE</div>
+      <div style="font-size:15px;font-weight:700">${p.postulante_nombre}</div>
+      <div style="font-size:12px;color:var(--t4)">${p.postulante_email} · ${p.postulante_org}</div>
+    </div>`}
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:4px">DESCRIPCIÓN</div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.6">${p.descripcion}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div><div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:3px">PRESUPUESTO</div><div style="font-size:14px;font-weight:700">${fmtMoney(p.presupuesto)}</div></div>
+      <div><div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:3px">ESTADO</div><div style="margin-top:2px">${estadoBadge(p.estado)}</div></div>
+      <div><div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:3px">EQUIPO</div><div style="font-size:13px;color:var(--t2)">${p.equipo}</div></div>
+      <div><div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:3px">EXPERIENCIA</div><div style="font-size:13px;color:var(--t2)">${p.experiencia}</div></div>
+    </div>
+    ${ev?`<div style="border-top:1px solid var(--border);padding-top:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:6px">EVALUACIÓN</div>
+      <div style="font-size:28px;font-weight:800;color:${scoreColor(ev.total)}">${ev.total}<span style="font-size:13px;font-weight:400">/100</span></div>
+      <div style="font-size:13px;color:var(--t2);margin-top:6px">${ev.comentario||''}</div>
+    </div>`:''}`;
+  document.getElementById('modal-det-footer').innerHTML=`
+    <button class="btn btn-secondary btn-sm" onclick="closeModal('modal-detalle')">Cerrar</button>
+    ${p.estado!=='evaluado'?`<button class="btn btn-primary btn-sm" onclick="closeModal('modal-detalle');openEval('${p.id}')">Evaluar</button>`:''}`;
+  openModal('modal-detalle');
+}
+
+// ══════════════════════════════════════
+//  EVAL MODAL
+// ══════════════════════════════════════
+function openEval(id){
+  const p=_allPosts[id];if(!p)return;
+  _evalTarget=id;
+  const crit=(_settings?.criterios||SEED_SETTINGS.criterios);
+  const prev=(p.evaluaciones||{})[_session.uid];
+  const rows=crit.map((c,i)=>`
+    <div class="criterion-row">
+      <div class="criterion-name"><b>${c.nombre}</b></div>
+      <input class="criterion-input" type="number" min="0" max="${c.peso}" id="crit-${i}" value="${prev?.puntajes?.['c'+i]||0}" oninput="updEvalTotal()">
+      <span class="criterion-max">/ ${c.peso}</span>
+      <span class="ai-sug-btn" id="ai-sug-${i}" style="display:none">✨ IA</span>
+    </div>`).join('');
+
+  document.getElementById('modal-eval-body').innerHTML=`
+    <div class="alert alert-warn" style="margin-bottom:14px"><span>🔒</span> <b>Evaluación ciega</b> — la identidad del postulante no se muestra.</div>
+    <div style="margin-bottom:12px"><b style="font-size:14px">${p.titulo}</b><div style="font-size:12px;color:var(--t4);margin-top:3px">${fmtDate(p.enviado_en)} · ${fmtMoney(p.presupuesto)}</div></div>
+    <div style="font-size:13px;color:var(--t2);margin-bottom:16px;line-height:1.5">${p.descripcion}</div>
+    <div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:10px;text-transform:uppercase">Criterios de Evaluación</div>
+    ${rows}
+    <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
+      <span style="font-size:13px;color:var(--t3)">Puntaje Total:</span>
+      <span style="font-size:28px;font-weight:800;color:var(--teal)" id="eval-tot">${prev?.total||0}</span>
+    </div>
+    <div class="field-group" style="margin-top:14px">
+      <label>Comentario del Evaluador</label>
+      <textarea id="eval-com" rows="3" placeholder="Fortalezas, debilidades, observaciones...">${prev?.comentario||''}</textarea>
+    </div>
+    <div id="ai-eval-panel"></div>`;
+  openModal('modal-eval');
+}
+
+function updEvalTotal(){
+  const crit=_settings?.criterios||SEED_SETTINGS.criterios;
+  let tot=0;
+  crit.forEach((_,i)=>{tot+=parseInt(document.getElementById('crit-'+i)?.value||0);});
+  const el=document.getElementById('eval-tot');
+  if(el){el.textContent=tot;el.style.color=scoreColor(tot);}
+}
+
+function guardarEvaluacion(){
+  const crit=_settings?.criterios||SEED_SETTINGS.criterios;
+  let tot=0;const puntajes={};
+  crit.forEach((_,i)=>{const v=parseInt(document.getElementById('crit-'+i)?.value||0);puntajes['c'+i]=v;tot+=v;});
+  const comentario=document.getElementById('eval-com')?.value||'';
+  const p=_allPosts[_evalTarget];if(!p)return;
+  const ev={uid:_session.uid,puntajes,comentario,total:tot,fecha:Date.now()};
+  if(!p.evaluaciones)p.evaluaciones={};
+  p.evaluaciones[_session.uid]=ev;
+  p.estado='evaluado';p.puntaje_total=tot;
+  if(_db){
+    _db.ref(`${DB_PATH}/postulaciones/${_evalTarget}/evaluaciones/${_session.uid}`).set(ev);
+    _db.ref(`${DB_PATH}/postulaciones/${_evalTarget}/estado`).set('evaluado');
+    _db.ref(`${DB_PATH}/postulaciones/${_evalTarget}/puntaje_total`).set(tot);
+  }
+  closeModal('modal-eval');
+  renderView(_activeNav);
+  toast('Evaluación guardada ✅');
+}
+
+// ══════════════════════════════════════
+//  AI CALLS
+// ══════════════════════════════════════
+async function _llmCall(messages){
+  const key=_settings?.api_key||'';
+  if(!key)return'⚠️ No hay API Key configurada. Ve a Configuración → API Key Gemini.';
+  try{
+    const contents=messages.map(m=>({
+      role:m.role==='assistant'?'model':m.role,
+      parts:[{text:m.content}]
+    }));
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents,generationConfig:{maxOutputTokens:1000}})
+    });
+    const j=await r.json();
+    if(j.error)return'Error IA: '+j.error.message;
+    return j.candidates?.[0]?.content?.parts?.[0]?.text||'Sin respuesta';
+  }catch(e){return'Error de conexión: '+e.message;}
+}
+
+async function pedirSugerenciaIA(){
+  const p=_allPosts[_evalTarget];if(!p)return;
+  const crit=_settings?.criterios||SEED_SETTINGS.criterios;
+  const panel=document.getElementById('ai-eval-panel');
+  if(!panel)return;
+  panel.innerHTML=`<div class="ai-panel"><h4>✨ Analizando con IA…</h4><div style="color:#15803d;font-style:italic;font-size:13px">Generando sugerencias de puntaje…</div></div>`;
+
+  const prompt=`Eres evaluador experto en innovación tecnológica. Analiza el proyecto y sugiere puntajes para cada criterio. Responde SOLO en JSON: {"c0":N,"c1":N,"c2":N,"c3":N,"justificacion":"texto"}.
+
+Proyecto: ${p.titulo}
+Descripción: ${p.descripcion}
+Equipo: ${p.equipo}
+Experiencia: ${p.experiencia}
+Presupuesto: ${fmtMoney(p.presupuesto)}
+
+Criterios (máximo en paréntesis):
+${crit.map((c,i)=>`c${i}: ${c.nombre} (max ${c.peso})`).join('\n')}`;
+
+  const res=await _llmCall([{role:'user',content:prompt}]);
+  try{
+    const json=res.match(/\{[\s\S]*\}/)?.[0];
+    const obj=JSON.parse(json||res);
+    crit.forEach((_,i)=>{
+      const v=obj['c'+i];
+      if(v!==undefined){
+        const sug=document.getElementById('ai-sug-'+i);
+        if(sug){
+          sug.style.display='inline';
+          sug.textContent=`✨ Aceptar ${v}`;
+          sug.onclick=()=>{
+            const inp=document.getElementById('crit-'+i);
+            if(inp){inp.value=v;updEvalTotal();}
+            sug.style.display='none';
+          };
+        }
+      }
+    });
+    panel.innerHTML=`<div class="ai-panel"><h4>✨ Justificación IA</h4><div class="ai-result">${obj.justificacion||'Puntuaciones sugeridas disponibles arriba.'}</div></div>`;
+  }catch(e){
+    panel.innerHTML=`<div class="ai-panel"><h4>✨ Análisis IA</h4><div class="ai-result">${res}</div></div>`;
+  }
+}
+
+async function abrirIARanking(){
+  openModal('modal-ia-rank');
+  const body=document.getElementById('modal-ia-body');
+  body.innerHTML=`<div style="color:#15803d;font-style:italic;font-size:13px">Analizando proyectos con IA…</div>`;
+  const evaluated=posts().filter(p=>p.puntaje_total!=null).sort((a,b)=>b.puntaje_total-a.puntaje_total);
+  if(!evaluated.length){body.innerHTML=`<div class="alert alert-warn">No hay postulaciones evaluadas aún.</div>`;return;}
+  const params=_settings?.ranking_params||SEED_SETTINGS.ranking_params;
+  const ctx=_settings?.ranking_ctx||SEED_SETTINGS.ranking_ctx;
+  const list=evaluated.map((p,i)=>`${i+1}. "${p.titulo}" (${p.postulante_org}) — Puntaje: ${p.puntaje_total}/100\n   ${p.descripcion}`).join('\n\n');
+
+  const prompt=`Eres experto en evaluación de proyectos de innovación. Analiza los proyectos evaluados y genera un ranking con justificación basado en los parámetros.
+
+CONTEXTO: ${ctx}
+PARÁMETROS: ${params}
+
+PROYECTOS (por puntaje):
+${list}
+
+Entrega:
+1. Ranking final recomendado con justificación
+2. Análisis de los 3 mejores proyectos
+3. Conclusión y recomendación para el jurado`;
+
+  const res=await _llmCall([{role:'user',content:prompt}]);
+  body.innerHTML=`<div class="ai-panel" style="margin:0"><h4>✨ Análisis IA – Ranking de Proyectos</h4><div class="ai-result">${res.replace(/\n/g,'<br>')}</div></div>`;
+}
+
+async function checkFormIAById(id){
+  const mine=_allPosts[id];
+  if(!mine)return;
+  const el=document.getElementById('ia-check-'+id);
+  if(!el)return;
+  el.innerHTML=`<div class="ai-panel"><h4>✨ Verificando con IA…</h4><div style="color:#15803d;font-style:italic;font-size:13px">Analizando completitud…</div></div>`;
+  const prompt=`Analiza la siguiente postulación y evalúa su completitud (NO mejores el contenido). Indica para cada campo: ✅ completo, ⚠️ podría mejorar, ❌ incompleto. Al final concluye si está lista para evaluación.\n\n- Título: ${mine.titulo}\n- Descripción: ${mine.descripcion}\n- Presupuesto: ${fmtMoney(mine.presupuesto)}\n- Equipo: ${mine.equipo}\n- Experiencia: ${mine.experiencia}`;
+  const res=await _llmCall([{role:'user',content:prompt}]);
+  el.innerHTML=`<div class="ai-panel"><h4>✨ Resultado de verificación</h4><div class="ai-result">${res.replace(/\n/g,'<br>')}</div></div>`;
+}
+
+async function checkFormIA(){
+  const mine=posts().find(p=>p.postulante_uid===_session.uid);
+  if(!mine)return;
+  const el=document.getElementById('ia-check-result');
+  if(!el)return;
+  el.innerHTML=`<div class="ai-panel"><h4>✨ Verificando con IA…</h4><div style="color:#15803d;font-style:italic;font-size:13px">Analizando completitud…</div></div>`;
+  const prompt=`Analiza la siguiente postulación y evalúa su completitud (NO mejores el contenido). Indica para cada campo: ✅ completo, ⚠️ podría mejorar, ❌ incompleto. Al final concluye si está lista para evaluación.
+
+- Título: ${mine.titulo}
+- Descripción: ${mine.descripcion}
+- Presupuesto: ${fmtMoney(mine.presupuesto)}
+- Equipo: ${mine.equipo}
+- Experiencia: ${mine.experiencia}`;
+  const res=await _llmCall([{role:'user',content:prompt}]);
+  el.innerHTML=`<div class="ai-panel"><h4>✨ Resultado de verificación</h4><div class="ai-result">${res.replace(/\n/g,'<br>')}</div></div>`;
+}
+
+async function checkFormIANew(){
+  const t=document.getElementById('np-titulo')?.value?.trim()||'(vacío)';
+  const d=document.getElementById('np-desc')?.value?.trim()||'(vacío)';
+  const p=document.getElementById('np-presupuesto')?.value||'0';
+  const e=document.getElementById('np-exp')?.value?.trim()||'(vacío)';
+  const eq=document.getElementById('np-equipo')?.value?.trim()||'(vacío)';
+  const el=document.getElementById('ia-check-new');
+  if(!el)return;
+  el.innerHTML=`<div class="ai-panel"><h4>✨ Verificando…</h4><div style="color:#15803d;font-style:italic;font-size:13px">Analizando tu borrador…</div></div>`;
+  const prompt=`Analiza este borrador de postulación y evalúa completitud (NO mejores el contenido). Indica ✅/⚠️/❌ por campo y concluye si está listo para enviar.
+
+- Título: ${t}
+- Descripción: ${d}
+- Presupuesto: $${p}
+- Equipo: ${eq}
+- Experiencia: ${e}`;
+  const res=await _llmCall([{role:'user',content:prompt}]);
+  el.innerHTML=`<div class="ai-panel"><h4>✨ Resultado de verificación</h4><div class="ai-result">${res.replace(/\n/g,'<br>')}</div></div>`;
+}
+
+// ══════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function toast(msg,type='success'){
+  let el=document.getElementById('_toast');
+  if(!el){
+    el=document.createElement('div');el.id='_toast';
+    Object.assign(el.style,{position:'fixed',bottom:'24px',right:'24px',padding:'12px 20px',borderRadius:'10px',fontWeight:'600',fontSize:'13px',zIndex:'99999',boxShadow:'0 4px 20px rgba(0,0,0,.2)',transition:'opacity .3s'});
+    document.body.appendChild(el);
+  }
+  const colors={success:{bg:'#e8f5e9',border:'#a5d6a7',color:'#1b5e20'},warn:{bg:'#fff8e1',border:'#ffe082',color:'#6d4c00'},error:{bg:'#ffebee',border:'#ef9a9a',color:'#c62828'}};
+  const c=colors[type]||colors.success;
+  Object.assign(el.style,{background:c.bg,border:`1px solid ${c.border}`,color:c.color,opacity:'1'});
+  el.textContent=msg;
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>{el.style.opacity='0';},3000);
+}
+
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+if(_session)bootApp();
+</script>
+</body>
+</html>
