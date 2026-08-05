@@ -996,7 +996,11 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
   // Redirect cliente4 → concursos NexEnergy
   (function(){
     const p = new URLSearchParams(window.location.search).get('c');
-    if(p === 'cliente4') window.location.replace('./concurso.html');
+    if(p === 'cliente4'){
+      document.open();
+      document.write('<style>*{margin:0;padding:0;box-sizing:border-box}html,body,iframe{width:100%;height:100%;border:none;display:block}</style><iframe src="./concurso.html" style="width:100%;height:100%;border:none"></iframe>');
+      document.close();
+    }
   })();
 </script>
 </head>
