@@ -2998,7 +2998,7 @@ function openEmailModal() {
   (PIPELINE||[]).forEach((q,i) => {
     const opt = document.createElement('option');
     opt.value = i;
-    opt.textContent = `${q.id||('COT-'+i)} · ${q.client||'Cliente'} · ${q.svc||''} · ${q.total||''}`;
+    opt.textContent = `${q.id||('COT-'+i)} · ${q.cliente||q.client||'Cliente'} · ${q.svc||''} · ${q.total||''}`;
     sel.appendChild(opt);
   });
   prev.style.display = 'none';
@@ -3029,11 +3029,11 @@ async function generateEmailPreview() {
   let texto = '';
   if (CONFIG.llm && CONFIG.llm.apiKey) {
     const sys = `Eres el redactor de emails comerciales de ${company}. Escribe un párrafo introductorio breve (3-4 oraciones) personalizado para acompañar una cotización. Tono profesional y cercano. En español. Sin saludo ni firma — solo el cuerpo.`;
-    const usr = `Cliente: ${q.client||'el cliente'}\nSegmento: ${segLabel}\nServicio: ${svcLabel}\nTotal: ${q.total||''}\nEstado: ${q.estado||'En proceso'}`;
+    const usr = `Cliente: ${q.cliente||q.client||'el cliente'}\nSegmento: ${segLabel}\nServicio: ${svcLabel}\nTotal: ${q.total||''}\nEstado: ${q.estado||'En proceso'}`;
     texto = await _llmCall(sys, usr) || '';
   }
   if (!texto) {
-    texto = `Es un gusto presentarle la propuesta comercial que hemos preparado especialmente para ${q.client||'su empresa'}. Nuestro equipo ha diseñado esta solución de ${svcLabel} considerando las necesidades del segmento ${segLabel} y los estándares de calidad que nos caracterizan. Quedamos a su disposición para resolver cualquier consulta y coordinar los próximos pasos.`;
+    texto = `Es un gusto presentarle la propuesta comercial que hemos preparado especialmente para ${q.cliente||q.client||'su empresa'}. Nuestro equipo ha diseñado esta solución de ${svcLabel} considerando las necesidades del segmento ${segLabel} y los estándares de calidad que nos caracterizan. Quedamos a su disposición para resolver cualquier consulta y coordinar los próximos pasos.`;
   }
   prev.textContent   = texto;
   prev.style.display = 'block';
