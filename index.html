@@ -2657,12 +2657,12 @@ function deactivateServiceById(id){
   const actv=CONFIG.services.filter(x=>x.enabled!==false);
   if(actv.length<=1)return;
   s.enabled=false;
-  renderSvcGrid();rebuildSvcList();renderCESvcEditor&&renderCESvcEditor();saveConfigToStorage();
+  renderSvcGrid();renderSbSvcs();rebuildSvcList();renderCESvcEditor&&renderCESvcEditor();saveConfigToStorage();
 }
-function deactivateCESvcItem(i){const s=CONFIG.services[i];if(!s)return;const actv=CONFIG.services.filter(x=>x.enabled!==false);if(actv.length<=1){return;}s.enabled=false;renderCESvcEditor();rebuildSvcList();renderSvcGrid();saveConfigToStorage();}
-function reactivateCESvcItem(i){const s=CONFIG.services[i];if(!s)return;s.enabled=true;renderCESvcEditor();rebuildSvcList();renderSvcGrid();saveConfigToStorage();}
-function deleteCESvcItem(i){CONFIG.services.splice(i,1);renderCESvcEditor();rebuildSvcList();renderSvcGrid();saveConfigToStorage();}
-function addCESvcItem(name){const ex=CONFIG.services.find(s=>s.name===name);if(ex){ex.enabled=true;}else{CONFIG.services.push({id:'svc'+Date.now(),name,desc:'',icon:'<circle cx="12" cy="12" r="10"/>'});}renderCESvcEditor();rebuildSvcList();renderSvcGrid();}
+function deactivateCESvcItem(i){const s=CONFIG.services[i];if(!s)return;const actv=CONFIG.services.filter(x=>x.enabled!==false);if(actv.length<=1){return;}s.enabled=false;renderCESvcEditor();rebuildSvcList();renderSvcGrid();renderSbSvcs();saveConfigToStorage();}
+function reactivateCESvcItem(i){const s=CONFIG.services[i];if(!s)return;s.enabled=true;renderCESvcEditor();rebuildSvcList();renderSvcGrid();renderSbSvcs();saveConfigToStorage();}
+function deleteCESvcItem(i){CONFIG.services.splice(i,1);renderCESvcEditor();rebuildSvcList();renderSvcGrid();renderSbSvcs();saveConfigToStorage();}
+function addCESvcItem(name){const ex=CONFIG.services.find(s=>s.name===name);if(ex){ex.enabled=true;}else{CONFIG.services.push({id:'svc'+Date.now(),name,desc:'',icon:'<circle cx="12" cy="12" r="10"/>'});}renderCESvcEditor();rebuildSvcList();renderSvcGrid();renderSbSvcs();}
 function addCESvcCustom(){const i=document.getElementById('ce-svc-inp');if(!i||!i.value.trim())return;addCESvcItem(i.value.trim());i.value='';}
 function removeCESvcItem(i){deactivateCESvcItem(i);}
 
@@ -3355,7 +3355,7 @@ function rebuildSvcList() {
 function addServiceByName(el, name) {
   const ex = CONFIG.services.find(s => s.name === name);
   if(ex){ ex.enabled = true; } else { CONFIG.services.push({ id:'svc'+Date.now(), name, desc:'', icon:'<circle cx="12" cy="12" r="10"/>' }); }
-  rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
+  rebuildSvcList(); renderSvcGrid(); renderSbSvcs(); markCfgDirty(); saveConfigToStorage();
 }
 function addServiceCustom() {
   const inp = document.getElementById('cfg-new-svc');
@@ -3374,15 +3374,15 @@ function removeService(i) {
   const actv = CONFIG.services.filter(s=>s.enabled!==false);
   if (actv.length <= 1) { toast('Debe existir al menos un servicio activo', 'warn'); return; }
   CONFIG.services[i].enabled = false;
-  rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
+  rebuildSvcList(); renderSvcGrid(); renderSbSvcs(); markCfgDirty(); saveConfigToStorage();
 }
 function reactivateService(i) {
   CONFIG.services[i].enabled = true;
-  rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
+  rebuildSvcList(); renderSvcGrid(); renderSbSvcs(); markCfgDirty(); saveConfigToStorage();
 }
 function deleteService(i) {
   CONFIG.services.splice(i, 1);
-  rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
+  rebuildSvcList(); renderSvcGrid(); renderSbSvcs(); markCfgDirty(); saveConfigToStorage();
 }
 
 // ─── Precios helpers ─────────────────────────────────────────────────
