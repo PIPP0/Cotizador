@@ -727,7 +727,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 .svc-desc{font-size:11px;color:var(--t3);margin-top:3px}
 .svc{position:relative}.svc-rm{display:none;position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;border:none;background:rgba(200,60,60,.12);color:#c43c3c;font-size:11px;line-height:1;cursor:pointer;align-items:center;justify-content:center;padding:0;font-family:inherit;opacity:.7;transition:.12s}
 .svc-rm:hover{opacity:1;background:rgba(200,60,60,.22)}
-.svc-grid:hover .svc-rm{display:flex}
+.svc-grid.editing .svc-rm{display:flex}
 
 /* System pills */
 .sys-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
@@ -2620,6 +2620,9 @@ function toggleCardEditor(edId, btnId) {
   const opening=!ed.classList.contains('open');
   ed.classList.toggle('open',opening);
   if(btn) btn.classList.toggle('active',opening);
+  // Show X buttons on svc cards only when svc editor is open
+  const svcGrid=document.getElementById('svc-container');
+  if(edId==='ce-svc-ed' && svcGrid) svcGrid.classList.toggle('editing', opening);
   if(opening){
     if(edId==='ce-seg-ed')    renderCESegEditor();
     if(edId==='ce-svc-ed')    renderCESvcEditor();
