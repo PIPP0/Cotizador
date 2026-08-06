@@ -4123,9 +4123,12 @@ let PIPELINE = _getPipelineDemo();
 
 function _plKey(){ return 'pipeline_'+_CLIENT_ID+'_'+((CONFIG.nameA||'')+(CONFIG.nameB||'empresa')).toLowerCase().replace(/\s+/g,''); }
 function savePipelineToStorage() {
-  try { localStorage.setItem(_plKey(), JSON.stringify(PIPELINE)); } catch(e){}
+  const _ts = Date.now();
+  try { localStorage.setItem(_plKey(), JSON.stringify(PIPELINE)); localStorage.setItem(_plKey()+'_ts', _ts); } catch(e){}
   if (_fbDb) {
-    _fbDb.ref('pipeline/' + _CLIENT_ID).set(PIPELINE).catch(e => console.warn('[Firebase] pipeline save error:', e));
+    const _fbPayload = PIPELINE.map(r=>({...r}));
+    _fbPayload._savedAt = _ts;
+    _fbDb.ref('pipeline/' + _CLIENT_ID).set(_fbPayload).catch(e => console.warn('[Firebase] pipeline save error:', e));
   }
 }
 
@@ -4153,14 +4156,23 @@ function _syncPipelineFromFirebase() {
   if (!_fbDb) return;
   _fbDb.ref('pipeline/' + _CLIENT_ID).on('value', snapshot => {
     const r = snapshot.val();
-    if (!r || !Array.isArray(r) || r.length === 0) return;
+    if (!r || !Array.isArray(r || r.length === 0)) return;
+    const rows = Array.isArray(r) ? r : Object.values(r).filter(x=>x && x.id);
+    if (!rows.length) return;
+    // Solo sobrescribir si Firebase es más reciente que localStorage
+    const localTs = parseInt(localStorage.getItem(_plKey()+'_ts') || '0');
+    const fbTs = r._savedAt || Math.max(...rows.map(x=>x.lastModified||x.created||0));
+    if (localTs > 0 && localTs >= fbTs) {
+      console.log('[Firebase] localStorage más reciente, omitiendo sync.');
+      return;
+    }
     PIPELINE.length = 0;
-    r.forEach(row => PIPELINE.push(row));
+    rows.forEach(row => PIPELINE.push(row));
     const changed = _migrateIdPrefix(PIPELINE);
     if (changed) savePipelineToStorage();
-    else localStorage.setItem(_plKey(), JSON.stringify(PIPELINE));
+    else { localStorage.setItem(_plKey(), JSON.stringify(PIPELINE)); localStorage.setItem(_plKey()+'_ts', fbTs||Date.now()); }
     try { renderAll(); } catch(e) {}
-    console.log('[Firebase] pipeline sincronizado (live):', r.length, 'filas');
+    console.log('[Firebase] pipeline sincronizado (live):', rows.length, 'filas');
   }, e => console.warn('[Firebase] pipeline sync error:', e));
 }
 
