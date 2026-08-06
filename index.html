@@ -4937,8 +4937,10 @@ window.addEventListener('load',()=>{
   }
   try { applyConfig(); } catch(e) { console.warn('[init] applyConfig:', e); }
 
-  // Pre-fill login form for cliente5
+  // Pre-fill login form for cliente5 + force credentials so doLogin() always succeeds
   if(_CLIENT_ID === 'cliente5'){
+    if(typeof _AUTH !== 'undefined'){ _AUTH.admin = 'energy'; _AUTH.ejecutivo = 'energy'; }
+    if(typeof USERS !== 'undefined'){ USERS.admin.pass = 'energy'; USERS.ejecutivo.pass = 'energy'; }
     var _fu = document.getElementById('login-user');
     var _fp = document.getElementById('login-pass');
     if(_fu) _fu.value = 'admin';
