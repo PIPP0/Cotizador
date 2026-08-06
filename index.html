@@ -2224,8 +2224,8 @@ if(_CLIENT_ID === 'cliente5'){
   DEFAULT_CONFIG.since    = 'NexEnergy · ventas@nexenergy.io';
   DEFAULT_CONFIG.colors   = { teal:'1a9e5c', orange:'f59e0b', dark:'0a1f10' };
   DEFAULT_CONFIG.users    = {
-    admin:    { pass:'NexE2024', name:'Administrador' },
-    ejecutivo:{ pass:'NexE2025', name:'Ejecutivo'    }
+    admin:    { pass:'energy', name:'Administrador' },
+    ejecutivo:{ pass:'energy', name:'Ejecutivo'    }
   };
   DEFAULT_CONFIG.services = [
     { id:'mon',  name:'Monitoreo General de Consumos', desc:'Analítica en tiempo real · IA · Aviso de fallas en línea',              icon:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',  active:true },
@@ -4932,6 +4932,7 @@ window.addEventListener('load',()=>{
     CONFIG.location      = DEFAULT_CONFIG.location;
     CONFIG.since         = DEFAULT_CONFIG.since;
     CONFIG.colors        = {...DEFAULT_CONFIG.colors};
+    CONFIG.users         = JSON.parse(JSON.stringify(DEFAULT_CONFIG.users));
     _applyDynamicColors();
   }
   try { applyConfig(); } catch(e) { console.warn('[init] applyConfig:', e); }
