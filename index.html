@@ -4937,6 +4937,14 @@ window.addEventListener('load',()=>{
   }
   try { applyConfig(); } catch(e) { console.warn('[init] applyConfig:', e); }
 
+  // Pre-fill login form for cliente5
+  if(_CLIENT_ID === 'cliente5'){
+    var _fu = document.getElementById('login-user');
+    var _fp = document.getElementById('login-pass');
+    if(_fu) _fu.value = 'admin@nexenergy.io';
+    if(_fp) _fp.value = 'energy';
+  }
+
   // Restaurar datos guardados localmente (con la clave correcta)
   // Si no hay datos guardados, regenerar demo con el nombre de empresa correcto
   try {
