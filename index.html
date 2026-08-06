@@ -991,6 +991,10 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 .ce-sugg-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px}
 .ce-sugg-chip{display:inline-flex;align-items:center;padding:3px 9px;background:var(--surface);border:1.5px dashed var(--border);border-radius:20px;font-size:10.5px;font-weight:600;color:var(--t3);cursor:pointer;transition:.12s}
 .ce-sugg-chip:hover{border-color:var(--teal);color:var(--teal);background:rgba(var(--teal-rgb),.06)}
+.ce-sugg-del{color:#d46e3a;margin-left:5px;opacity:.5;font-size:10px;cursor:pointer;line-height:1;border:none;background:none;padding:0;font-family:inherit}
+.ce-sugg-del:hover{opacity:1}
+.cfg-sugg-del{color:#d46e3a;margin-left:5px;opacity:.5;font-size:11px;cursor:pointer;line-height:1;border:none;background:none;padding:0;font-family:inherit}
+.cfg-sugg-del:hover{opacity:1}
 .ce-add-row{display:flex;gap:5px;margin-top:3px}
 .ce-add-row input{flex:1;padding:6px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--t1);font-size:12px;font-family:inherit;outline:none;transition:.15s}
 .ce-add-row input:focus{border-color:var(--teal)}
@@ -2568,7 +2572,7 @@ function applyConfig() {
 function renderSvcGrid() {
   const grid = document.getElementById('svc-container');
   if (!grid) return;
-  grid.innerHTML = CONFIG.services.map(s =>
+  grid.innerHTML = CONFIG.services.filter(s=>s.enabled!==false).map(s =>
     `<div class="svc${s.active?' on':''}" id="svc-${s.id}" onclick="setSvc('${s.id}')">
       <div class="svc-icon-wrap"><svg viewBox="0 0 24 24">${s.icon}</svg></div>
       <div><div class="svc-name">${s.name}</div><div class="svc-desc">${s.desc}</div></div>
@@ -2586,7 +2590,7 @@ function renderSbSvcs() {
   const el = document.getElementById('sb-svc-list');
   if (!el) return;
   const fallback = ['#1e95a6','#e4b840','#d46e3a','#0fa06a','#8aaac5','#c5d0d9'];
-  el.innerHTML = (CONFIG.services || []).map((s, i) => {
+  el.innerHTML = (CONFIG.services || []).filter(s=>s.enabled!==false).map((s, i) => {
     const color = SVC_COLOR_MAP[s.name] || fallback[i % fallback.length];
     return `<div class="sb-item">
       <div class="sb-dot" style="background:${color}"></div>
@@ -2630,13 +2634,18 @@ function removeCESegItem(i){if(CONFIG.segments.length<=1)return;CONFIG.segments.
 function renderCESvcEditor(){
   const el=document.getElementById('ce-svc'); if(!el) return;
   const SUGG=['Ventilacion Industrial','Refrigeracion Comercial','Automatizacion BMS','Monitoreo 24/7','Auditoria Energetica','Certificacion HVAC','Climatizacion Minera','Sala Limpia'];
-  const chips=CONFIG.services.map((s,i)=>`<span class="ce-chip">${s.name}<button class="ce-chip-rm" onclick="removeCESvcItem(${i})">✕</button></span>`).join('');
-  const suggs=SUGG.filter(n=>!CONFIG.services.find(s=>s.name===n)).map(n=>`<span class="ce-sugg-chip" onclick="addCESvcItem('${n}')">+ ${n}</span>`).join('');
-  el.innerHTML=`<div class="ce-chip-grid">${chips||'<span style="font-size:11px;color:var(--t4)">Sin servicios</span>'}</div>`+(suggs?`<div class="ce-sugg-label">Sugerencias</div><div class="ce-sugg-row">${suggs}</div>`:'')+`<div class="ce-add-row"><input id="ce-svc-inp" placeholder="Nombre del servicio..."><button class="ce-add-btn" onclick="addCESvcCustom()">+ Agregar</button></div>`;
+  const chips=CONFIG.services.filter(s=>s.enabled!==false).map((s,i)=>`<span class="ce-chip">${s.name}<button class="ce-chip-rm" onclick="deactivateCESvcItem(${i})" title="Mover a sugerencias">✕</button></span>`).join('');
+  const inactSuggs=CONFIG.services.map((s,i)=>({s,i})).filter(({s})=>s.enabled===false).map(({s,i})=>`<span class="ce-sugg-chip" onclick="reactivateCESvcItem(${i})">+ ${s.name}<button class="ce-sugg-del" onclick="event.stopPropagation();deleteCESvcItem(${i})" title="Eliminar definitivamente">✕</button></span>`).join('');
+  const staticSuggs=SUGG.filter(n=>!CONFIG.services.find(s=>s.name===n)).map(n=>`<span class="ce-sugg-chip" onclick="addCESvcItem('${n}')">+ ${n}</span>`).join('');
+  const hasSuggs=inactSuggs||staticSuggs;
+  el.innerHTML=`<div class="ce-chip-grid">${chips||'<span style="font-size:11px;color:var(--t4)">Sin servicios</span>'}</div>`+(hasSuggs?`<div class="ce-sugg-label">Sugerencias</div><div class="ce-sugg-row">${inactSuggs}${staticSuggs}</div>`:'')+`<div class="ce-add-row"><input id="ce-svc-inp" placeholder="Nombre del servicio..."><button class="ce-add-btn" onclick="addCESvcCustom()">+ Agregar</button></div>`;
 }
-function addCESvcItem(name){CONFIG.services.push({id:'svc'+Date.now(),name,desc:'',icon:'<circle cx="12" cy="12" r="10"/>'});renderCESvcEditor();rebuildSvcList();renderSvcGrid();}
+function deactivateCESvcItem(i){const s=CONFIG.services[i];if(!s)return;const actv=CONFIG.services.filter(x=>x.enabled!==false);if(actv.length<=1){return;}s.enabled=false;renderCESvcEditor();rebuildSvcList();renderSvcGrid();saveConfigToStorage();}
+function reactivateCESvcItem(i){const s=CONFIG.services[i];if(!s)return;s.enabled=true;renderCESvcEditor();rebuildSvcList();renderSvcGrid();saveConfigToStorage();}
+function deleteCESvcItem(i){CONFIG.services.splice(i,1);renderCESvcEditor();rebuildSvcList();renderSvcGrid();saveConfigToStorage();}
+function addCESvcItem(name){const ex=CONFIG.services.find(s=>s.name===name);if(ex){ex.enabled=true;}else{CONFIG.services.push({id:'svc'+Date.now(),name,desc:'',icon:'<circle cx="12" cy="12" r="10"/>'});}renderCESvcEditor();rebuildSvcList();renderSvcGrid();}
 function addCESvcCustom(){const i=document.getElementById('ce-svc-inp');if(!i||!i.value.trim())return;addCESvcItem(i.value.trim());i.value='';}
-function removeCESvcItem(i){if(CONFIG.services.length<=1)return;CONFIG.services.splice(i,1);renderCESvcEditor();rebuildSvcList();renderSvcGrid();}
+function removeCESvcItem(i){deactivateCESvcItem(i);}
 
 function renderCESysEditor(){
   const el=document.getElementById('ce-sys'); if(!el) return;
@@ -3310,19 +3319,23 @@ const SVC_SUGGESTIONS = ['Ventilación Industrial','Refrigeración Comercial','A
 function rebuildSvcList() {
   const el = document.getElementById('cfg-services-list');
   if (!el) return;
-  const chips = CONFIG.services.map((s,i) =>
-    `<span class="cfg-chip">${s.name}<button class="cfg-chip-rm" onclick="removeService(${i})" title="Quitar">✕</button></span>`
+  const chips = CONFIG.services.filter(s=>s.enabled!==false).map((s,i) =>
+    `<span class="cfg-chip">${s.name}<button class="cfg-chip-rm" onclick="removeService(${i})" title="Mover a sugerencias">✕</button></span>`
   ).join('');
-  const suggs = SVC_SUGGESTIONS
+  const inactSuggs = CONFIG.services.map((s,idx)=>({s,idx})).filter(({s})=>s.enabled===false)
+    .map(({s,idx})=>`<span class="cfg-sugg-chip" onclick="reactivateService(${idx})">+ ${s.name}<button class="cfg-sugg-del" onclick="event.stopPropagation();deleteService(${idx})" title="Eliminar definitivamente">✕</button></span>`).join('');
+  const staticSuggs = SVC_SUGGESTIONS
     .filter(n => !CONFIG.services.find(s => s.name === n))
     .map(n => `<span class="cfg-sugg-chip" onclick="addServiceByName(this,'${n.replace(/'/g,"\'")}')">+ ${n}</span>`).join('');
+  const hasSuggs = inactSuggs || staticSuggs;
   el.innerHTML =
     `<div class="cfg-chip-grid">${chips || '<span style="font-size:11px;color:var(--t4)">Sin servicios</span>'}</div>`+
-    (suggs ? `<div class="cfg-sugg-label">Sugerencias</div><div class="cfg-sugg-row">${suggs}</div>` : '')+
+    (hasSuggs ? `<div class="cfg-sugg-label">Sugerencias</div><div class="cfg-sugg-row">${inactSuggs}${staticSuggs}</div>` : '')+
     `<div class="cfg-inline-add"><input class="cfg-inp" id="cfg-new-svc" placeholder="Nombre del servicio…"><button class="cfg-add-btn" onclick="addServiceCustom()">+ Agregar</button></div>`;
 }
 function addServiceByName(el, name) {
-  CONFIG.services.push({ id:'svc'+Date.now(), name, desc:'', icon:'<circle cx="12" cy="12" r="10"/>' });
+  const ex = CONFIG.services.find(s => s.name === name);
+  if(ex){ ex.enabled = true; } else { CONFIG.services.push({ id:'svc'+Date.now(), name, desc:'', icon:'<circle cx="12" cy="12" r="10"/>' }); }
   rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
 }
 function addServiceCustom() {
@@ -3339,7 +3352,16 @@ function addServiceCustom() {
   inp.value = ''; rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
 }
 function removeService(i) {
-  if (CONFIG.services.length <= 1) { toast('Debe existir al menos un servicio', 'warn'); return; }
+  const actv = CONFIG.services.filter(s=>s.enabled!==false);
+  if (actv.length <= 1) { toast('Debe existir al menos un servicio activo', 'warn'); return; }
+  CONFIG.services[i].enabled = false;
+  rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
+}
+function reactivateService(i) {
+  CONFIG.services[i].enabled = true;
+  rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
+}
+function deleteService(i) {
   CONFIG.services.splice(i, 1);
   rebuildSvcList(); renderSvcGrid(); markCfgDirty(); saveConfigToStorage();
 }
