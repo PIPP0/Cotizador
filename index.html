@@ -1991,7 +1991,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
           <div class="ring-core"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
         </div>
         <div class="ai-h" id="motor-ia-title">Motor IA procesando...</div>
-        <div class="ai-p">Consultando historial de cotizaciones, catálogo de equipos y costos operacionales.</div>
+        <div class="ai-p" id="ai-subtitle">Analizando perfil energético, benchmark sectorial y catálogo de soluciones NexEnergy.</div>
         <div class="ai-list">
           <div class="ai-row run" id="ai1"><div class="ai-dot"></div><span>Clasificando tipo y alcance del servicio <span class="ai-row-tag">✦ IA</span></span><div class="mspin"></div></div>
           <div class="ai-row" id="ai2"><div class="ai-dot"></div><span>Consultando historial NexClima y cotizaciones similares <span class="ai-row-tag">✦ IA</span></span></div>
@@ -2215,7 +2215,7 @@ const DEFAULT_CONFIG = {
 // ─── NexEnergy — Inteligencia Energética (?c=cliente5) ───────────────────────
 if(_CLIENT_ID === 'cliente5'){
   // Forzar reset de localStorage si la config guardada es de otra empresa (versión anterior)
-  const _nexVer = 'nexenergy-v3';
+  const _nexVer = 'nexenergy-v5';
   if(localStorage.getItem('_nex_cfg_ver') !== _nexVer){
     ['spc_cliente5_colors','svc_cliente5_cfg','spc_cliente5_logo',
      'spc_default_colors','svc_default_cfg'].forEach(k=>localStorage.removeItem(k));
@@ -2559,10 +2559,11 @@ function applyConfig() {
   document.title = _co + ' · Dashboard IA';
   liveText('cot-page-sub', 'Genera propuestas en segundos — motor inteligente ' + _co);
   liveText('motor-ia-title', 'Motor IA de ' + _co + ' procesando...');
+  liveText('ai-subtitle', 'Analizando perfil energético, benchmark sectorial y catálogo de soluciones ' + _co + '.');
   try { applyMotorIA(); } catch(e) {}
   liveText('chat-header-title', 'Chat IA ' + _co);
   liveText('clientes-page-sub', 'Portafolio activo ' + _co + ' · ordenado por ingreso proyectado');
-  liveText('sgclima-page-sub', 'Plataforma propietaria ' + _co + ' · Cool Automation IoC · ROBOTBAS');
+  liveText('sgclima-page-sub', _CLIENT_ID==='cliente5' ? 'Plataforma propietaria '+_co+' · IoT · Solar · BMS · Inteligencia Energética' : 'Plataforma propietaria ' + _co + ' · Cool Automation IoC · ROBOTBAS');
   // Update chat welcome message
   const _chatWelcome = document.getElementById('chat-welcome-msg');
   if (_chatWelcome) _chatWelcome.innerHTML = `¡Hola! Soy el asistente IA de <strong>${_co}</strong>. Tengo acceso al pipeline, cotizaciones y configuración. Puedes preguntarme: <em>¿cuál es mi cliente más rentable?</em>, <em>¿qué cotizaciones vencen esta semana?</em>, <em>¿cómo mejorar mi tasa de conversión?</em>`;
@@ -2644,7 +2645,7 @@ function removeCESegItem(i){if(CONFIG.segments.length<=1)return;CONFIG.segments.
 
 function renderCESvcEditor(){
   const el=document.getElementById('ce-svc'); if(!el) return;
-  const SUGG=['Ventilacion Industrial','Refrigeracion Comercial','Automatizacion BMS','Monitoreo 24/7','Auditoria Energetica','Certificacion HVAC','Climatizacion Minera','Sala Limpia'];
+  const SUGG=_CLIENT_ID==='cliente5'?['Gestión de Demanda Energética','Eficiencia Energética LED','Climatización Inteligente','Carga Vehículos Eléctricos','Cogeneración Energética','Certificación ISO 50001','Análisis Factura Eléctrica','Mantención Preventiva IoT']:['Ventilacion Industrial','Refrigeracion Comercial','Automatizacion BMS','Monitoreo 24/7','Auditoria Energetica','Certificacion HVAC','Climatizacion Minera','Sala Limpia'];
   const chips=CONFIG.services.map((s,i)=>({s,i})).filter(({s})=>s.enabled!==false).map(({s,i})=>`<span class="ce-chip">${s.name}<button class="ce-chip-rm" onclick="deactivateCESvcItem(${i})" title="Mover a sugerencias">✕</button></span>`).join('');
   const inactSuggs=CONFIG.services.map((s,i)=>({s,i})).filter(({s})=>s.enabled===false).map(({s,i})=>`<span class="ce-sugg-chip" onclick="reactivateCESvcItem(${i})">+ ${s.name}<button class="ce-sugg-del" onclick="event.stopPropagation();deleteCESvcItem(${i})" title="Eliminar definitivamente">✕</button></span>`).join('');
   const staticSuggs=SUGG.filter(n=>!CONFIG.services.find(s=>s.name===n)).map(n=>`<span class="ce-sugg-chip" onclick="addCESvcItem('${n}')">+ ${n}</span>`).join('');
@@ -3334,7 +3335,7 @@ function openCfgPanel() {
   }
 }
 // ─── Services add / remove ───────────────────────────────────
-const SVC_SUGGESTIONS = ['Ventilación Industrial','Refrigeración Comercial','Automatización BMS','Monitoreo 24/7','Auditoría Energética','Certificación HVAC','Climatización Minera','Sala Limpia','Bombas de Calor'];
+const SVC_SUGGESTIONS = _CLIENT_ID==='cliente5' ? ['Gestión de Demanda Energética','Eficiencia Energética LED','Climatización Inteligente','Carga Vehículos Eléctricos','Cogeneración Energética','Certificación ISO 50001','Análisis de Factura Eléctrica','Mantenimiento Preventivo IoT'] : ['Ventilación Industrial','Refrigeración Comercial','Automatización BMS','Monitoreo 24/7','Auditoría Energética','Certificación HVAC','Climatización Minera','Sala Limpia','Bombas de Calor'];
 function rebuildSvcList() {
   const el = document.getElementById('cfg-services-list');
   if (!el) return;
@@ -3899,6 +3900,16 @@ const _D=Date.now(), _DAY=86400000;
 // Los IDs de demo se generan dinámicamente para respetar el prefijo de la marca actual
 function _demoId(n){ return ((CONFIG.nameA||'COT')+(CONFIG.nameB||'')).replace(/\s+/g,'').substring(0,6).toUpperCase()+'-'+n; }
 function _getPipelineDemo(){
+  if(_CLIENT_ID==='cliente5') return [
+  {id:_demoId(582),cliente:'Hotel W Santiago',seg:'Hotelería y Turismo',svc:'Monitoreo General de Consumos',sys:'Red IoT 12 sensores · Gateway LTE · Plataforma NexEnergy',monto:18400000,prob:88,estado:'En revisión',vence:'05 jul',tip:'Hotelería con alta variabilidad energética nocturna. Incluir benchmark vs hoteles similares y proyección de ahorro 20% primer año.',created:_D-5*_DAY},
+  {id:_demoId(581),cliente:'INACAP Santiago',seg:'Centros de Formación',svc:'Auditoría Energética',sys:'Diagnóstico IA · Baseline · Plan de acción energético',monto:3200000,prob:81,estado:'Enviada',vence:'28 jul',tip:'Centro formación con 3 campus. Auditoría IA detecta sobreconsumo en iluminación y climatización fuera de horario. ROI estimado 18 meses.',created:_D-7*_DAY},
+  {id:_demoId(579),cliente:'CBRE Chile',seg:'Oficinas',svc:'Reporting',sys:'Dashboard personalizado · Sankey · Exportación API · Plataforma anual',monto:42600000,prob:80,estado:'Negociando',vence:'12 jul',tip:'Portafolio 8 edificios. Reporting consolidado reduce tiempo de gestión energética 60%. Incluir benchmark sectorial para diferenciación.',created:_D-10*_DAY},
+  {id:_demoId(577),cliente:'Mall Costanera Norte',seg:'Retail',svc:'Control y Gestión de Equipos',sys:'BMS integrado · Control HVAC VRF multi-marca · APP remoto',monto:8900000,prob:72,estado:'Enviada',vence:'18 jul',tip:'Retail con 40+ unidades HVAC. Control centralizado proyecta ahorro 15% en consumo climatización. Incluir demo APP móvil en presentación.',created:_D-14*_DAY},
+  {id:_demoId(575),cliente:'Constructora Siena',seg:'Construcción y Arquitectura',svc:'Energías Renovables',sys:'Solar FV 50kW · Inversor híbrido · Batería LiFePO4 10kWh',monto:21300000,prob:80,estado:'En proceso',vence:'02 jul',tip:'Proyecto LEED Gold. Sistema solar proyecta autoconsumo 70%. Incluir simulación Helioscope + informe huella de carbono para certificación.',created:_D-18*_DAY},
+  {id:_demoId(573),cliente:'Municipalidad de Rancagua',seg:'Mercado Público',svc:'Monitoreo General de Consumos',sys:'Red IoT 8 sensores · Medidores trifásicos · Plataforma NexEnergy',monto:12100000,prob:73,estado:'Borrador',vence:'15 jul',tip:'Licitación pública. Destacar eficiencia presupuestaria, cumplimiento ley 21.305 y reducción emisiones GEI. Adjuntar certificación ISO 50001.',created:_D-21*_DAY},
+  {id:_demoId(571),cliente:'Viña Santa Rita',seg:'Construcción y Arquitectura',svc:'Energías Renovables',sys:'Solar FV 120kW · Almacenamiento activo · Monitoreo IoT integrado',monto:34200000,prob:84,estado:'Ganada',vence:'Cerrada',tip:'Ganada. Proyecto solar con almacenamiento activo. ROI 4.2 años. Proponer mantención anual NexEnergy + expansión fase 2 en siguiente reunión.',created:_D-28*_DAY},
+  {id:_demoId(569),cliente:'Falabella Corporativo',seg:'Retail',svc:'Control y Gestión de Equipos',sys:'Control HVAC VRF 80 unidades · BMS centralizado',monto:55800000,prob:58,estado:'Perdida',vence:'Cerrada',tip:'Perdida por precio. Evaluar propuesta escalonada por tiendas piloto en próxima licitación. Preparar caso de estudio Mall Costanera como referencia.',created:_D-35*_DAY},
+  ];
   return [
   {id:_demoId(582),cliente:'Hotel Plaza Bosque',seg:'Hotelería y Gast.',svc:'Calidad del Aire',sys:'Estación MyInBiot + HEPA H14',monto:18400000,prob:88,estado:'En revisión',vence:'05 jul',tip:'Cliente hotelería con alta demanda calidad aire. Incluir informe normativo Minsal + variables CO₂/HR/PM como diferenciador.',created:_D-5*_DAY},
   {id:_demoId(581),cliente:'INACAP Santiago',seg:'Ctros. Formación',svc:'Mantenimiento de Clima',sys:'12× Daikin Split · SGClima integrado',monto:3200000,prob:81,estado:'Enviada',vence:'28 jul',tip:'Recurrencia histórica 2.3 contratos/año. Proponer contrato anual con 8% descuento para asegurar ingresos recurrentes.',created:_D-7*_DAY},
