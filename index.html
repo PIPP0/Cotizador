@@ -3070,10 +3070,11 @@ function openEmailModal() {
   const genBtn= document.getElementById('email-gen-btn');
   if (!modal) return;
   sel.innerHTML = '<option value="">— Selecciona una cotización —</option>';
+  const _svcNamesE = {}; (CONFIG.services||[]).forEach(s=>{ _svcNamesE[s.id]=s.name; _svcNamesE[s.name]=s.name; });
   (PIPELINE||[]).forEach((q,i) => {
     const opt = document.createElement('option');
     opt.value = i;
-    opt.textContent = `${q.id||('COT-'+i)} · ${q.cliente||q.client||'Cliente'} · ${q.svc||''}`;
+    opt.textContent = `${q.id||('COT-'+i)} · ${q.cliente||q.client||'Cliente'} · ${_svcNamesE[q.svc]||q.svc||''}`;
     sel.appendChild(opt);
   });
   prev.style.display = 'none'; prev.textContent = '';
