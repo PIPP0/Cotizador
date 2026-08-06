@@ -2559,6 +2559,7 @@ function applyConfig() {
   document.title = _co + ' · Dashboard IA';
   liveText('cot-page-sub', 'Genera propuestas en segundos — motor inteligente ' + _co);
   liveText('motor-ia-title', 'Motor IA de ' + _co + ' procesando...');
+  try { applyMotorIA(); } catch(e) {}
   liveText('chat-header-title', 'Chat IA ' + _co);
   liveText('clientes-page-sub', 'Portafolio activo ' + _co + ' · ordenado por ingreso proyectado');
   liveText('sgclima-page-sub', 'Plataforma propietaria ' + _co + ' · Cool Automation IoC · ROBOTBAS');
