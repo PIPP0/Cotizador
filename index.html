@@ -1772,8 +1772,21 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
         </div>
       </div>
       <div id="email-modal-preview" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:6px;font-size:13px;color:var(--t2);line-height:1.6;white-space:pre-wrap"></div>
-      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+      <div id="email-send-row" style="display:none;margin-bottom:12px;padding:10px 14px;background:#f0faf8;border:1px solid #b2dfdb;border-radius:8px">
+        <label style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Email del destinatario</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="email-send-to" type="email" placeholder="contacto@empresa.cl"
+            style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;background:#fff"/>
+          <button onclick="sendConvEmail()" id="email-send-btn"
+            style="padding:8px 16px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">
+            ✉ Abrir en email
+          </button>
+        </div>
+        <div style="font-size:10.5px;color:var(--t4);margin-top:5px">Abre tu cliente de correo (Outlook · Gmail) con el texto listo para enviar</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <button id="email-copy-btn" onclick="copyEmailText()" style="display:none;font-size:11px;color:var(--teal);background:none;border:none;cursor:pointer;font-weight:600;padding:2px 0">⎘ Copiar texto</button>
+        <div></div>
       </div>
       <div id="email-modal-status" style="font-size:12px;color:var(--t3);margin-bottom:12px;min-height:18px"></div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
@@ -3066,6 +3079,7 @@ function openEmailModal() {
   prev.style.display = 'none'; prev.textContent = '';
   stat.textContent   = ''; info.style.display = 'none';
   if(cpBtn) cpBtn.style.display = 'none';
+  const _sr = document.getElementById('email-send-row'); if(_sr) _sr.style.display = 'none';
   if(genBtn){ genBtn.disabled = true; genBtn.textContent = '✦ Generar email'; }
   modal.style.display = 'flex';
 }
@@ -3090,6 +3104,7 @@ function onEmailDealSelect(val) {
   prev.style.display = 'none'; prev.textContent = '';
   stat.textContent   = '';
   if(cpBtn) cpBtn.style.display = 'none';
+  const _sr2 = document.getElementById('email-send-row'); if(_sr2) _sr2.style.display = 'none';
   genBtn.disabled = false; genBtn.textContent = '✦ Generar email';
 }
 function closeEmailModal() {
@@ -3104,6 +3119,22 @@ function copyEmailText() {
     btn.textContent = '✓ Copiado';
     setTimeout(()=>{ btn.textContent = '⎘ Copiar texto'; }, 2000);
   });
+}
+function sendConvEmail() {
+  const prev   = document.getElementById('email-modal-preview');
+  const toEl   = document.getElementById('email-send-to');
+  const sel    = document.getElementById('email-modal-select');
+  if (!prev || !prev.textContent) { toast('Genera el email primero','red'); return; }
+  const body   = prev.textContent;
+  const to     = (toEl && toEl.value.trim()) ? toEl.value.trim() : '';
+  const q      = PIPELINE[parseInt(sel.value)] || {};
+  const svcNames={}; (CONFIG.services||[]).forEach(s=>svcNames[s.id]=s.name);
+  const svc    = svcNames[q.svc] || q.svc || '';
+  const estado = q.estado || '';
+  const tipo   = (_EMAIL_TIPO[estado]||{}).label || 'Seguimiento';
+  const subject= `${tipo} · ${q.id||''} · ${q.cliente||q.client||''} · ${svc}`;
+  const mailto = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(mailto, '_blank');
 }
 async function generateEmailPreview() {
   const sel  = document.getElementById('email-modal-select');
@@ -3149,6 +3180,9 @@ async function generateEmailPreview() {
   stat.textContent   = `✓ Email de "${tipo?tipo.label:'seguimiento'}" listo — revísalo y personaliza antes de enviar.`;
   stat.style.color   = 'var(--teal)';
   if(cpBtn) cpBtn.style.display = 'block';
+  // Show send row
+  const sendRow = document.getElementById('email-send-row');
+  if (sendRow) sendRow.style.display = 'block';
   btn.disabled = false; btn.textContent = '✦ Regenerar';
 }
 // ─────────────────────────────────────────────────────────────────────
