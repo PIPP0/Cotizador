@@ -5106,6 +5106,16 @@ window.addEventListener('load',()=>{
     CONFIG.colors        = {...DEFAULT_CONFIG.colors};
     CONFIG.users         = JSON.parse(JSON.stringify(DEFAULT_CONFIG.users));
     _applyDynamicColors();
+    // Reemplazar gráfico "Productos más cotizados" con items NexEnergy
+    const _tic = document.getElementById('top-items-chart');
+    if (_tic) _tic.innerHTML = [
+      ['Plataforma NexEnergy (suscripción anual)', '90%', 'var(--teal)',   '21 cot.'],
+      ['Sensor IoT monitoreo consumo eléctrico',   '74%', 'var(--gold)',   '17 cot.'],
+      ['Panel solar monocristalino 550W',          '58%', 'var(--orange)', '13 cot.'],
+      ['Auditoría energética baseline',            '46%', 'var(--blueg)',  '11 cot.'],
+      ['Gateway IoT LTE/4G',                       '34%', '#aaaabc',       '8 cot.'],
+      ['Informe ROI + huella de carbono',          '24%', '#c5d0d9',       '6 cot.'],
+    ].map(([lbl,w,bg,v])=>`<div class="bar-row"><div class="bar-lbl">${lbl}</div><div class="bar-track"><div class="bar-fill" style="width:${w};background:${bg}"></div></div><div class="bar-v">${v}</div></div>`).join('');
   }
   try { applyConfig(); } catch(e) { console.warn('[init] applyConfig:', e); }
 
