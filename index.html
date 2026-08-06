@@ -2971,9 +2971,18 @@ function renderEdicion() {
 // ─── Tabla de conversión — 3 capas independientes ────────────────────
 function _convCellSave(key, val, el) {
   CONFIG.convOverride = CONFIG.convOverride || {};
-  CONFIG.convOverride[key] = (val === '' || val == null) ? null : parseInt(val);
+  const isOv = (val !== '' && val != null && val !== 0 && !isNaN(parseInt(val)));
+  CONFIG.convOverride[key] = isOv ? parseInt(val) : null;
   if (el) {
-    el.style.borderColor = (val === '' || val == null) ? '' : 'var(--orange)';
+    el.style.borderColor = isOv ? 'var(--orange)' : '';
+    const wrap = el.parentNode;
+    if (wrap) {
+      const badge = wrap.querySelector('.conv-badge');
+      if (badge) badge.textContent = isOv ? 'editado' : (badge._ref||badge.textContent);
+      if (isOv && badge && !badge._ref) badge._ref = badge.textContent; // save original
+      const btn = wrap.querySelector('.conv-reset-btn');
+      if (btn) btn.style.display = isOv ? 'flex' : 'none';
+    }
   }
   saveConfigToStorage();
 }
@@ -3077,11 +3086,7 @@ function buildConvTable() {
         displayVal  = parseInt(ov[key]);
         borderColor = 'var(--orange)';
         badge       = 'editado';
-        resetBtn    = `<button onclick="event.stopPropagation();_convCellReset('${key}')"
-          title="Restaurar valor automático"
-          style="font-size:11px;color:var(--orange);background:rgba(255,120,0,.10);border:1.5px solid var(--orange);border-radius:5px;cursor:pointer;padding:3px 8px;line-height:1.5;font-weight:700;font-family:inherit;display:flex;align-items:center;gap:3px;margin-top:2px"
-          onmouseover="this.style.background='var(--orange)';this.style.color='#fff'"
-          onmouseout="this.style.background='rgba(255,120,0,.10)';this.style.color='var(--orange)'">↺ reset</button>`;
+        resetBtn    = ''; // handled via always-present slot below
       } else if (hasReal) {
         // Capa 2: histórico real Ganada/Perdida
         displayVal  = h.rate;
@@ -3108,8 +3113,13 @@ function buildConvTable() {
             oninput="_convCellSave('${key}', this.value, this)"
             onfocus="this.style.boxShadow='0 0 0 3px rgba(30,149,166,.1)'"
             onblur="this.style.boxShadow='none'">
-          <span style="font-size:8px;color:var(--t4);white-space:nowrap">${badge}</span>
-          ${resetBtn}
+          <span class="conv-badge" style="font-size:8px;color:var(--t4);white-space:nowrap">${badge}</span>
+          <button class="conv-reset-btn" data-key="${key}"
+            onclick="event.stopPropagation();_convCellReset('${key}')"
+            title="Restaurar valor automático"
+            style="font-size:11px;color:var(--orange);background:rgba(255,120,0,.10);border:1.5px solid var(--orange);border-radius:5px;cursor:pointer;padding:3px 8px;line-height:1.5;font-weight:700;font-family:inherit;align-items:center;gap:3px;margin-top:2px;display:${hasOv?'flex':'none'}"
+            onmouseover="this.style.background='var(--orange)';this.style.color='#fff'"
+            onmouseout="this.style.background='rgba(255,120,0,.10)';this.style.color='var(--orange)'">↺ reset</button>
         </div>
       </td>`;
     });
