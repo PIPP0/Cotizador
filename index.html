@@ -1775,7 +1775,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
       <div id="email-send-row" style="display:none;margin-bottom:12px;padding:10px 14px;background:#f0faf8;border:1px solid #b2dfdb;border-radius:8px">
         <label style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Email del destinatario</label>
         <div style="display:flex;gap:8px;align-items:center">
-          <input id="email-send-to" type="email" placeholder="contacto@empresa.cl"
+          <input id="email-send-to" type="text" placeholder="contacto@empresa.cl"
             style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;font-family:inherit;background:#fff"/>
           <button onclick="sendConvEmail()" id="email-send-btn"
             style="padding:8px 16px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">
@@ -3121,20 +3121,60 @@ function copyEmailText() {
   });
 }
 function sendConvEmail() {
-  const prev   = document.getElementById('email-modal-preview');
-  const toEl   = document.getElementById('email-send-to');
-  const sel    = document.getElementById('email-modal-select');
-  if (!prev || !prev.textContent) { toast('Genera el email primero','red'); return; }
-  const body   = prev.textContent;
-  const to     = (toEl && toEl.value.trim()) ? toEl.value.trim() : '';
-  const q      = PIPELINE[parseInt(sel.value)] || {};
+  const prev    = document.getElementById('email-modal-preview');
+  const toEl    = document.getElementById('email-send-to');
+  const sendBtn = document.getElementById('email-send-btn');
+  const sel     = document.getElementById('email-modal-select');
+  const stat    = document.getElementById('email-modal-status');
+  if (!prev || !prev.textContent.trim()) { toast('Genera el email primero','red'); return; }
+  const body = prev.textContent.trim();
+  const to   = toEl ? toEl.value.trim() : '';
+  if (!to || !to.includes('@')) {
+    if (toEl) { toEl.style.borderColor='var(--red,#e74c3c)'; toEl.focus(); setTimeout(()=>toEl.style.borderColor='',2500); }
+    toast('Ingresa el email del destinatario','red'); return;
+  }
+  const q       = PIPELINE[parseInt(sel.value)] || {};
   const svcNames={}; (CONFIG.services||[]).forEach(s=>svcNames[s.id]=s.name);
-  const svc    = svcNames[q.svc] || q.svc || '';
-  const estado = q.estado || '';
-  const tipo   = (_EMAIL_TIPO[estado]||{}).label || 'Seguimiento';
-  const subject= `${tipo} · ${q.id||''} · ${q.cliente||q.client||''} · ${svc}`;
-  const mailto = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  window.open(mailto, '_blank');
+  const svc     = svcNames[q.svc] || q.svc || '';
+  const estado  = q.estado || '';
+  const tipo    = (_EMAIL_TIPO[estado]||{}).label || 'Seguimiento';
+  const subject = `${tipo} · ${q.id||''} · ${q.cliente||q.client||''}`;
+  const company = (CONFIG.nameA||'') + (CONFIG.nameB||'');
+  sendBtn.disabled = true; sendBtn.textContent = 'Enviando…';
+  emailjs.send('service_oa9hbgk','template_1hljlkf',{
+    subject:          subject,
+    to_email:         to,
+    to_name:          q.cliente||q.client||'',
+    cot_id:           q.id||'',
+    servicio:         svc,
+    segmento:         q.seg||'',
+    fecha:            new Date().toLocaleDateString('es-CL'),
+    items_rows:       '',
+    subtotal:         '',
+    iva:              '',
+    total:            q.total||'',
+    tip:              '',
+    email_intro:      body,
+    name:             company,
+    company_name:     company,
+    company_email:    CONFIG.email    || '',
+    company_location: CONFIG.location || '',
+    company_since:    (CONFIG.since||'').replace(/^Desde\s+/i,''),
+    company_tagline:  CONFIG.tagline  || '',
+    company_logo:     (CONFIG.logoUrl||'').startsWith('data:') ? '' : (CONFIG.logoUrl||''),
+    company_dark:     '#' + ((CONFIG.colors&&CONFIG.colors.dark)  || '252530'),
+    company_teal:     '#' + ((CONFIG.colors&&CONFIG.colors.teal)  || '1e95a6'),
+    email:            CONFIG.email    || ''
+  }).then(()=>{
+    toast('✓ Email enviado a ' + to, 'green');
+    stat.textContent = '✓ Enviado a ' + to;
+    stat.style.color = 'var(--teal)';
+    sendBtn.disabled = false; sendBtn.textContent = '✉ Enviar email';
+  }).catch(err=>{
+    const msg = err && (err.text||err.message||JSON.stringify(err));
+    toast('Error al enviar: ' + msg, 'red');
+    sendBtn.disabled = false; sendBtn.textContent = '✉ Enviar email';
+  });
 }
 async function generateEmailPreview() {
   const sel  = document.getElementById('email-modal-select');
