@@ -5445,7 +5445,7 @@ REGLAS POR CAMPO:
 - "segmento": infiere el más apropiado. Opciones: ${segList}
 - "servicio": infiere el más apropiado según lo que se describe. Opciones: ${svcList}
 - "sistema": infiere el más apropiado. Opciones: ${sysList}
-- "num_equipos": número entero si menciona cantidad de equipos/unidades explícitamente. Si NO se menciona pero sí hay superficie, estima la cantidad según el tipo de sistema (split: 1 por cada 25-35 m²; VRV: 1 unidad interior por cada 20-30 m²; chiller: 1 cada 300-500 m²). Nunca devuelvas null si tienes suficiente contexto para estimar.
+- "num_equipos": número entero si menciona cantidad de equipos/unidades/sensores/inversores explícitamente. Si NO se menciona pero hay superficie o contexto suficiente, estima de forma razonable según el tipo de sistema y uso descrito. Si no hay ningún dato para estimar, devuelve null.
 - "superficie": número entero en m² si menciona metros cuadrados/m²/superficie, sino null.
 - "descripcion": descripción técnica enriquecida del proyecto en 2-3 frases en español. NO repitas literalmente lo que dice el texto: amplía con contexto técnico relevante (tipo de instalación, condiciones del espacio, consideraciones del sistema, requerimientos típicos para ese tipo de cliente/uso). Agrega valor profesional que un ejecutivo comercial añadiría al analizar el requerimiento.
 - "urgencia": "h" si dice urgente/hoy/inmediato, "l" si dice sin apuro/flexible, "m" en los demás casos.
@@ -5797,7 +5797,7 @@ function buildQ(){
         const llmSys = `Eres el motor de IA comercial de ${(CONFIG.nameA||'')+(CONFIG.nameB||'')} (${CONFIG.tagline||CONFIG.module||'empresa de servicios'}).
 Genera UN insight comercial breve (2-3 oraciones) para el ejecutivo de ventas, en español.
 El insight debe ser específico, accionable y mencionar datos concretos. NO empieces con "El modelo" o "IA detecta".
-Sé directo como un asesor comercial experto en HVAC.`;
+Sé directo como un asesor comercial experto en el rubro de la empresa.`;
         const llmUser = `Cliente: ${clientName}
 Segmento: ${segLabel}
 Servicio: ${sn[svc]||svc}
@@ -5963,14 +5963,22 @@ Motiva a contratar, tono profesional, en español. Sin saludo ni firma.`;
   // Fallback: personalización por template si no hay intro generada por IA
   if (!emailIntro) {
     const _svcBenefits = {
+      // NexClima
       mant: 'mantener sus equipos de climatización en óptimas condiciones, evitar fallas costosas y prolongar la vida útil de su inversión',
       inst: 'contar con una instalación certificada que garantiza confort, eficiencia energética y cumplimiento normativo desde el primer día',
       virt: 'reducir hasta un 60% las visitas presenciales, con monitoreo continuo de sus sistemas 24/7 desde cualquier lugar',
       ener: 'reducir su consumo energético en clima en un 15% o más, con un retorno de inversión medible en los primeros 18 meses',
       aire: 'mejorar la calidad del aire interior de sus espacios, protegiendo la salud de sus colaboradores y clientes con tecnología certificada',
-      ing: 'respaldar su proyecto con ingeniería de detalle, certificaciones ASHRAE y supervisión especializada que aseguran resultados a largo plazo',
+      ing:  'respaldar su proyecto con ingeniería de detalle, certificaciones ASHRAE y supervisión especializada que aseguran resultados a largo plazo',
+      // NexEnergy
+      mon:  'visibilizar en tiempo real el consumo energético de sus instalaciones, detectar sobreconsumos y reducir su factura eléctrica desde el primer mes',
+      ctrl: 'controlar y optimizar todos sus equipos energéticos de forma centralizada, reduciendo consumo y tiempos de respuesta ante fallas',
+      ren:  'generar su propia energía limpia, reducir dependencia de la red eléctrica y alcanzar sus metas de sostenibilidad con ROI comprobable',
+      rep:  'tener visibilidad total del desempeño energético de su operación con reportes automáticos y benchmark sectorial en tiempo real',
+      aud:  'identificar oportunidades de ahorro concretas con un diagnóstico energético IA, baseline certificado y plan de acción priorizado',
+      man:  'mantener su infraestructura energética operando al máximo rendimiento con soporte proactivo, firmware actualizado y SLA garantizado',
     };
-    const _benefit = _svcBenefits[d.svcKey] || `mejorar la eficiencia de sus sistemas de clima`;
+    const _benefit = _svcBenefits[d.svcKey] || `optimizar su operación con ${d.servicio}`;
     emailIntro = `Adjuntamos la cotización de ${d.servicio} para ${d.toName||'su empresa'}. Este servicio le permitirá ${_benefit}. Quedamos disponibles para coordinar los próximos pasos.`;
   }
 
