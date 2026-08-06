@@ -2207,6 +2207,13 @@ const DEFAULT_CONFIG = {
 // @@CONFIG-END
 // ─── NexEnergy — Inteligencia Energética (?c=cliente5) ───────────────────────
 if(_CLIENT_ID === 'cliente5'){
+  // Forzar reset de localStorage si la config guardada es de otra empresa (versión anterior)
+  const _nexVer = 'nexenergy-v3';
+  if(localStorage.getItem('_nex_cfg_ver') !== _nexVer){
+    ['spc_cliente5_colors','svc_cliente5_cfg','spc_cliente5_logo',
+     'spc_default_colors','svc_default_cfg'].forEach(k=>localStorage.removeItem(k));
+    localStorage.setItem('_nex_cfg_ver', _nexVer);
+  }
   DEFAULT_CONFIG.nameA    = 'Nex';
   DEFAULT_CONFIG.nameB    = 'Energy';
   DEFAULT_CONFIG.module   = 'Dashboard IA · Inteligencia Energética';
