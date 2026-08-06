@@ -1743,26 +1743,42 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 
 <!-- ─── MODAL: EMAIL PERSONALIZADO ─── -->
 <div id="email-modal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:20px">
-  <div style="background:#fff;border-radius:16px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden">
+  <div style="background:#fff;border-radius:16px;width:100%;max-width:580px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden">
     <div style="padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
       <div>
-        <div style="font-size:15px;font-weight:700;color:var(--t1)">Email personalizado ✦ IA</div>
-        <div style="font-size:12px;color:var(--t3);margin-top:2px">Selecciona una cotización del pipeline para generar el email</div>
+        <div style="font-size:15px;font-weight:700;color:var(--t1)">Email de conversión ✦ IA</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:2px">Genera un email estratégico según el estado del deal para avanzar al cierre</div>
       </div>
       <button onclick="closeEmailModal()" style="background:none;border:none;cursor:pointer;color:var(--t4);font-size:20px;line-height:1;padding:4px">✕</button>
     </div>
     <div style="padding:20px 24px">
       <div style="margin-bottom:14px">
         <label style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px">Cotización</label>
-        <select id="email-modal-select" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;cursor:pointer">
-          <option value="">— Selecciona —</option>
+        <select id="email-modal-select" onchange="onEmailDealSelect(this.value)" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;cursor:pointer">
+          <option value="">— Selecciona una cotización —</option>
         </select>
       </div>
-      <div id="email-modal-preview" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px;font-size:13px;color:var(--t2);line-height:1.6;white-space:pre-wrap"></div>
+      <div id="email-deal-info" style="display:none;margin-bottom:14px;padding:10px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div>
+            <span id="email-deal-cliente" style="font-size:13px;font-weight:700;color:var(--t1)"></span>
+            <span id="email-deal-svc" style="font-size:12px;color:var(--t3);margin-left:6px"></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span id="email-deal-estado-pill" style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:#e8f5e9;color:#2e7d32"></span>
+            <span style="font-size:11px;color:var(--t4)">→</span>
+            <span id="email-tipo-label" style="font-size:11px;font-weight:700;color:var(--teal)"></span>
+          </div>
+        </div>
+      </div>
+      <div id="email-modal-preview" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:6px;font-size:13px;color:var(--t2);line-height:1.6;white-space:pre-wrap"></div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+        <button id="email-copy-btn" onclick="copyEmailText()" style="display:none;font-size:11px;color:var(--teal);background:none;border:none;cursor:pointer;font-weight:600;padding:2px 0">⎘ Copiar texto</button>
+      </div>
       <div id="email-modal-status" style="font-size:12px;color:var(--t3);margin-bottom:12px;min-height:18px"></div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
         <button onclick="closeEmailModal()" class="btn-sm btn-o">Cancelar</button>
-        <button onclick="generateEmailPreview()" id="email-gen-btn" class="btn-sm btn-p">✦ Generar email</button>
+        <button onclick="generateEmailPreview()" id="email-gen-btn" class="btn-sm btn-p" disabled>✦ Generar email</button>
       </div>
     </div>
   </div>
@@ -2986,59 +3002,153 @@ function _convCellSave(key, val, el) {
   }
   saveConfigToStorage();
 }
-// ─── Email personalizado modal ───────────────────────────────────────
+// ─── Email de conversión modal ────────────────────────────────────────
+const _EMAIL_TIPO = {
+  'Enviada':      { label: 'Seguimiento post-envío',    color: '#1565c0', bg: '#e3f2fd' },
+  'En revisión':  { label: 'Despejar dudas · demo',     color: '#6a1b9a', bg: '#f3e5f5' },
+  'Negociando':   { label: 'Empuje al cierre',          color: '#e65100', bg: '#fff3e0' },
+  'En proceso':   { label: 'Update de avance',          color: '#2e7d32', bg: '#e8f5e9' },
+  'Borrador':     { label: 'Activar propuesta',         color: '#37474f', bg: '#eceff1' },
+  'Ganada':       { label: 'Bienvenida · kickoff',      color: '#1b5e20', bg: '#e8f5e9' },
+  'Perdida':      { label: 'Re-contacto estratégico',   color: '#b71c1c', bg: '#ffebee' },
+};
+const _EMAIL_FALLBACK = {
+  'Enviada':     (q,sv,sg,co) => `Espero que estén bien. Quería hacer un seguimiento a la propuesta de ${sv} que enviamos hace unos días para ${q.cliente||'su empresa'}.
+
+Si tienen alguna duda sobre los alcances técnicos, costos o cronograma, con gusto coordinamos una llamada corta esta semana. A veces un café de 20 minutos aclara más que un PDF.
+
+¿Cómo se sienten respecto a la propuesta?`,
+  'En revisión': (q,sv,sg,co) => `Estamos aquí para apoyarlos en la revisión de la propuesta de ${sv}. Sabemos que evaluar una solución de esta naturaleza implica comparar opciones y validar con el equipo técnico.
+
+Les propongo una sesión de 30 minutos donde podamos recorrer juntos los aspectos más críticos y responder cualquier consulta en tiempo real. También podemos preparar un caso comparable del segmento ${sg} si les es útil para la evaluación interna.
+
+¿Qué día les acomoda esta semana?`,
+  'Negociando':  (q,sv,sg,co) => `Quería retomar nuestra conversación sobre la propuesta de ${sv} para ${q.cliente||'su empresa'}.
+
+Entendemos que el presupuesto y el ROI son factores clave en esta decisión. Nuestra solución está diseñada para generar resultados medibles desde el primer trimestre, y estamos dispuestos a explorar condiciones que se ajusten mejor a su calendario de inversión.
+
+¿Podríamos cerrar esta semana? Quiero asegurarme de que puedan partir con el proyecto dentro de este trimestre.`,
+  'En proceso':  (q,sv,sg,co) => `Les escribo para compartir el avance del proyecto de ${sv} y alinear los próximos pasos con su equipo.
+
+Hasta ahora hemos cumplido con los hitos acordados y estamos en línea con el cronograma. En los próximos días coordinaremos la siguiente etapa y queríamos confirmar disponibilidad de su parte.
+
+¿Tienen alguna consulta o ajuste que quieran plantear antes de continuar?`,
+  'Ganada':      (q,sv,sg,co) => `¡Estamos muy contentos de comenzar este proyecto juntos! Bienvenidos a ${co}.
+
+En las próximas horas les llegará un correo con los accesos, el cronograma de implementación y el contacto directo de su ejecutivo de cuenta. Nuestro equipo ya está preparando todo para que el arranque sea fluido.
+
+Estaremos en contacto. ¡Muchas gracias por la confianza!`,
+  'Perdida':     (q,sv,sg,co) => `Espero que estén muy bien. Han pasado algunos meses desde que evaluamos juntos la propuesta de ${sv} y quería re-tomar contacto.
+
+El mercado de ${sg} ha evolucionado bastante, y tenemos nuevas opciones que podrían encajar mejor con su situación actual — incluyendo esquemas de implementación más graduales.
+
+Sin presión, pero si tienen 15 minutos esta semana, me encantaría mostrarles qué ha cambiado. ¿Cómo están?`,
+  'default':     (q,sv,sg,co) => `Espero que estén bien. Les escribo en relación a la propuesta de ${sv} para ${q.cliente||'su empresa'}.
+
+Quedo a disposición para resolver cualquier consulta y coordinar los próximos pasos. ¿Cuándo les viene bien conversar?`,
+};
 function openEmailModal() {
   const modal = document.getElementById('email-modal');
   const sel   = document.getElementById('email-modal-select');
   const prev  = document.getElementById('email-modal-preview');
   const stat  = document.getElementById('email-modal-status');
+  const info  = document.getElementById('email-deal-info');
+  const cpBtn = document.getElementById('email-copy-btn');
+  const genBtn= document.getElementById('email-gen-btn');
   if (!modal) return;
-  // Poblar selector con pipeline
   sel.innerHTML = '<option value="">— Selecciona una cotización —</option>';
   (PIPELINE||[]).forEach((q,i) => {
     const opt = document.createElement('option');
     opt.value = i;
-    opt.textContent = `${q.id||('COT-'+i)} · ${q.cliente||q.client||'Cliente'} · ${q.svc||''} · ${q.total||''}`;
+    opt.textContent = `${q.id||('COT-'+i)} · ${q.cliente||q.client||'Cliente'} · ${q.svc||''}`;
     sel.appendChild(opt);
   });
-  prev.style.display = 'none';
-  prev.textContent   = '';
-  stat.textContent   = '';
+  prev.style.display = 'none'; prev.textContent = '';
+  stat.textContent   = ''; info.style.display = 'none';
+  if(cpBtn) cpBtn.style.display = 'none';
+  if(genBtn){ genBtn.disabled = true; genBtn.textContent = '✦ Generar email'; }
   modal.style.display = 'flex';
+}
+function onEmailDealSelect(val) {
+  const info   = document.getElementById('email-deal-info');
+  const genBtn = document.getElementById('email-gen-btn');
+  const prev   = document.getElementById('email-modal-preview');
+  const stat   = document.getElementById('email-modal-status');
+  const cpBtn  = document.getElementById('email-copy-btn');
+  if (val === '') { info.style.display='none'; genBtn.disabled=true; return; }
+  const q = PIPELINE[parseInt(val)]; if(!q) return;
+  const svcNames={}; (CONFIG.services||[]).forEach(s=>svcNames[s.id]=s.name);
+  const svcLabel = svcNames[q.svc]||q.svc||'';
+  const estado   = q.estado||'Enviada';
+  const tipo     = _EMAIL_TIPO[estado] || { label: 'Email de seguimiento', color:'var(--teal)', bg:'#e0f7fa' };
+  document.getElementById('email-deal-cliente').textContent = q.cliente||q.client||'Cliente';
+  document.getElementById('email-deal-svc').textContent     = svcLabel;
+  const pill = document.getElementById('email-deal-estado-pill');
+  pill.textContent = estado; pill.style.background = tipo.bg; pill.style.color = tipo.color;
+  document.getElementById('email-tipo-label').textContent = tipo.label;
+  info.style.display = 'block';
+  prev.style.display = 'none'; prev.textContent = '';
+  stat.textContent   = '';
+  if(cpBtn) cpBtn.style.display = 'none';
+  genBtn.disabled = false; genBtn.textContent = '✦ Generar email';
 }
 function closeEmailModal() {
   const modal = document.getElementById('email-modal');
   if (modal) modal.style.display = 'none';
+}
+function copyEmailText() {
+  const prev = document.getElementById('email-modal-preview');
+  const btn  = document.getElementById('email-copy-btn');
+  if (!prev || !prev.textContent) return;
+  navigator.clipboard.writeText(prev.textContent).then(()=>{
+    btn.textContent = '✓ Copiado';
+    setTimeout(()=>{ btn.textContent = '⎘ Copiar texto'; }, 2000);
+  });
 }
 async function generateEmailPreview() {
   const sel  = document.getElementById('email-modal-select');
   const prev = document.getElementById('email-modal-preview');
   const stat = document.getElementById('email-modal-status');
   const btn  = document.getElementById('email-gen-btn');
+  const cpBtn= document.getElementById('email-copy-btn');
   const idx  = sel.value;
   if (idx === '') { stat.textContent = 'Selecciona una cotización primero.'; return; }
-  const q = PIPELINE[parseInt(idx)];
-  if (!q) return;
-  const company = (CONFIG.nameA||'Empresa')+(CONFIG.nameB||'');
+  const q = PIPELINE[parseInt(idx)]; if(!q) return;
+  const company  = (CONFIG.nameA||'') + (CONFIG.nameB||'');
   const svcNames = {}; (CONFIG.services||[]).forEach(s=>svcNames[s.id]=s.name);
   const segNames = {}; (CONFIG.segments||[]).forEach(s=>segNames[s.id]=s.name);
   const svcLabel = svcNames[q.svc]||q.svc||'';
   const segLabel = segNames[q.seg]||q.seg||'';
+  const estado   = q.estado||'Enviada';
+  const tipo     = _EMAIL_TIPO[estado];
   btn.disabled = true; btn.textContent = '✦ Generando…';
-  stat.textContent = '';
+  stat.textContent = ''; prev.style.display = 'none';
+  if(cpBtn) cpBtn.style.display = 'none';
   let texto = '';
   if (CONFIG.llm && CONFIG.llm.apiKey) {
-    const sys = `Eres el redactor de emails comerciales de ${company}. Escribe un párrafo introductorio breve (3-4 oraciones) personalizado para acompañar una cotización. Tono profesional y cercano. En español. Sin saludo ni firma — solo el cuerpo.`;
-    const usr = `Cliente: ${q.cliente||q.client||'el cliente'}\nSegmento: ${segLabel}\nServicio: ${svcLabel}\nTotal: ${q.total||''}\nEstado: ${q.estado||'En proceso'}`;
+    const objetivos = {
+      'Enviada':     'Hacer seguimiento suave 2-3 días después del envío. Objetivo: confirmar recepción, despertar interés, proponer una llamada corta. Tono amigable, sin presión.',
+      'En revisión': 'El cliente está evaluando. Objetivo: ofrecer ayuda para la revisión técnica, proponer demo o reunión aclaratoria, reducir fricción. Tono consultivo.',
+      'Negociando':  'Estamos en negociación de condiciones. Objetivo: destacar el ROI y valor diferenciado, proponer cierre esta semana, mostrar flexibilidad razonable. Tono directo y orientado al valor.',
+      'En proceso':  'El proyecto ya está en marcha. Objetivo: compartir avance, confirmar próximos pasos, mantener relación. Tono ejecutivo y proactivo.',
+      'Borrador':    'La propuesta aún no se ha enviado. Objetivo: activar al ejecutivo interno para terminar y enviar. Tono directo.',
+      'Ganada':      'Deal cerrado. Email de bienvenida al proyecto. Tono entusiasta y profesional, sin vender más.',
+      'Perdida':     'El deal se perdió hace tiempo. Re-contacto estratégico meses después. Tono reflexivo, sin presión, mencionando novedades relevantes.',
+    };
+    const obj = objetivos[estado] || 'Email de seguimiento comercial profesional.';
+    const sys = `Eres el redactor de emails comerciales de ${company}. Escribe un email de seguimiento comercial estratégico. ${obj} En español. Sin asunto ni firma — solo el cuerpo del email. Máximo 4 párrafos cortos. Usa salto de línea entre párrafos.`;
+    const usr = `Cliente: ${q.cliente||q.client||'el cliente'}\nServicio cotizado: ${svcLabel}\nSegmento: ${segLabel}\nMonto: ${q.total||''}\nEstado actual del deal: ${estado}\nTipo de email a generar: ${tipo?tipo.label:'Seguimiento'}`;
     texto = await _llmCall(sys, usr) || '';
   }
   if (!texto) {
-    texto = `Es un gusto presentarle la propuesta comercial que hemos preparado especialmente para ${q.cliente||q.client||'su empresa'}. Nuestro equipo ha diseñado esta solución de ${svcLabel} considerando las necesidades del segmento ${segLabel} y los estándares de calidad que nos caracterizan. Quedamos a su disposición para resolver cualquier consulta y coordinar los próximos pasos.`;
+    const fn = _EMAIL_FALLBACK[estado] || _EMAIL_FALLBACK['default'];
+    texto = fn(q, svcLabel, segLabel, company);
   }
   prev.textContent   = texto;
   prev.style.display = 'block';
-  stat.textContent   = '✓ Email generado — puedes copiarlo o adaptarlo.';
-  stat.style.color   = 'var(--green,#27ae60)';
+  stat.textContent   = `✓ Email de "${tipo?tipo.label:'seguimiento'}" listo — revísalo y personaliza antes de enviar.`;
+  stat.style.color   = 'var(--teal)';
+  if(cpBtn) cpBtn.style.display = 'block';
   btn.disabled = false; btn.textContent = '✦ Regenerar';
 }
 // ─────────────────────────────────────────────────────────────────────
