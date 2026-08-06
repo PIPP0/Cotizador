@@ -4796,16 +4796,18 @@ function renderTableInto(tableId, rows){
   if(rows.length===0){
     tbody=`<tr class="empty-row"><td colspan="${COLS.length}">No hay cotizaciones con ese filtro.</td></tr>`;
   } else {
+    const _svcNames = {}; (CONFIG.services||[]).forEach(s=>{ _svcNames[s.id]=s.name; _svcNames[s.name]=s.name; });
     tbody=rows.map(r=>{
       const liveProb = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 0 : getConvProb(r.svc, r.seg);
       const probLabel = r.estado==='Ganada' ? '✓ Ganada' : r.estado==='Perdida' ? '✗ Perdida' : liveProb+'%';
       const probFill  = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 100 : liveProb;
       const probClr   = r.estado==='Ganada' ? 'var(--green)' : r.estado==='Perdida' ? 'var(--red)' : probColor(liveProb);
+      const _svcDisplay = _svcNames[r.svc] || r.svc || '';
       return `
       <tr onclick="openModal('${r.id}')">
         <td><span class="cot-id">${_displayId(r.id)}</span></td>
         <td><div class="cot-name">${r.cliente}</div><div class="cot-sub">${r.seg}</div></td>
-        <td><div class="cot-name" style="font-size:12px">${r.svc}</div><div class="cot-sub">${r.sys}</div></td>
+        <td><div class="cot-name" style="font-size:12px">${_svcDisplay}</div><div class="cot-sub">${r.sys}</div></td>
         <td><div class="amt" style="color:${r.monto>20000000?'var(--orange)':'var(--teal)'}">${fmtMonto(r.monto)}</div></td>
         <td>
           <div class="prob-wrap">
@@ -4900,7 +4902,8 @@ function openModal(id){
   if(!r) return;
   _modalId = id;
   document.getElementById('modal-title').textContent=_displayId(r.id);
-  document.getElementById('modal-sub').textContent=`${r.cliente} · ${r.svc}`;
+  const _svcNamesM = {}; (CONFIG.services||[]).forEach(s=>{ _svcNamesM[s.id]=s.name; _svcNamesM[s.name]=s.name; });
+  document.getElementById('modal-sub').textContent=`${r.cliente} · ${_svcNamesM[r.svc]||r.svc||''}`;
   const statusOpts=STATUSES.map(s=>`<option${s===r.estado?' selected':''}>${s}</option>`).join('');
   const _ivaPctM=CONFIG.cotizacion?.iva??19;
   const ivaAmt=Math.round(r.monto*(_ivaPctM/100));
@@ -4911,7 +4914,7 @@ function openModal(id){
       <div class="modal-grid">
         <div class="modal-field"><div class="modal-field-label">Cliente</div><div class="modal-field-value">${r.cliente}</div></div>
         <div class="modal-field"><div class="modal-field-label">Segmento</div><div class="modal-field-value">${r.seg}</div></div>
-        <div class="modal-field"><div class="modal-field-label">Servicio</div><div class="modal-field-value">${r.svc}</div></div>
+        <div class="modal-field"><div class="modal-field-label">Servicio</div><div class="modal-field-value">${_svcNamesM[r.svc]||r.svc||''}</div></div>
         <div class="modal-field"><div class="modal-field-label">Sistema</div><div class="modal-field-value">${r.sys}</div></div>
         <div class="modal-field"><div class="modal-field-label">Fecha de emisión</div><div class="modal-field-value">${fechaEmision}</div></div>
         <div class="modal-field"><div class="modal-field-label">Vencimiento</div><div class="modal-field-value">${r.vence}</div></div>
