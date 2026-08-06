@@ -4913,6 +4913,27 @@ document.addEventListener('keydown',e=>{
 window.addEventListener('load',()=>{
   // Cargar config PRIMERO para que _plKey() use el nombre correcto
   try { loadConfigFromStorage(); } catch(e) { console.warn('[init] loadConfig:', e); }
+  // Re-aplicar config estructural para clientes con override (evita que localStorage pise los datos correctos)
+  if(_CLIENT_ID === 'cliente5'){
+    CONFIG.services      = DEFAULT_CONFIG.services;
+    CONFIG.segments      = DEFAULT_CONFIG.segments;
+    CONFIG.systemTypes   = DEFAULT_CONFIG.systemTypes;
+    CONFIG.sidebarServices = DEFAULT_CONFIG.sidebarServices;
+    CONFIG.precios       = DEFAULT_CONFIG.precios;
+    CONFIG.motorIA       = DEFAULT_CONFIG.motorIA;
+    CONFIG.cotizacion    = DEFAULT_CONFIG.cotizacion;
+    CONFIG.convRef       = DEFAULT_CONFIG.convRef;
+    CONFIG.nameA         = DEFAULT_CONFIG.nameA;
+    CONFIG.nameB         = DEFAULT_CONFIG.nameB;
+    CONFIG.module        = DEFAULT_CONFIG.module;
+    CONFIG.tagline       = DEFAULT_CONFIG.tagline;
+    CONFIG.dashsub       = DEFAULT_CONFIG.dashsub;
+    CONFIG.email         = DEFAULT_CONFIG.email;
+    CONFIG.location      = DEFAULT_CONFIG.location;
+    CONFIG.since         = DEFAULT_CONFIG.since;
+    CONFIG.colors        = {...DEFAULT_CONFIG.colors};
+    _applyDynamicColors();
+  }
   try { applyConfig(); } catch(e) { console.warn('[init] applyConfig:', e); }
 
   // Restaurar datos guardados localmente (con la clave correcta)
