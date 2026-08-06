@@ -2205,6 +2205,85 @@ const DEFAULT_CONFIG = {
   llm: { apiKey: '', model: 'gpt-4o-mini' }
 };
 // @@CONFIG-END
+// ─── NexEnergy override para ?c=cliente5 ─────────────────────────────────────
+if(_CLIENT_ID === 'cliente5'){
+  DEFAULT_CONFIG.nameA    = 'Nex';
+  DEFAULT_CONFIG.nameB    = 'Energy';
+  DEFAULT_CONFIG.module   = 'Dashboard IA · Energético';
+  DEFAULT_CONFIG.tagline  = 'Inteligencia Energética';
+  DEFAULT_CONFIG.dashsub  = 'Monitoreo · Control · Renovables · Reporting';
+  DEFAULT_CONFIG.email    = 'ventas@nexenergy.io';
+  DEFAULT_CONFIG.location = 'Chile';
+  DEFAULT_CONFIG.since    = 'NexEnergy · ventas@nexenergy.io';
+  DEFAULT_CONFIG.colors   = { teal:'1a9e5c', orange:'f59e0b', dark:'0f2318' };
+  DEFAULT_CONFIG.users    = {
+    admin:    { pass:'NexE2024', name:'Administrador' },
+    ejecutivo:{ pass:'NexE2025', name:'Ejecutivo'    }
+  };
+  DEFAULT_CONFIG.services = [
+    { id:'mon',  name:'Monitoreo de Consumos',   desc:'Sensores IoT y medición en tiempo real',     icon:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',  active:true },
+    { id:'ctrl', name:'Control y Gestión',        desc:'Automatización y control de equipos',         icon:'<rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>' },
+    { id:'ren',  name:'Energías Renovables',      desc:'Solar fotovoltaico y generación distribuida', icon:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>' },
+    { id:'rep',  name:'Reporting Energético',     desc:'Dashboards e inteligencia de consumo',        icon:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>' },
+    { id:'aud',  name:'Auditoría Energética',     desc:'Diagnóstico y baseline de eficiencia',        icon:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>' },
+    { id:'man',  name:'Mantención Plataforma',    desc:'Soporte técnico y mantención preventiva',     icon:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>' }
+  ];
+  DEFAULT_CONFIG.segments = [
+    { id:'hotel', name:'Hotelería y Turismo' },
+    { id:'edu',   name:'Centros de Formación', active:true },
+    { id:'of',    name:'Oficinas' },
+    { id:'ret',   name:'Retail' },
+    { id:'pub',   name:'Mercado Público' },
+    { id:'con',   name:'Construcción y Arquitectura' }
+  ];
+  DEFAULT_CONFIG.sidebarServices = ['Monitoreo Energético','Energías Renovables','Reporting IA'];
+  DEFAULT_CONFIG.systemTypes = [
+    {id:'iot',   name:'Monitoreo IoT'},
+    {id:'solar', name:'Paneles Solares'},
+    {id:'hvac',  name:'HVAC Inteligente'},
+    {id:'ilum',  name:'Iluminación Inteligente'},
+    {id:'bms',   name:'BMS / Gestión Edificio'},
+    {id:'gen',   name:'Generación Distribuida'}
+  ];
+  DEFAULT_CONFIG.cotizacion = {
+    iva:19, validezDias:30, convProb:72,
+    condiciones:'Validez 30 días · Pago 30 días factura · Instalación coordinada con cliente'
+  };
+  DEFAULT_CONFIG.convRef = {
+    'mon_hotel':85,'mon_edu':80,'mon_of':82,'mon_ret':74,'mon_pub':78,'mon_con':70,
+    'ctrl_hotel':76,'ctrl_edu':72,'ctrl_of':79,'ctrl_ret':68,'ctrl_pub':65,'ctrl_con':73,
+    'ren_hotel':68,'ren_edu':70,'ren_of':72,'ren_ret':62,'ren_pub':75,'ren_con':78,
+    'rep_hotel':82,'rep_edu':77,'rep_of':84,'rep_ret':70,'rep_pub':72,'rep_con':65,
+    'aud_hotel':79,'aud_edu':74,'aud_of':80,'aud_ret':67,'aud_pub':70,'aud_con':73,
+    'man_hotel':88,'man_edu':83,'man_of':85,'man_ret':76,'man_pub':80,'man_con':72
+  };
+  DEFAULT_CONFIG.convOverride = {};
+  DEFAULT_CONFIG.motorIA = [
+    'Clasificando tipo y alcance del proyecto energético',
+    'Consultando historial de instalaciones similares',
+    'Seleccionando equipos y sensores — catálogo NexEnergy',
+    'Calculando ahorro proyectado y retorno de inversión',
+    'Generando cotización energética con análisis IA'
+  ];
+  DEFAULT_CONFIG.precios = [
+    {key:'sensorIoT',    label:'Sensor IoT (unid.)',                       valor:95000},
+    {key:'gateway',      label:'Gateway de comunicaciones (unid.)',          valor:180000},
+    {key:'medidorRed',   label:'Medidor de red (unid.)',                     valor:65000},
+    {key:'plataforma',   label:'Plataforma NexEnergy — suscripción anual',  valor:480000},
+    {key:'dashboard',    label:'Dashboard personalizado',                     valor:320000},
+    {key:'panelSolar',   label:'Panel solar monocristalino (kW)',             valor:450000},
+    {key:'inversor',     label:'Inversor solar (unid.)',                      valor:280000},
+    {key:'instalSolar',  label:'Instalación sistema solar',                   valor:200000},
+    {key:'auditoria',    label:'Auditoría energética baseline',               valor:350000},
+    {key:'reportMens',   label:'Reporte energético mensual',                  valor:85000},
+    {key:'hhTecnico',    label:'HH Técnico especialista (unid.)',              valor:145000},
+    {key:'integrBMS',    label:'Integración con BMS existente',               valor:220000},
+    {key:'mantPrev',     label:'Mantención preventiva anual',                 valor:180000},
+    {key:'capacitacion', label:'Capacitación plataforma (día)',               valor:120000},
+    {key:'diagnosticoIA',label:'Diagnóstico IA consumos',                     valor:85000}
+  ];
+}
+// ─────────────────────────────────────────────────────────────────────────────
 let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 
 // ─── Restauración INMEDIATA de colores + logo desde localStorage ────
