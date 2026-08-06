@@ -2634,7 +2634,7 @@ function removeCESegItem(i){if(CONFIG.segments.length<=1)return;CONFIG.segments.
 function renderCESvcEditor(){
   const el=document.getElementById('ce-svc'); if(!el) return;
   const SUGG=['Ventilacion Industrial','Refrigeracion Comercial','Automatizacion BMS','Monitoreo 24/7','Auditoria Energetica','Certificacion HVAC','Climatizacion Minera','Sala Limpia'];
-  const chips=CONFIG.services.filter(s=>s.enabled!==false).map((s,i)=>`<span class="ce-chip">${s.name}<button class="ce-chip-rm" onclick="deactivateCESvcItem(${i})" title="Mover a sugerencias">✕</button></span>`).join('');
+  const chips=CONFIG.services.map((s,i)=>({s,i})).filter(({s})=>s.enabled!==false).map(({s,i})=>`<span class="ce-chip">${s.name}<button class="ce-chip-rm" onclick="deactivateCESvcItem(${i})" title="Mover a sugerencias">✕</button></span>`).join('');
   const inactSuggs=CONFIG.services.map((s,i)=>({s,i})).filter(({s})=>s.enabled===false).map(({s,i})=>`<span class="ce-sugg-chip" onclick="reactivateCESvcItem(${i})">+ ${s.name}<button class="ce-sugg-del" onclick="event.stopPropagation();deleteCESvcItem(${i})" title="Eliminar definitivamente">✕</button></span>`).join('');
   const staticSuggs=SUGG.filter(n=>!CONFIG.services.find(s=>s.name===n)).map(n=>`<span class="ce-sugg-chip" onclick="addCESvcItem('${n}')">+ ${n}</span>`).join('');
   const hasSuggs=inactSuggs||staticSuggs;
@@ -3319,7 +3319,7 @@ const SVC_SUGGESTIONS = ['Ventilación Industrial','Refrigeración Comercial','A
 function rebuildSvcList() {
   const el = document.getElementById('cfg-services-list');
   if (!el) return;
-  const chips = CONFIG.services.filter(s=>s.enabled!==false).map((s,i) =>
+  const chips = CONFIG.services.map((s,i)=>({s,i})).filter(({s})=>s.enabled!==false).map(({s,i}) =>
     `<span class="cfg-chip">${s.name}<button class="cfg-chip-rm" onclick="removeService(${i})" title="Mover a sugerencias">✕</button></span>`
   ).join('');
   const inactSuggs = CONFIG.services.map((s,idx)=>({s,idx})).filter(({s})=>s.enabled===false)
