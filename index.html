@@ -5370,7 +5370,7 @@ function buildQ(){
   let cotLogo=document.getElementById('cot-banner-logo');
   if(!cotLogo){ cotLogo=document.createElement('img'); cotLogo.id='cot-banner-logo'; cotLogo.style.cssText='height:32px;object-fit:contain;margin-bottom:6px;display:block'; document.querySelector('.quote-banner').prepend(cotLogo); }
   if(CONFIG.logoSrc){ cotLogo.src=CONFIG.logoSrc; cotLogo.style.display='block'; } else { cotLogo.style.display='none'; }
-  const sn={mant:'Mantenimiento de Clima',inst:'Instalaciones de Clima',ing:'Ingeniería de Proyectos',virt:'Mantenimiento Virtual',ener:'Eficiencia Energética · SGClima',aire:'Calidad del Aire'};
+  const sn={mant:'Mantenimiento de Clima',inst:'Instalaciones de Clima',ing:'Ingeniería de Proyectos',virt:'Mantenimiento Virtual',ener:'Eficiencia Energética · SGClima',aire:'Calidad del Aire',mon:'Monitoreo de Consumos',ctrl:'Control y Gestión de Equipos',ren:'Energías Renovables',rep:'Reporting Energético',aud:'Auditoría Energética',man:'Mantención Plataforma'};
   const sgn={hotel:'Hotelería y Gastronomía',edu:'Centros de Formación',of:'Oficinas',ret:'Retail',con:'Construcción y Arquitectura',pub:'Mercado Público'};
   const sysLabel={split:'Split/Compactos',vrv:'VRV/VRF',chiller:'Chiller',uma:'UMA/Manejadora',vinvex:'VIN/VEX',solar:'Paneles Solares',cal:'Calefacción'};
   document.getElementById('qb').textContent=sn[svc]||svc;
@@ -5443,6 +5443,51 @@ function buildQ(){
       {n:'Supervisión de obras (por visita técnica)',d:'Informe de avance + protocolo de recepción técnica final',q:Math.ceil(neq/4),u:95000,a:false},
     ],
   };
+  // NexEnergy rows para ?c=cliente5
+  if(_CLIENT_ID === 'cliente5'){
+    rows.mon = [
+      {n:'Sensor IoT medición consumo energético (unid.)',d:'Instalación en tablero eléctrico — protocolo Modbus/MQTT',q:neq,u:_cfgP('sensorIoT',95000),a:true},
+      {n:'Gateway de comunicaciones (unid.)',d:'Conectividad LTE/WiFi — envío de datos a plataforma NexEnergy',q:Math.ceil(neq/10)+1,u:_cfgP('gateway',180000),a:true},
+      {n:'Medidor de red trifásico (unid.)',d:'Medición kWh, potencia activa/reactiva, factor de potencia',q:neq,u:_cfgP('medidorRed',65000),a:false},
+      {n:'Plataforma NexEnergy — suscripción anual',d:'Dashboard 24/7, alertas automáticas, histórico y reportes IA',q:1,u:_cfgP('plataforma',480000),a:true},
+      {n:'Puesta en marcha e integración de sensores',d:'Configuración, pruebas de comunicación y capacitación en sitio',q:1,u:180000,a:false},
+    ];
+    rows.ctrl = [
+      {n:'Sistema control automático equipos HVAC',d:'Automatización encendido/apagado por horario y demanda real',q:Math.ceil(neq/2),u:_cfgP('integrBMS',220000),a:true},
+      {n:'Controlador IoT por zona (unid.)',d:'Control temperatura, iluminación y equipos en tiempo real',q:neq,u:_cfgP('sensorIoT',95000),a:true},
+      {n:'Integración con BMS existente',d:'Compatibilidad Siemens, Honeywell, Johnson Controls',q:1,u:_cfgP('integrBMS',220000),a:false},
+      {n:'Dashboard de control y gestión centralizado',d:'Panel unificado — acceso remoto 24/7 desde cualquier dispositivo',q:1,u:_cfgP('dashboard',320000),a:true},
+      {n:'Capacitación operadores — 2 jornadas en sitio',d:'Entrenamiento equipo técnico cliente en plataforma NexEnergy',q:1,u:_cfgP('capacitacion',120000),a:false},
+    ];
+    rows.ren = [
+      {n:'Panel solar monocristalino 550W (unid.)',d:'Eficiencia >21%, garantía rendimiento 25 años — IEC 61215',q:neq,u:_cfgP('panelSolar',450000),a:true},
+      {n:'Inversor solar trifásico (unid.)',d:'Inversor string con monitoreo integrado — eficiencia >98%',q:Math.ceil(neq/10)+1,u:_cfgP('inversor',280000),a:true},
+      {n:'Instalación y montaje sistema solar',d:'Estructura soporte, cableado DC/AC, protecciones y puesta en marcha',q:1,u:_cfgP('instalSolar',200000),a:false},
+      {n:'Sensor IoT monitoreo generación solar',d:'Medición producción en tiempo real integrado a plataforma NexEnergy',q:Math.ceil(neq/10)+1,u:_cfgP('sensorIoT',95000),a:true},
+      {n:'Informe técnico + proyección ROI',d:'Simulación producción, cálculo retorno inversión y huella carbono',q:1,u:120000,a:false},
+    ];
+    rows.rep = [
+      {n:'Dashboard personalizado NexEnergy',d:'Visualización en tiempo real de consumos, costos y KPIs energéticos',q:1,u:_cfgP('dashboard',320000),a:true},
+      {n:'Reporte energético mensual (12 meses)',d:'Informe PDF automático con tendencias, alertas y recomendaciones IA',q:12,u:_cfgP('reportMens',85000),a:true},
+      {n:'Análisis inteligente de consumos IA',d:'Detección anomalías, predicción costos y oportunidades de ahorro',q:1,u:_cfgP('diagnosticoIA',85000),a:true},
+      {n:'Integración datos factura eléctrica',d:'Conciliación automática con distribuidora — control costo real',q:1,u:95000,a:false},
+      {n:'Plataforma NexEnergy — acceso anual',d:'Usuarios ilimitados, exportación Excel/PDF, API REST incluida',q:1,u:_cfgP('plataforma',480000),a:false},
+    ];
+    rows.aud = [
+      {n:'Auditoría energética in-situ — baseline',d:'Levantamiento consumos, equipos y patrones de uso en instalación',q:1,u:_cfgP('auditoria',350000),a:true},
+      {n:'Diagnóstico IA consumos históricos',d:'Análisis 12 meses de datos — identificación oportunidades de ahorro',q:1,u:_cfgP('diagnosticoIA',85000),a:true},
+      {n:'Informe técnico con plan de acción',d:'Recomendaciones priorizadas, estimación ahorro y plan de implementación',q:1,u:180000,a:true},
+      {n:'Benchmark sectorial energético',d:'Comparación vs instalaciones similares — índice kWh/m² por rubro',q:1,u:120000,a:false},
+      {n:'HH Técnico especialista energético',d:'Visita certificada con equipos de medición calibrados',q:Math.ceil(neq/4),u:_cfgP('hhTecnico',145000),a:false},
+    ];
+    rows.man = [
+      {n:'Mantención preventiva plataforma — anual',d:'Revisión sensores, firmware, conectividad y calibración',q:1,u:_cfgP('mantPrev',180000),a:true},
+      {n:'Soporte técnico remoto 12 meses',d:'Atención tickets en < 4h — monitoreo continuo plataforma NexEnergy',q:1,u:150000,a:true},
+      {n:'Reemplazo sensores IoT defectuosos (unid.)',d:'Garantía funcionamiento — reemplazo en < 48h hábiles',q:Math.ceil(neq/10),u:_cfgP('sensorIoT',95000),a:false},
+      {n:'Actualización firmware y software',d:'Actualizaciones plataforma + nuevas funciones IA incluidas',q:1,u:85000,a:false},
+      {n:'Informe anual estado de la instalación',d:'Revisión técnica completa + recomendaciones de mejora',q:1,u:65000,a:false},
+    ];
+  }
   // Resolver: primero por ID exacto, luego por keyword en el nombre del servicio, luego mant
   function _resolveRows(rows, svcId){
     if(rows[svcId]) return rows[svcId];
@@ -5508,6 +5553,12 @@ function buildQ(){
       ener: `SGClima garantiza ahorro mínimo 15% en consumo energético de clima. La IA calcula ROI a 18 meses para ${segLabel} basado en benchmark sectorial. Incluir informe de ROI proyectado a 3 años acelera significativamente la decisión de compra.`,
       aire: `Demanda en ${segLabel} creció 340% desde 2021. Variables críticas detectadas: CO₂ >800 ppm, HR fuera de rango 40–60%, TVOC elevado. La IA recomienda incluir estación MyInBiot + informe normativo como diferenciador frente a competencia.`,
       ing: `Proyecto de ingeniería con potencial de certificación LEED. La IA detecta que propuestas con ingeniería de detalle + supervisión de obras tienen 35% mayor tasa de cierre en ${segLabel}. Incluir estudio de eficiencia energética como valor agregado.`,
+      mon: `Segmento ${segLabel} con alta demanda de visibilidad energética. La IA proyecta ahorro de 15-25% en costos eléctricos con monitoreo en tiempo real. Recomienda proponer suscripción anual plataforma para generar ingreso recurrente. Prob. cierre estimada: ${cp}%.`,
+      ctrl: `Control automático de equipos en ${segLabel} reduce consumo promedio 22% según benchmark NexEnergy. La IA recomienda mostrar casos de uso concretos del sector. Incluir dashboard de control como diferenciador visual. Prob.: ${cp}%.`,
+      ren: `Proyecto solar en ${segLabel} con ROI proyectado a 5-7 años. La IA recomienda incluir simulación de producción PVGIS y cálculo de reducción huella carbono como diferenciador. 78% de propuestas con informe ROI avanzan a propuesta formal. Prob.: ${cp}%.`,
+      rep: `Reporting energético con IA para ${segLabel}. Clientes con dashboard personalizado renuevan contrato en 94% de los casos. La IA detecta que incluir conciliación automática de factura eléctrica acelera la decisión de compra. Prob.: ${cp}%.`,
+      aud: `Auditoría energética como entrada en ${segLabel}. 78% de clientes que contratan auditoría implementan al menos una solución adicional en 6 meses. Enfatizar ahorro proyectado y benchmarking sectorial. Prob.: ${cp}%.`,
+      man: `Mantención plataforma en ${segLabel} — ingreso recurrente con alta fidelización (NPS 82). La IA recomienda incluir SLA de respuesta < 4h como diferenciador vs competencia. Contrato anual aumenta LTV en 3.2x. Prob.: ${cp}%.`,
     };
     const tipEl = document.getElementById('tip');
     if (tipEl) {
