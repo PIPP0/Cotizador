@@ -3079,9 +3079,9 @@ function buildConvTable() {
         badge       = 'editado';
         resetBtn    = `<button onclick="event.stopPropagation();_convCellReset('${key}')"
           title="Restaurar valor automático"
-          style="font-size:9px;color:var(--orange);background:rgba(255,120,0,.08);border:1px solid var(--orange);border-radius:4px;cursor:pointer;padding:1px 5px;line-height:1.4;font-weight:600;font-family:inherit"
+          style="font-size:11px;color:var(--orange);background:rgba(255,120,0,.10);border:1.5px solid var(--orange);border-radius:5px;cursor:pointer;padding:3px 8px;line-height:1.5;font-weight:700;font-family:inherit;display:flex;align-items:center;gap:3px;margin-top:2px"
           onmouseover="this.style.background='var(--orange)';this.style.color='#fff'"
-          onmouseout="this.style.background='rgba(255,120,0,.08)';this.style.color='var(--orange)'">↺ reset</button>`;
+          onmouseout="this.style.background='rgba(255,120,0,.10)';this.style.color='var(--orange)'">↺ reset</button>`;
       } else if (hasReal) {
         // Capa 2: histórico real Ganada/Perdida
         displayVal  = h.rate;
