@@ -2243,6 +2243,11 @@ const DEFAULT_CONFIG = {
 // @@CONFIG-END
 // ─── NexEnergy — Inteligencia Energética (?c=nexenergy) ───────────────────────
 if(_CLIENT_ID === 'nexenergy'){
+  // Migrar claves de cliente5 a nexenergy si existen
+  if(localStorage.getItem('_nex_cfg_ver') === 'cliente5-v5'){
+    [['spc_cliente5_colors','spc_nexenergy_colors'],['svc_cliente5_cfg','svc_nexenergy_cfg'],['spc_cliente5_logo','spc_nexenergy_logo']].forEach(([o,n])=>{const v=localStorage.getItem(o);if(v)localStorage.setItem(n,v);});
+    localStorage.setItem('_nex_cfg_ver','nexenergy-v5');
+  }
   // Forzar reset de localStorage si la config guardada es de otra empresa (versión anterior)
   const _nexVer = 'nexenergy-v5';
   if(localStorage.getItem('_nex_cfg_ver') !== _nexVer){
