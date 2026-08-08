@@ -5221,6 +5221,14 @@ document.addEventListener('keydown',e=>{
 window.addEventListener('load',()=>{
   // Cargar config PRIMERO para que _plKey() use el nombre correcto
   try { loadConfigFromStorage(); } catch(e) { console.warn('[init] loadConfig:', e); }
+  // Aplicar colores guardados a CSS variables
+  (function(){
+    const _r = document.documentElement.style;
+    const _c = (CONFIG.colors) || {};
+    if (_c.teal)   { _r.setProperty('--teal','#'+_c.teal); _r.setProperty('--teal2','#'+_c.teal); _r.setProperty('--nx-teal','#'+_c.teal); }
+    if (_c.orange) { _r.setProperty('--orange','#'+_c.orange); _r.setProperty('--nx-orange','#'+_c.orange); }
+    if (_c.dark)   { _r.setProperty('--dark','#'+_c.dark); _r.setProperty('--nx-dark','#'+_c.dark); }
+  })();
   // Re-aplicar config estructural para clientes con override (evita que localStorage pise los datos correctos)
   if(_CLIENT_ID === 'nexenergy'){
     _applyDynamicColors();
