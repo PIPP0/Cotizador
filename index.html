@@ -5214,22 +5214,6 @@ window.addEventListener('load',()=>{
   try { loadConfigFromStorage(); } catch(e) { console.warn('[init] loadConfig:', e); }
   // Re-aplicar config estructural para clientes con override (evita que localStorage pise los datos correctos)
   if(_CLIENT_ID === 'nexenergy'){
-    CONFIG.segments      = DEFAULT_CONFIG.segments;
-    CONFIG.systemTypes   = DEFAULT_CONFIG.systemTypes;
-    CONFIG.sidebarServices = DEFAULT_CONFIG.sidebarServices;
-    CONFIG.precios       = DEFAULT_CONFIG.precios;
-    CONFIG.motorIA       = DEFAULT_CONFIG.motorIA;
-    CONFIG.cotizacion    = DEFAULT_CONFIG.cotizacion;
-    CONFIG.nameA         = DEFAULT_CONFIG.nameA;
-    CONFIG.nameB         = DEFAULT_CONFIG.nameB;
-    CONFIG.module        = DEFAULT_CONFIG.module;
-    CONFIG.tagline       = DEFAULT_CONFIG.tagline;
-    CONFIG.dashsub       = DEFAULT_CONFIG.dashsub;
-    CONFIG.email         = DEFAULT_CONFIG.email;
-    CONFIG.location      = DEFAULT_CONFIG.location;
-    CONFIG.since         = DEFAULT_CONFIG.since;
-    CONFIG.colors        = {...DEFAULT_CONFIG.colors};
-    CONFIG.users         = JSON.parse(JSON.stringify(DEFAULT_CONFIG.users));
     _applyDynamicColors();
     // Reemplazar gráfico "Productos más cotizados" con items NexEnergy
     const _tic = document.getElementById('top-items-chart');
