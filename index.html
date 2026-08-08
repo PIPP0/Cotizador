@@ -2136,7 +2136,7 @@ const _selfScript = document.currentScript;
 // ══════════════════════════════════════════════════
 //  MULTI-TENANT — cliente por URL (?c=nombre)
 // ══════════════════════════════════════════════════
-const _CLIENT_ID    = (new URLSearchParams(window.location.search).get('c') || 'default').toLowerCase().replace(/[^a-z0-9_-]/g,'');
+const _CLIENT_ID    = (new URLSearchParams(window.location.search).get('c') || (location.hostname === 'cotizadia.cl' ? 'nexenergy' : 'default')).toLowerCase().replace(/[^a-z0-9_-]/g,'');
 const _spcKey       = 'spc_'      + _CLIENT_ID;
 const _spcLogoKey   = 'spc_logo_' + _CLIENT_ID;
 
