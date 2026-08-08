@@ -4320,7 +4320,8 @@ function buildLiveData() {
     if (!svcMap[k]) svcMap[k] = { n:k, c:0, color: SVC_COLORS[k]||'#9999aa' };
     svcMap[k].c++;
   });
-  const servicios = Object.values(svcMap).sort((a,b) => b.c - a.c);
+  const _activeSvcNames = new Set((CONFIG.services||[]).filter(s=>s.enabled!==false).map(s=>s.name));
+  const servicios = Object.values(svcMap).filter(s => _activeSvcNames.size === 0 || _activeSvcNames.has(s.n)).sort((a,b) => b.c - a.c);
 
   // Segments
   const segMap = {};
