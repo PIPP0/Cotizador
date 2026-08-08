@@ -5221,6 +5221,15 @@ window.addEventListener('load',()=>{
     if(_fp) _fp.value = 'energy';
   }
 
+  // Migracion cliente5->nexenergy: copiar datos si nexenergy no tiene datos aun
+  try {
+    if(_CLIENT_ID === 'nexenergy' && !localStorage.getItem(_plKey())) {
+      const _oldKey = _plKey().replace('nexenergy','cliente5');
+      const _oldData = localStorage.getItem(_oldKey);
+      if(_oldData) { localStorage.setItem(_plKey(), _oldData); localStorage.setItem(_plKey()+'_ts', localStorage.getItem(_oldKey+'_ts')||Date.now()); }
+    }
+  } catch(e){}
+
   // Restaurar datos guardados localmente (con la clave correcta)
   // Si no hay datos guardados, regenerar demo con el nombre de empresa correcto
   try {
