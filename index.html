@@ -3877,7 +3877,7 @@ function _syncFromFirebase() {
     if (r.motorIA) CONFIG.motorIA = r.motorIA;
     if (r.precios) CONFIG.precios = r.precios;
     if (r.llm) CONFIG.llm = {...(CONFIG.llm||{}), ...r.llm};
-    try { const _ls=JSON.parse(localStorage.getItem(_spcKey)||'{}'); const _fb={...r}; if('convRef' in _ls) _fb.convRef=_ls.convRef; if('convOverride' in _ls) _fb.convOverride=_ls.convOverride; localStorage.setItem(_spcKey,JSON.stringify(_fb)); } catch(e){ localStorage.setItem(_spcKey,JSON.stringify(r)); }
+    try { const _ls=JSON.parse(localStorage.getItem(_spcKey)||'{}'); const _fb={...r}; if('convRef' in _ls) _fb.convRef=_ls.convRef; if('convOverride' in _ls) _fb.convOverride=_ls.convOverride; if('services' in _ls) _fb.services=_ls.services; if('colors' in _ls) _fb.colors=_ls.colors; if('sidebarServices' in _ls) _fb.sidebarServices=_ls.sidebarServices; localStorage.setItem(_spcKey,JSON.stringify(_fb)); } catch(e){ localStorage.setItem(_spcKey,JSON.stringify(r)); }
     _applyDynamicColors();
     try { applyConfig(); } catch(e) {}
     try { applyLogoToDOM(); } catch(e) {}
