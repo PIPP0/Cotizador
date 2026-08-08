@@ -1864,7 +1864,10 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
       <div class="page-title">Tasas de conversión</div>
       <div class="page-sub">Historial de conversión por servicio y segmento</div>
     </div>
-    <button class="btn-sm btn-o" onclick="resetAllConvRates()" style="font-size:11.5px;padding:6px 14px;color:var(--red);border-color:var(--red)" title="Borrar todos los overrides manuales y volver a valores de referencia">↺ Reiniciar todo</button>
+    <div style="display:flex;gap:8px;align-self:center">
+      <button class="btn-sm btn-o" onclick="resetConvToDefaults()" style="font-size:11.5px;padding:6px 14px;color:var(--orange);border-color:var(--orange)" title="Volver a los valores de referencia base">↺ Reiniciar tasas</button>
+      <button class="btn-sm btn-o" onclick="resetAllConvRates()" style="font-size:11.5px;padding:6px 14px;color:var(--red);border-color:var(--red)" title="Dejar todos los campos vacíos">✕ Iniciar tasas en cero</button>
+    </div>
   </div>
   <div id="conv-body"></div>
 </div>
@@ -3242,6 +3245,22 @@ function _convCellReset(key) {
   renderConvView();
 }
 
+function resetConvToDefaults() {
+  _confirm(
+    'Se restaurarán los valores de referencia base originales y se borrarán los overrides manuales. El historial real del pipeline se mantiene.',
+    () => {
+      CONFIG.convOverride = {};
+      CONFIG.convRef = {...(DEFAULT_CONFIG.convRef || {})};
+      saveConfigToStorage();
+      if (typeof renderConvTab === 'function') renderConvTab();
+      else if (document.getElementById('conv-body')) {
+        document.getElementById('conv-body').innerHTML = buildConvTable();
+      }
+      toast('Tasas restauradas a valores de referencia', 'green');
+    },
+    { title: 'Reiniciar tasas', okLabel: 'Reiniciar', variant: 'warn' }
+  );
+}
 function resetAllConvRates() {
   _confirm(
     'Se borrarán todos los valores de la tabla — referencia base y overrides manuales. Los valores calculados desde el pipeline real (borde teal) se mantienen.',
