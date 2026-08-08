@@ -3244,17 +3244,18 @@ function _convCellReset(key) {
 
 function resetAllConvRates() {
   _confirm(
-    '¿Reiniciar todas las tasas de conversión? Se borrarán los overrides manuales y quedará solo la referencia base y el historial real del pipeline.',
+    'Se borrarán todos los valores de la tabla — referencia base y overrides manuales. Los valores calculados desde el pipeline real (borde teal) se mantienen.',
     () => {
       CONFIG.convOverride = {};
+      CONFIG.convRef = {};
       saveConfigToStorage();
       if (typeof renderConvTab === 'function') renderConvTab();
       else if (document.getElementById('conv-body')) {
         document.getElementById('conv-body').innerHTML = buildConvTable();
       }
-      toast('Tasas de conversión reiniciadas', 'green');
+      toast('Tabla de tasas dejada en cero', 'green');
     },
-    { title: 'Reiniciar tasas de conversión', okLabel: 'Reiniciar', variant: 'warn' }
+    { title: 'Dejar tabla en cero', okLabel: 'Dejar en cero', variant: 'warn' }
   );
 }
 function buildConvTable() {
