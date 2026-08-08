@@ -3243,14 +3243,19 @@ function _convCellReset(key) {
 }
 
 function resetAllConvRates() {
-  if (!confirm('¿Reiniciar todas las tasas de conversión? Se borrarán los overrides manuales y quedará solo la referencia base y el historial real del pipeline.')) return;
-  CONFIG.convOverride = {};
-  saveConfigToStorage();
-  if (typeof renderConvTab === 'function') renderConvTab();
-  else if (document.getElementById('conv-body')) {
-    document.getElementById('conv-body').innerHTML = buildConvTable();
-  }
-  toast('Tasas de conversión reiniciadas', 'green');
+  _confirm(
+    '¿Reiniciar todas las tasas de conversión? Se borrarán los overrides manuales y quedará solo la referencia base y el historial real del pipeline.',
+    () => {
+      CONFIG.convOverride = {};
+      saveConfigToStorage();
+      if (typeof renderConvTab === 'function') renderConvTab();
+      else if (document.getElementById('conv-body')) {
+        document.getElementById('conv-body').innerHTML = buildConvTable();
+      }
+      toast('Tasas de conversión reiniciadas', 'green');
+    },
+    { title: 'Reiniciar tasas de conversión', okLabel: 'Reiniciar', variant: 'warn' }
+  );
 }
 function buildConvTable() {
   const svcs = (CONFIG.services || []).filter(s=>s.enabled!==false);
