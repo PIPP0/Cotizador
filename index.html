@@ -1864,7 +1864,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
       <div class="page-title">Tasas de conversión</div>
       <div class="page-sub">Historial de conversión por servicio y segmento</div>
     </div>
-    <span style="font-size:11px;color:var(--t4);align-self:center">Calculado desde pipeline · editable</span>
+    <button class="btn-sm btn-o" onclick="resetAllConvRates()" style="font-size:11.5px;padding:6px 14px;color:var(--red);border-color:var(--red)" title="Borrar todos los overrides manuales y volver a valores de referencia">↺ Reiniciar todo</button>
   </div>
   <div id="conv-body"></div>
 </div>
@@ -3242,6 +3242,16 @@ function _convCellReset(key) {
   renderConvView();
 }
 
+function resetAllConvRates() {
+  if (!confirm('¿Reiniciar todas las tasas de conversión? Se borrarán los overrides manuales y quedará solo la referencia base y el historial real del pipeline.')) return;
+  CONFIG.convOverride = {};
+  saveConfigToStorage();
+  if (typeof renderConvTab === 'function') renderConvTab();
+  else if (document.getElementById('conv-body')) {
+    document.getElementById('conv-body').innerHTML = buildConvTable();
+  }
+  toast('Tasas de conversión reiniciadas', 'green');
+}
 function buildConvTable() {
   const svcs = (CONFIG.services || []).filter(s=>s.enabled!==false);
   const segs = CONFIG.segments  || [];
