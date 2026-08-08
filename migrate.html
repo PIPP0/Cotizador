@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Migración de datos · Cotizadia</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f0f3f6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{background:#fff;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,.1);padding:40px;max-width:520px;width:100%}
+h1{font-size:22px;color:#0a1f10;margin-bottom:6px}
+.sub{color:#737380;font-size:14px;margin-bottom:32px}
+.section{margin-bottom:28px}
+.label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#aaaabc;margin-bottom:10px}
+.btn{display:block;width:100%;padding:14px 20px;border-radius:10px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:.15s;text-align:center}
+.btn-green{background:#1a9e5c;color:#fff}
+.btn-green:hover{background:#157d49}
+.btn-outline{background:#fff;color:#252530;border:1.5px solid #dde4ea;margin-top:10px}
+.btn-outline:hover{background:#f0f3f6}
+.status{margin-top:16px;padding:12px 16px;border-radius:8px;font-size:14px;display:none}
+.status.ok{background:#eaf7f1;color:#0a5c32;display:block}
+.status.err{background:#fdf0f0;color:#d63b3b;display:block}
+.divider{border:none;border-top:1.5px solid #f0f3f6;margin:28px 0}
+.keys-list{font-size:13px;color:#3d3d4f;background:#f8f9fb;border-radius:8px;padding:12px;max-height:140px;overflow-y:auto;margin-top:8px}
+.keys-list span{display:block;padding:2px 0;color:#737380}
+.keys-list strong{color:#1a9e5c}
+.back{display:block;text-align:center;margin-top:24px;color:#8C5BB3;font-size:14px;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🔄 Migración de datos</h1>
+  <p class="sub">Transfiere tus datos guardados entre dominios</p>
+
+  <!-- EXPORT -->
+  <div class="section">
+    <div class="label">Paso 1 — Exportar desde este dominio</div>
+    <div class="keys-list" id="keys-preview"><span style="color:#aaa">Cargando...</span></div>
+    <button class="btn btn-green" onclick="exportData()" style="margin-top:12px">⬇ Descargar backup de datos</button>
+    <div class="status" id="export-status"></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- IMPORT -->
+  <div class="section">
+    <div class="label">Paso 2 — Importar en el nuevo dominio</div>
+    <p style="font-size:13px;color:#737380;margin-bottom:12px">Abre esta página en <strong>cotizadia.cl/migrate.html</strong> y sube el archivo exportado:</p>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
+    <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">⬆ Seleccionar archivo backup</button>
+    <div class="status" id="import-status"></div>
+  </div>
+
+  <a href="/" class="back">← Volver a la plataforma</a>
+</div>
+
+<script>
+const IGNORE = ['_nex_cfg_ver']; // claves que no necesitan migración (se regeneran)
+
+function getRelevantKeys(){
+  const keys = [];
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    if(k && !IGNORE.includes(k)) keys.push(k);
+  }
+  return keys.sort();
+}
+
+function renderPreview(){
+  const keys = getRelevantKeys();
+  const el = document.getElementById('keys-preview');
+  if(!keys.length){
+    el.innerHTML = '<span>No hay datos guardados en este dominio.</span>';
+    return;
+  }
+  el.innerHTML = `<strong>${keys.length} claves encontradas en ${location.hostname}:</strong>` +
+    keys.map(k=>`<span>• ${k}</span>`).join('');
+}
+
+function exportData(){
+  const keys = getRelevantKeys();
+  const data = { domain: location.hostname, exported: new Date().toISOString(), items: {} };
+  keys.forEach(k=>{ data.items[k] = localStorage.getItem(k); });
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `cotizadia-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  const st = document.getElementById('export-status');
+  st.className='status ok';
+  st.textContent = `✓ Backup descargado con ${keys.length} claves desde ${location.hostname}`;
+}
+
+function importData(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data.items) throw new Error('Archivo inválido');
+      let count = 0;
+      Object.entries(data.items).forEach(([k,v])=>{
+        if(v!==null){ localStorage.setItem(k,v); count++; }
+      });
+      const st = document.getElementById('import-status');
+      st.className='status ok';
+      st.innerHTML = `✓ ${count} claves importadas desde <strong>${data.domain}</strong> (${data.exported?.slice(0,10)})<br>
+        <a href="/" style="color:#1a9e5c;font-weight:600">→ Ir a la plataforma</a>`;
+    } catch(err){
+      const st = document.getElementById('import-status');
+      st.className='status err';
+      st.textContent = 'Error al leer el archivo: ' + err.message;
+    }
+    input.value='';
+  };
+  reader.readAsText(file);
+}
+
+renderPreview();
+
+// Si viene de redirect con ?done=1, mostrar éxito
+if(location.search.includes('done=1')){
+  document.getElementById('import-status').className='status ok';
+  document.getElementById('import-status').innerHTML='✓ Migración completada. <a href="/" style="color:#1a9e5c">→ Ir a la plataforma</a>';
+}
+</script>
+</body>
+</html>
