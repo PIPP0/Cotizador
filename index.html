@@ -3924,7 +3924,7 @@ function saveCfgPanel() {
   });
   // URL logo para correos
   const luEl = document.getElementById('cfg-logoUrl');
-  if (luEl) CONFIG.logoUrl = luEl.value.trim() || null;
+  if (luEl && luEl.value.trim()) CONFIG.logoUrl = luEl.value.trim();
   // Colores desde hex inputs
   const _badHex = [];
   ['teal','orange','dark'].forEach(c => {
