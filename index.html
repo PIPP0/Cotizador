@@ -3862,8 +3862,8 @@ function _syncFromFirebase() {
     if (r.motorIA) CONFIG.motorIA = r.motorIA;
     if (r.precios) CONFIG.precios = r.precios;
     if (r.llm) CONFIG.llm = {...(CONFIG.llm||{}), ...r.llm};
-    if (r.convRef) CONFIG.convRef = {...(CONFIG.convRef||{}), ...r.convRef};
-    if (r.convOverride) CONFIG.convOverride = {...(CONFIG.convOverride||{}), ...r.convOverride};
+    if ('convRef' in r) CONFIG.convRef = r.convRef;
+    if ('convOverride' in r) CONFIG.convOverride = r.convOverride || {};
     if (r.convTable && !r.convOverride) CONFIG.convOverride = {...r.convTable};
     localStorage.setItem(_spcKey,JSON.stringify(r));
     _applyDynamicColors();
@@ -3903,8 +3903,8 @@ function loadConfigFromStorage() {
     if (sv.motorIA) CONFIG.motorIA = sv.motorIA;
     if (sv.precios) CONFIG.precios = sv.precios;
     if (sv.llm) CONFIG.llm = {...(CONFIG.llm||{}), ...sv.llm};
-    if (sv.convRef) CONFIG.convRef = {...(CONFIG.convRef||{}), ...sv.convRef};
-    if (sv.convOverride) CONFIG.convOverride = {...(CONFIG.convOverride||{}), ...sv.convOverride};
+    if ('convRef' in sv) CONFIG.convRef = sv.convRef;
+    if ('convOverride' in sv) CONFIG.convOverride = sv.convOverride || {};
     // Migración: si hay datos del antiguo convTable, promoverlos a convOverride
     if (sv.convTable && !sv.convOverride) CONFIG.convOverride = {...sv.convTable};
     // Solo cargar logo guardado si los colores son de este cliente (no legacy)
