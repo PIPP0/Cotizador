@@ -3324,14 +3324,14 @@ function buildConvTable() {
       } else {
         displayVal  = '';
         borderColor = '#d0d5dd';
-        badge       = '—';
+        badge       = 'sin datos';
       }
 
       cells += `<td style="padding:5px 4px;text-align:center;border-bottom:1px solid var(--border)">
         <div style="display:inline-flex;flex-direction:column;align-items:center;gap:2px">
           <input type="number" min="1" max="99"
             value="${displayVal}"
-            placeholder="—"
+            placeholder="0"
             title="${sv.name} / ${sg.name} · Fuente: ${badge}"
             style="width:52px;text-align:center;border:1.5px solid ${borderColor};border-radius:7px;padding:5px 4px;font-size:13px;font-weight:700;font-family:inherit;background:#fff;color:var(--t1);transition:.12s"
             oninput="_convCellSave('${key}', this.value, this)"
