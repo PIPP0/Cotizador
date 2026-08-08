@@ -3963,6 +3963,14 @@ function saveCfgPanel() {
   // Confirmar logo pendiente si el usuario subió/quitó uno
   if (_pendingLogo !== undefined) { CONFIG.logoSrc = _pendingLogo; _pendingLogo = undefined; }
   applyLogoToDOM();
+  // Aplicar colores a CSS variables inmediatamente
+  (function(){
+    const _r = document.documentElement.style;
+    const _c = CONFIG.colors || {};
+    if (_c.teal)   { _r.setProperty('--teal','#'+_c.teal); _r.setProperty('--teal2','#'+_c.teal); _r.setProperty('--nx-teal','#'+_c.teal); }
+    if (_c.orange) { _r.setProperty('--orange','#'+_c.orange); _r.setProperty('--nx-orange','#'+_c.orange); }
+    if (_c.dark)   { _r.setProperty('--dark','#'+_c.dark); _r.setProperty('--nx-dark','#'+_c.dark); }
+  })();
   saveConfigToStorage();
   try {
     applyConfig();
