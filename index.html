@@ -5214,7 +5214,6 @@ window.addEventListener('load',()=>{
   try { loadConfigFromStorage(); } catch(e) { console.warn('[init] loadConfig:', e); }
   // Re-aplicar config estructural para clientes con override (evita que localStorage pise los datos correctos)
   if(_CLIENT_ID === 'nexenergy'){
-    CONFIG.services      = DEFAULT_CONFIG.services;
     CONFIG.segments      = DEFAULT_CONFIG.segments;
     CONFIG.systemTypes   = DEFAULT_CONFIG.systemTypes;
     CONFIG.sidebarServices = DEFAULT_CONFIG.sidebarServices;
