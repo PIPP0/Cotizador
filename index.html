@@ -3252,10 +3252,8 @@ function resetConvToDefaults() {
       CONFIG.convOverride = {};
       CONFIG.convRef = {...(DEFAULT_CONFIG.convRef || {})};
       saveConfigToStorage();
+      if (typeof renderConvView === 'function') renderConvView();
       if (typeof renderConvTab === 'function') renderConvTab();
-      else if (document.getElementById('conv-body')) {
-        document.getElementById('conv-body').innerHTML = buildConvTable();
-      }
       toast('Tasas restauradas a valores de referencia', 'green');
     },
     { title: 'Reiniciar tasas', okLabel: 'Reiniciar', variant: 'warn' }
@@ -3268,10 +3266,8 @@ function resetAllConvRates() {
       CONFIG.convOverride = {};
       CONFIG.convRef = {};
       saveConfigToStorage();
+      if (typeof renderConvView === 'function') renderConvView();
       if (typeof renderConvTab === 'function') renderConvTab();
-      else if (document.getElementById('conv-body')) {
-        document.getElementById('conv-body').innerHTML = buildConvTable();
-      }
       toast('Tabla de tasas dejada en cero', 'green');
     },
     { title: 'Dejar tabla en cero', okLabel: 'Dejar en cero', variant: 'warn' }
