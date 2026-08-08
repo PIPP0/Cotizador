@@ -3243,7 +3243,7 @@ function _convCellReset(key) {
 }
 
 function buildConvTable() {
-  const svcs = CONFIG.services  || [];
+  const svcs = (CONFIG.services || []).filter(s=>s.enabled!==false);
   const segs = CONFIG.segments  || [];
   const hist = calcHistoricalConv();
   const ref  = CONFIG.convRef     || {};
@@ -4186,7 +4186,7 @@ function resetDemoData(){
   _confirm('¿Restablecer los datos de ejemplo? Se perderán los datos importados.', ()=>{
     localStorage.removeItem(_plKey());
     PIPELINE.length = 0;
-    _getPipelineDemo().forEach(r => PIPELINE.push({...r}));
+    _getPipelineDemo().filter(r=>{ const _an=new Set((CONFIG.services||[]).filter(s=>s.enabled!==false).map(s=>s.name)); return _an.size===0||_an.has(r.svc); }).forEach(r => PIPELINE.push({...r}));
     savePipelineToStorage();
     renderTable();
     if(typeof renderTable2 === 'function') renderTable2();
@@ -5245,12 +5245,14 @@ window.addEventListener('load',()=>{
       const parsed = JSON.parse(saved);
       if(Array.isArray(parsed) && parsed.length > 0){
         PIPELINE.length = 0;
-        parsed.forEach(r => PIPELINE.push(r));
+        // Filter out quotes whose service is no longer active
+        const _activeSN = new Set((CONFIG.services||[]).filter(s=>s.enabled!==false).map(s=>s.name));
+        parsed.filter(r => _activeSN.size===0 || _activeSN.has(r.svc) || r._userCreated).forEach(r => PIPELINE.push(r));
       }
     } else {
       // Primera vez: regenerar IDs con nameA actual (ya cargado de CONFIG)
       PIPELINE.length = 0;
-      _getPipelineDemo().forEach(r => PIPELINE.push(r));
+      _getPipelineDemo().filter(r=>{ const _an=new Set((CONFIG.services||[]).filter(s=>s.enabled!==false).map(s=>s.name)); return _an.size===0||_an.has(r.svc); }).forEach(r => PIPELINE.push(r));
     }
     // Migrar prefijos de IDs al nombre actual de la empresa
     const _needsMigration = _migrateIdPrefix(PIPELINE);
@@ -6158,7 +6160,8 @@ Motiva a contratar, tono profesional, en español. Sin saludo ni firma.`;
         vence: venceStr,
         tip: d.tipText,
         email: d.toEmail,
-        created: Date.now()
+        created: Date.now(),
+        _userCreated: true
       };
       PIPELINE.unshift(newRow);
       savePipelineToStorage();
