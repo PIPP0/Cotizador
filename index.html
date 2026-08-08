@@ -1005,6 +1005,20 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 .ce-add-btn{padding:6px 12px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;transition:.12s}
 .ce-add-btn:hover{opacity:.85}
 </style>
+<script>
+/* Aplicar colores guardados antes del primer render — evita flash */
+(function(){
+  try {
+    var k = Object.keys(localStorage).find(function(x){ return x.indexOf('spc_')===0 && x.indexOf('logo')===-1; });
+    if (!k) return;
+    var c = (JSON.parse(localStorage.getItem(k)||'{}').colors)||{};
+    var r = document.documentElement.style;
+    if (c.teal)   { r.setProperty('--teal','#'+c.teal); r.setProperty('--teal2','#'+c.teal); r.setProperty('--nx-teal','#'+c.teal); }
+    if (c.orange) { r.setProperty('--orange','#'+c.orange); r.setProperty('--nx-orange','#'+c.orange); }
+    if (c.dark)   { r.setProperty('--dark','#'+c.dark); r.setProperty('--nx-dark','#'+c.dark); }
+  } catch(e){}
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 </head>
