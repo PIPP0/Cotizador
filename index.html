@@ -2861,7 +2861,7 @@ function calcHistoricalConv() {
   });
   return r;
 }
-function getConvProb(svcRaw, segRaw) {
+function getConvProb(svcRaw, segRaw, storedProb) {
   const svcId = _normSvc(svcRaw);
   const segId = _normSeg(segRaw);
   const key   = svcId + '_' + segId;
@@ -2877,6 +2877,9 @@ function getConvProb(svcRaw, segRaw) {
   // Capa 1 — baseline de referencia
   const ref = CONFIG.convRef || {};
   if (ref[key] != null) { const _p=parseInt(ref[key]); return isNaN(_p)?75:_p; }
+
+  // Capa 0 — prob almacenada en la fila (cuando no hay tasa configurada)
+  if (storedProb != null && storedProb > 0) return storedProb;
 
   // Default global
   return (CONFIG.cotizacion||{}).convProb || 75;
@@ -4869,7 +4872,7 @@ function renderTableInto(tableId, rows){
   } else {
     const _svcNames = {}; (CONFIG.services||[]).forEach(s=>{ _svcNames[s.id]=s.name; _svcNames[s.name]=s.name; });
     tbody=rows.map(r=>{
-      const liveProb = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 0 : (r.prob != null && r.prob > 0 ? r.prob : getConvProb(r.svc, r.seg));
+      const liveProb = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 0 : getConvProb(r.svc, r.seg, r.prob);
       const probLabel = r.estado==='Ganada' ? '✓ Ganada' : r.estado==='Perdida' ? '✗ Perdida' : liveProb+'%';
       const probFill  = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 100 : liveProb;
       const probClr   = r.estado==='Ganada' ? 'var(--green)' : r.estado==='Perdida' ? 'var(--red)' : probColor(liveProb);
