@@ -5867,19 +5867,6 @@ function _applyFbData() {
     if (d.trabajador)  parts.push('Técnico: ' + d.trabajador);
     rdEl.value = parts.join(' — ');
   }
-
-  const nlEl = document.getElementById('nl-input');
-  if (nlEl && !nlEl.value) {
-    const parts = [];
-    if (d.empresa)     parts.push(d.empresa);
-    if (d.tipoTarea)   parts.push(d.tipoTarea);
-    if (d.equipos)     parts.push(d.equipos + ' equipos');
-    if (d.descripcion) parts.push(d.descripcion);
-    nlEl.value = parts.join(', ');
-    document.getElementById('nl-status').textContent = '💡 Pulsa Completar para que la IA seleccione servicio y segmento.';
-    document.getElementById('nl-status').style.color = 'var(--teal)';
-  }
-
   closeFbModal();
   const eqTxt = d.equipos ? ` · ${d.equipos} equipos` : '';
   toast(`✓ Datos de FieldBeat aplicados${eqTxt}`, 'green');
