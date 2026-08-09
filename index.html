@@ -4869,7 +4869,7 @@ function renderTableInto(tableId, rows){
   } else {
     const _svcNames = {}; (CONFIG.services||[]).forEach(s=>{ _svcNames[s.id]=s.name; _svcNames[s.name]=s.name; });
     tbody=rows.map(r=>{
-      const liveProb = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 0 : getConvProb(r.svc, r.seg);
+      const liveProb = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 0 : (r.prob != null && r.prob > 0 ? r.prob : getConvProb(r.svc, r.seg));
       const probLabel = r.estado==='Ganada' ? '✓ Ganada' : r.estado==='Perdida' ? '✗ Perdida' : liveProb+'%';
       const probFill  = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 100 : liveProb;
       const probClr   = r.estado==='Ganada' ? 'var(--green)' : r.estado==='Perdida' ? 'var(--red)' : probColor(liveProb);
