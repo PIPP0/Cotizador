@@ -5950,9 +5950,11 @@ function _cpSeedFromPipeline() {
   if (!PIPELINE || !PIPELINE.length) return;
   const all = _cpGetAll();
   let changed = false;
+  let demoNames;
+  try { demoNames = new Set((_getPipelineDemo()||[]).map(r=>(r.cliente||'').toLowerCase())); } catch(e) { demoNames = new Set(); }
   PIPELINE.forEach(r => {
     const key = (r.cliente||'').toLowerCase();
-    if (!key) return;
+    if (!key || demoNames.has(key)) return;
     if (!all[key]) {
       all[key] = { empresa: r.cliente, email: r.email||'', svc: r.svc||'', updated: r.created||Date.now() };
       changed = true;
