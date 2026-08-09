@@ -5741,7 +5741,14 @@ async function _handleFbFile(file) {
         'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     }
     const text = await _extractFbPdfText(file);
-    const data = _parseFbText(text);
+    const hasKey = CONFIG.llm && CONFIG.llm.apiKey && CONFIG.llm.apiKey.trim();
+    let data = null;
+    if (hasKey) {
+      body.innerHTML = '<div style="text-align:center;padding:32px;color:var(--t3);font-size:13px">✨ Extrayendo datos con IA…</div>';
+      data = await _parseFbWithLlm(text);
+    }
+    if (!data) data = _parseFbText(text);
+    if (!data.taskId) { const m=text.match(/task_id=(\d+)/); if(m) data.taskId=m[1]; }
     _fbParsedData = data;
     _showFbPreview(data);
   } catch(e) {
@@ -5770,6 +5777,21 @@ async function _extractFbPdfText(file) {
     out += lines.join('\n') + '\n';
   }
   return out;
+}
+
+async function _parseFbWithLlm(text) {
+  const sys = `Eres un extractor de datos de informes de servicio de FieldBeat (empresa chilena de climatización/HVAC). El texto proviene de un PDF procesado por coordenadas Y, puede tener artefactos de formato. Extrae estos campos y devuelve SOLO un JSON válido sin texto adicional:
+{"empresa":"","rut":"","email":"","telefono":"","contacto":"","sucursal":"","direccion":"","tipoTarea":"","descripcion":"","trabajador":"","fecha":"","equipos":0}
+Reglas: empresa=nombre empresa cliente (campo Cliente); contacto=SOLO nombre de persona sin cargo ni tipo de tarea; sucursal=nombre de sede; tipoTarea=PREVENTIVO/CORRECTIVO/etc; trabajador=nombre del técnico; equipos=número entero. Campos no encontrados: cadena vacía o 0.`;
+  try {
+    const result = await _llmCall(sys, text.slice(0, 4000), null, 400);
+    if (!result) return null;
+    const m = result.match(/\{[\s\S]*\}/);
+    if (!m) return null;
+    const d = JSON.parse(m[0]);
+    if (typeof d.equipos === 'string') d.equipos = parseInt(d.equipos) || 0;
+    return d;
+  } catch(e) { console.warn('[FieldBeat LLM]', e); return null; }
 }
 
 function _parseFbText(text) {
