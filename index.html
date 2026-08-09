@@ -2861,28 +2861,25 @@ function calcHistoricalConv() {
   });
   return r;
 }
-function getConvProb(svcRaw, segRaw, storedProb) {
+function getConvProb(svcRaw, segRaw) {
   const svcId = _normSvc(svcRaw);
   const segId = _normSeg(segRaw);
   const key   = svcId + '_' + segId;
 
   // Capa 3 — override explícito del usuario (máxima prioridad)
   const ov = CONFIG.convOverride || {};
-  if (ov[key] != null && ov[key] !== '') { const _p=parseInt(ov[key]); return isNaN(_p)?75:_p; }
+  if (ov[key] != null && ov[key] !== '') { const _p=parseInt(ov[key]); return isNaN(_p)?0:_p; }
 
   // Capa 2 — histórico real del pipeline (mínimo 3 registros para ser estadísticamente confiable)
   const hist = calcHistoricalConv();
   if (hist[key] && hist[key].n >= 3) return Math.max(5, hist[key].rate);
 
-  // Capa 1 — baseline de referencia
+  // Capa 1 — tasa configurada en Edición de Valores (fuente de verdad)
   const ref = CONFIG.convRef || {};
-  if (ref[key] != null) { const _p=parseInt(ref[key]); return isNaN(_p)?75:_p; }
+  if (ref[key] != null) { const _p=parseInt(ref[key]); return isNaN(_p)?0:_p; }
 
-  // Capa 0 — prob almacenada en la fila (cuando no hay tasa configurada)
-  if (storedProb != null && storedProb > 0) return storedProb;
-
-  // Default global
-  return (CONFIG.cotizacion||{}).convProb || 75;
+  // Sin tasa configurada → 0
+  return 0;
 }
 
 // ══════════════════════════════════════════════════
@@ -4872,7 +4869,7 @@ function renderTableInto(tableId, rows){
   } else {
     const _svcNames = {}; (CONFIG.services||[]).forEach(s=>{ _svcNames[s.id]=s.name; _svcNames[s.name]=s.name; });
     tbody=rows.map(r=>{
-      const liveProb = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 0 : getConvProb(r.svc, r.seg, r.prob);
+      const liveProb = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 0 : getConvProb(r.svc, r.seg);
       const probLabel = r.estado==='Ganada' ? '✓ Ganada' : r.estado==='Perdida' ? '✗ Perdida' : liveProb+'%';
       const probFill  = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 100 : liveProb;
       const probClr   = r.estado==='Ganada' ? 'var(--green)' : r.estado==='Perdida' ? 'var(--red)' : probColor(liveProb);
