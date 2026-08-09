@@ -4395,8 +4395,13 @@ function buildLiveData() {
   const active = data.filter(r => r.estado !== 'Perdida');
   const ganadas = data.filter(r => r.estado === 'Ganada');
   const pipTotal = active.reduce((s, r) => s + (r.monto || 0), 0);
+  // Usar getConvProb (igual que la tabla) para coherencia con tasas configuradas
   const avgProb = active.length
-    ? Math.round(active.reduce((s, r) => s + (r.prob || 0), 0) / active.length)
+    ? Math.round(active.reduce((s, r) => {
+        if (r.estado === 'Ganada')  return s + 100;
+        if (r.estado === 'Perdida') return s + 0;
+        return s + getConvProb(r.svc, r.seg);
+      }, 0) / active.length)
     : 0;
   const clientes = new Set(data.map(r => r.cliente)).size;
 
