@@ -1979,7 +1979,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
           <span class="card-label">Datos del cliente</span>
           <button class="cot-edit-btn" onclick="toggleCardEditor('ce-client-ed','ce-client-icon')" title="Editar campos" id="ce-client-icon"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         </div>
-                <!-- ââ Client Picker ââ -->
+                <!-- ── Client Picker ── -->
         <div id="cp-wrap" style="margin-bottom:14px;position:relative">
           <div id="cp-chip" style="display:none;background:#e8f7f9;border:1.5px solid var(--teal);border-radius:8px;padding:9px 14px;align-items:center;justify-content:space-between;gap:10px">
             <div style="display:flex;align-items:center;gap:8px">
@@ -1991,7 +1991,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
           </div>
           <div id="cp-input-wrap" style="position:relative">
             <svg viewBox="0 0 24 24" width="15" height="15" stroke="var(--t3)" stroke-width="2" fill="none" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input id="cp-input" placeholder="Buscar cliente registradoâ¦" autocomplete="off"
+            <input id="cp-input" placeholder="Buscar cliente registrado…" autocomplete="off"
               style="width:100%;padding:9px 12px 9px 34px;border:1.5px solid var(--bbr);border-radius:8px;font-size:13px;background:#fff;color:var(--t1);font-family:inherit;transition:.12s;box-sizing:border-box"
               oninput="_cpFilter(this.value)" onfocus="_cpShow()" onblur="setTimeout(_cpHide,180)"
               onkeydown="if(event.key==='Escape')_cpHide()"
@@ -5936,7 +5936,7 @@ function _applyFbData() {
 // ────────────────────────────────────────────────────────────────────────────
 
 
-// ââ CLIENT REGISTRY ââââââââââââââââââââââââââââââââââââââââââââ
+// ── CLIENT REGISTRY ────────────────────────────────────────────
 const _spcClientsKey = 'spc_clients_' + _CLIENT_ID;
 function _cpGetAll() { try { return JSON.parse(localStorage.getItem(_spcClientsKey)||'{}'); } catch(e) { return {}; } }
 function _cpSave(data) {
@@ -5969,13 +5969,13 @@ function _cpRender(list) {
   const drop = document.getElementById('cp-drop');
   if (!drop) return;
   if (!list.length) {
-    drop.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--t3);text-align:center">No hay clientes registrados aÃºn.<br>Se guardan automÃ¡ticamente al enviar cotizaciones.</div>';
+    drop.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--t3);text-align:center">No hay clientes registrados aún.<br>Se guardan automáticamente al enviar cotizaciones.</div>';
     drop.style.display = 'block'; return;
   }
   drop.innerHTML = list.map((c,i) => {
     const ini = (c.empresa||'?').replace(/[^A-Za-z0-9]/g,'').slice(0,2).toUpperCase() || '??';
     const date = c.updated ? new Date(c.updated).toLocaleDateString('es-CL',{day:'2-digit',month:'short'}) : '';
-    const sub = [c.svc, date].filter(Boolean).join(' Â· ');
+    const sub = [c.svc, date].filter(Boolean).join(' · ');
     return '<div onmousedown="_cpSelect('+i+')" style="padding:10px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:.1s" onmouseover="this.style.background=\'#f0fbfc\'" onmouseout="this.style.background=\'\'"><div style="width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--teal),#0fa06a);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:800;color:#fff">'+ini+'</div><div style="min-width:0"><div style="font-size:13px;font-weight:700;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+c.empresa+'</div>'+(sub?'<div style="font-size:11px;color:var(--t3)">'+sub+'</div>':'')+'</div></div>';
   }).join('');
   drop._cpList = list;
