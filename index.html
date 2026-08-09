@@ -5952,6 +5952,7 @@ function _cpSeedFromPipeline() {
   let changed = false;
   let demoNames;
   try { demoNames = new Set((_getPipelineDemo()||[]).map(r=>(r.cliente||'').toLowerCase())); } catch(e) { demoNames = new Set(); }
+  demoNames.forEach(k => { if (all[k]) { delete all[k]; changed = true; } });
   PIPELINE.forEach(r => {
     const key = (r.cliente||'').toLowerCase();
     if (!key || demoNames.has(key)) return;
