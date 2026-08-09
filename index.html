@@ -5947,21 +5947,15 @@ function _cpSave(data) {
   try { localStorage.setItem(_spcClientsKey, JSON.stringify(all)); } catch(e) {}
 }
 function _cpSeedFromPipeline() {
-  if (!PIPELINE || !PIPELINE.length) return;
-  const all = _cpGetAll();
-  let changed = false;
-  let demoNames;
-  try { demoNames = new Set((_getPipelineDemo()||[]).map(r=>(r.cliente||'').toLowerCase())); } catch(e) { demoNames = new Set(); }
-  demoNames.forEach(k => { if (all[k]) { delete all[k]; changed = true; } });
-  PIPELINE.forEach(r => {
+  const prev = _cpGetAll();
+  const all = {};
+  (PIPELINE||[]).forEach(r => {
     const key = (r.cliente||'').toLowerCase();
-    if (!key || demoNames.has(key)) return;
-    if (!all[key]) {
-      all[key] = { empresa: r.cliente, email: r.email||'', svc: r.svc||'', updated: r.created||Date.now() };
-      changed = true;
-    }
+    if (!key) return;
+    const p = prev[key];
+    all[key] = p ? { ...p, empresa: r.cliente, svc: r.svc||p.svc||'', updated: Math.max(p.updated||0, r.created||0) || Date.now() } : { empresa: r.cliente, email: r.email||'', svc: r.svc||'', updated: r.created||Date.now() };
   });
-  if (changed) try { localStorage.setItem(_spcClientsKey, JSON.stringify(all)); } catch(e) {}
+  try { localStorage.setItem(_spcClientsKey, JSON.stringify(all)); } catch(e) {}
 }
 function _cpFilter(q) {
   const all = Object.values(_cpGetAll()).sort((a,b) => (b.updated||0)-(a.updated||0));
