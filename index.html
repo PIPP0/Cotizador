@@ -1984,6 +1984,8 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
           <div class="fg"><label>RUT</label><input id="cr" placeholder="Ej: 70.571.800-0"></div>
           <div class="fg"><label>Email de contacto <span style="color:var(--red);font-size:13px">*</span></label><input id="ce" placeholder="Ej: contacto@empresa.cl" type="email"></div>
           <div class="fg"><label>Teléfono</label><input id="cp" placeholder="Ej: +56 2 2422 3000"></div>
+          <div class="fg"><label>Nombre del contacto</label><input id="cct" placeholder="Ej: Jorge Campos Solís"></div>
+          <div class="fg"><label>Sucursal / Dirección</label><input id="cdir" placeholder="Ej: INACAP Centro, Av. Ecuador 3363"></div>
         </div>
         <div class="card-editor" id="ce-client-ed">
           <div class="ce-title">Campos del formulario</div>
@@ -5778,32 +5780,36 @@ function _parseFbText(text) {
     'Tipo de Tarea','Descripción','Cliente','Sucursal','Rut','Email del Contacto',
     'Nombre del Contacto','Telefono del Contacto','Dirección','Piso Oficina',
     'Equipos a Revisar','Formulario','VERIFICACIÓN','CANTIDAD DE EQUIPOS'];
-  function between(start) {
-    const si = text.indexOf(start);
+    function between(label) {
+    // Try label+newline first, then label+space (handles both PDF layouts)
+    let si = text.indexOf(label + '\n');
+    let skip = label.length + 1;
+    if (si === -1) { si = text.indexOf(label + ' '); skip = label.length + 1; }
     if (si === -1) return '';
-    const after = text.slice(si + start.length);
+    const after = text.slice(si + skip);
     let end = after.length;
     for (const lbl of LABELS) {
-      if (lbl === start) continue;
+      if (lbl === label) continue;
       const idx = after.indexOf(lbl);
       if (idx !== -1 && idx < end) end = idx;
     }
     return after.slice(0, end).replace(/\s+/g, ' ').trim();
   }
 
-  const empresa    = between('Cliente\n');
-  const sucursal   = between('Sucursal\n');
-  const rut        = between('Rut\n').split(' ')[0] || '';
-  const email      = (between('Email del Contacto\n').split(/\s/)[0] || '').trim();
-  const contacto   = between('Nombre del Contacto\n');
-  const telefono   = (between('Telefono del Contacto\n').split(/\s/)[0] || '').trim();
-  const direccion  = between('Dirección\n').replace(/Piso.*/, '').trim();
-  const tipoTarea  = between('Tipo de Tarea\n');
-  const descripcion= between('Descripción\n');
-  const trabajador = between('Trabajador\n');
-  const fecha      = between('Fecha y Hora Programada\n').split('Duración')[0].trim();
+  const empresa    = between('Cliente');
+  const sucursal   = between('Sucursal');
+  const rut        = between('Rut').split(' ')[0] || '';
+  const rawEmail   = (between('Email del Contacto').split(/\s/)[0] || '').trim();
+  const email      = rawEmail.includes('@') ? rawEmail : '';
+  const contacto   = between('Nombre del Contacto');
+  const rawTel     = (between('Telefono del Contacto').split(/\s/)[0] || '').trim();
+  const telefono   = /\d/.test(rawTel) ? rawTel : '';
+  const direccion  = between('Dirección').replace(/Piso.*/i, '').trim();
+  const tipoTarea  = between('Tipo de Tarea');
+  const descripcion= between('Descripción');
+  const trabajador = between('Trabajador');
+  const fecha      = between('Fecha y Hora Programada').split('Duración')[0].trim();
 
-  let equipos = 0;
   const eqMatch = text.match(/CANTIDAD DE EQUIPOS INTERVENIDOS\s+(\d+)/i);
   if (eqMatch) { equipos = parseInt(eqMatch[1]); }
   if (!equipos) {
@@ -5856,6 +5862,9 @@ function _applyFbData() {
   if (d.rut)       { const el=document.getElementById('cr'); if(el) el.value=d.rut; }
   if (d.email)     { const el=document.getElementById('ce'); if(el) el.value=d.email; }
   if (d.telefono)  { const el=document.getElementById('cp'); if(el) el.value=d.telefono; }
+  if (d.contacto)  { const el=document.getElementById('cct');  if(el) el.value=d.contacto; }
+  const dirVal = d.direccion || d.sucursal || '';
+  if (dirVal)      { const el=document.getElementById('cdir'); if(el) el.value=dirVal; }
   if (d.equipos)   { const el=document.getElementById('ne'); if(el) el.value=d.equipos; }
 
   const rdEl = document.getElementById('rd');
