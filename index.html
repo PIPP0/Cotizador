@@ -2186,6 +2186,7 @@ const _selfScript = document.currentScript;
 const _CLIENT_ID    = (new URLSearchParams(window.location.search).get('c') || (location.hostname === 'cotizadia.cl' ? 'nexenergy' : 'default')).toLowerCase().replace(/[^a-z0-9_-]/g,'');
 const _spcKey       = 'spc_'      + _CLIENT_ID;
 const _spcLogoKey   = 'spc_logo_' + _CLIENT_ID;
+const _spcLlmKey    = 'spc_llmkey_' + _CLIENT_ID; // clave separada — nunca sobrescrita por Firebase
 
 // ══════════════════════════════════════════════════
 //  CONFIG — personalización SaaS
@@ -3018,7 +3019,7 @@ function renderEdicion() {
         <div style="position:relative">
           <input type="password" id="ev-llm-key" placeholder="sk-proj-…" value="${llm.apiKey||''}"
             style="width:100%;padding-right:38px"
-            oninput="CONFIG.llm=CONFIG.llm||{};CONFIG.llm.apiKey=this.value"
+            oninput="CONFIG.llm=CONFIG.llm||{};CONFIG.llm.apiKey=this.value;if(this.value)localStorage.setItem(_spcLlmKey,this.value);else localStorage.removeItem(_spcLlmKey)"
             onfocus="this.style.borderColor='var(--teal)'"
             onblur="this.style.borderColor=''">
           <button title="Mostrar / ocultar" onclick="var i=document.getElementById('ev-llm-key');i.type=i.type==='password'?'text':'password'"
@@ -3869,6 +3870,8 @@ function saveConfigToStorage() {
     };
     try {
       localStorage.setItem(_spcKey,JSON.stringify(slim));
+      // API key en clave dedicada — nunca sobrescrita por Firebase ni por resetConfig
+      if (CONFIG.llm && CONFIG.llm.apiKey) localStorage.setItem(_spcLlmKey, CONFIG.llm.apiKey);
     } catch(qe) {
       if (qe.name === 'QuotaExceededError' || qe.code === 22) {
         toast('Almacenamiento lleno — algunos cambios no se guardaron localmente', 'warn');
@@ -3906,6 +3909,8 @@ function _syncFromFirebase() {
     if (r.motorIA) CONFIG.motorIA = r.motorIA;
     if (r.precios) CONFIG.precios = r.precios;
     if (r.llm) CONFIG.llm = {...(CONFIG.llm||{}), ...r.llm};
+    // API key: siempre restaurar desde clave dedicada — Firebase nunca la sobrescribe
+    { const _savedKey = localStorage.getItem(_spcLlmKey); if (_savedKey) { CONFIG.llm = CONFIG.llm||{}; CONFIG.llm.apiKey = _savedKey; } }
     try { const _ls=JSON.parse(localStorage.getItem(_spcKey)||'{}'); const _merged={...r,..._ls}; localStorage.setItem(_spcKey,JSON.stringify(_merged)); try{loadConfigFromStorage();}catch(_e){} } catch(e){ localStorage.setItem(_spcKey,JSON.stringify(r)); }
     _applyDynamicColors();
     try { applyConfig(); } catch(e) {}
@@ -3944,6 +3949,8 @@ function loadConfigFromStorage() {
     if (sv.motorIA) CONFIG.motorIA = sv.motorIA;
     if (sv.precios) CONFIG.precios = sv.precios;
     if (sv.llm) CONFIG.llm = {...(CONFIG.llm||{}), ...sv.llm};
+    // API key: clave dedicada tiene prioridad absoluta sobre cualquier valor en el config principal
+    { const _savedKey = localStorage.getItem(_spcLlmKey); if (_savedKey) { CONFIG.llm = CONFIG.llm||{}; CONFIG.llm.apiKey = _savedKey; } }
     if ('convRef' in sv) CONFIG.convRef = sv.convRef;
     if ('convOverride' in sv) CONFIG.convOverride = sv.convOverride || {};
     // Migración: si hay datos del antiguo convTable, promoverlos a convOverride
