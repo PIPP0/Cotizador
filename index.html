@@ -5749,6 +5749,9 @@ async function _handleFbFile(file) {
     }
     if (!data) data = _parseFbText(text);
     if (!data.taskId) { const m=text.match(/task_id=(\d+)/); if(m) data.taskId=m[1]; }
+    // Cross-check: prefer VEX item count over stated total (more reliable)
+    const _vexSet = [...new Set((text.match(/VEX[\s\-]\d+/gi) || []))].length;
+    if (_vexSet > 0) data.equipos = _vexSet;
     _fbParsedData = data;
     _showFbPreview(data);
   } catch(e) {
