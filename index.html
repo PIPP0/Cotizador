@@ -3925,12 +3925,11 @@ function _syncFromFirebase() {
     if (r.sidebarServices) CONFIG.sidebarServices = r.sidebarServices;
     if (r.systemTypes) CONFIG.systemTypes = r.systemTypes;
     if (r.clientFields) CONFIG.clientFields = r.clientFields;
-    if (r.logoSrc !== undefined) {
+    if (r.logoSrc) {
       CONFIG.logoSrc = r.logoSrc;
-      if (r.logoSrc) localStorage.setItem(_spcLogoKey, r.logoSrc);
-      else localStorage.removeItem(_spcLogoKey);
+      localStorage.setItem(_spcLogoKey, r.logoSrc);
     }
-    if (r.logoUrl !== undefined) CONFIG.logoUrl = r.logoUrl;
+    if (r.logoUrl) CONFIG.logoUrl = r.logoUrl;
     if (r.cotizacion) CONFIG.cotizacion = {...(CONFIG.cotizacion||{}), ...r.cotizacion};
     if (r.motorIA) CONFIG.motorIA = r.motorIA;
     if (r.precios) CONFIG.precios = r.precios;
