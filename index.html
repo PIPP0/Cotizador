@@ -2872,7 +2872,7 @@ function getConvProb(svcRaw, segRaw) {
 
   // Capa 2 — histórico real del pipeline (mínimo 3 registros para ser estadísticamente confiable)
   const hist = calcHistoricalConv();
-  if (hist[key] && hist[key].n >= 3) return Math.max(5, hist[key].rate);
+  if (hist[key] && hist[key].n >= 1) return hist[key].rate;
 
   // Capa 1 — tasa configurada en Edición de Valores (fuente de verdad)
   const ref = CONFIG.convRef || {};
@@ -3315,7 +3315,7 @@ function buildConvTable() {
       const key = sv.id + '_' + sg.id;
       const h   = hist[key];   // Capa 2: datos reales del pipeline
       const hasOv  = ov[key] != null && ov[key] !== '';
-      const hasReal = h && h.n >= 3; // mínimo 3 registros para ser estadísticamente válido
+      const hasReal = h && h.n >= 1; // cualquier registro cerrado es válido
       const hasRef  = ref[key] != null;
 
       // Determinar fuente activa y valor a mostrar
