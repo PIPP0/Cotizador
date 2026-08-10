@@ -1266,6 +1266,28 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
   </div>
 </div>
 
+<!-- INFORMES RECIBIDOS MODAL -->
+<div id="pr-modal" style="display:none;position:fixed;inset:0;z-index:9100;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)_prClose()">
+  <div style="background:#fff;border-radius:16px;width:100%;max-width:560px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--teal2));display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="#fff" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:15px;font-weight:800;color:var(--t1)">Informes recibidos</div>
+        <div style="font-size:12px;color:var(--t3)">Informes enviados por trabajadores en terreno</div>
+      </div>
+      <button onclick="_prClose()" style="background:none;border:none;cursor:pointer;color:var(--t3);padding:4px" title="Cerrar">
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="padding:12px 22px;border-bottom:1px solid var(--border);flex-shrink:0">
+      <input type="text" id="pr-search" placeholder="Buscar por archivo o trabajador..." oninput="_prRender()" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box">
+    </div>
+    <div id="pr-list" style="overflow-y:auto;padding:8px 14px 18px;flex:1"></div>
+  </div>
+</div>
+
 <!-- CONFIRM MODAL -->
 <div class="modal-overlay" id="confirmOverlay" style="z-index:9997" onclick="if(event.target===this)_confirmClose()">
   <div class="modal" style="max-width:360px">
@@ -1431,6 +1453,10 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
   <div class="sb-item" data-view="clientes" onclick="switchView('clientes')">
     <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clientes
   </div>
+  <div class="sb-item" data-view="informes" onclick="_prOpenPicker()" style="position:relative">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Informes
+    <span class="pr-badge" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--red);color:#fff;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:9px;align-items:center;justify-content:center;padding:0 4px">0</span>
+  </div>
   <div class="sb-item" data-view="motor" onclick="switchView('motor')">
     <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Motor IA
   </div>
@@ -1466,6 +1492,11 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
   <div class="mn-item" data-view="clientes" onclick="switchView('clientes')">
     <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     <span>Clientes</span>
+  </div>
+  <div class="mn-item" data-view="informes" onclick="_prOpenPicker()" style="position:relative">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <span>Informes</span>
+    <span class="pr-badge" style="display:none;position:absolute;right:10px;top:2px;background:var(--red);color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:8px;align-items:center;justify-content:center;padding:0 3px">0</span>
   </div>
   <div class="mn-item" data-view="motor" onclick="switchView('motor')">
     <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -1967,6 +1998,10 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
             <button onclick="fbImportPdf()" title="Importar desde FieldBeat" style="flex-shrink:0;background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:0 12px;font-size:12px;font-weight:700;color:#374151;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;transition:.15s;min-height:36px" onmouseover="this.style.borderColor='#0a84ff';this.style.color='#0a84ff'" onmouseout="this.style.borderColor='#d1d5db';this.style.color='#374151'">
               <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 5 17 10"/><line x1="12" y1="5" x2="12" y2="15"/></svg>
               Importar PDF
+            </button>
+            <button onclick="_prOpenPicker()" title="Elegir de informes recibidos" style="flex-shrink:0;background:#fff;border:1.5px solid #d1d5db;border-radius:8px;padding:0 12px;font-size:12px;font-weight:700;color:#374151;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;transition:.15s;min-height:36px" onmouseover="this.style.borderColor='#0a84ff';this.style.color='#0a84ff'" onmouseout="this.style.borderColor='#d1d5db';this.style.color='#374151'">
+              <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Informes
             </button>
             <input type="file" id="fb-file-input" accept=".pdf" style="display:none" onchange="if(this.files[0])_handleFbFile(this.files[0]);this.value=''">
           </div>
@@ -5371,6 +5406,7 @@ window.addEventListener('load',()=>{
   try { renderAll(); } catch(e) { console.warn('[init] renderAll:', e); }
   try { _cpSeedFromPipeline(); } catch(e) {}
   try { _syncFromFirebase(); } catch(e) { console.warn('[init] fbSync:', e); }
+  try { _prInit(); } catch(e) {}
   try { _syncPipelineFromFirebase(); } catch(e) { console.warn('[init] pipelineSync:', e); }
   try { renderSysRow(); } catch(e) { console.warn('[init] renderSysRow:', e); }
   try { rebuildSvcList(); } catch(e) { console.warn('[init] rebuildSvcList:', e); }
@@ -5932,6 +5968,128 @@ function _applyFbData() {
   _cpSave({empresa:d.empresa||'',rut:d.rut||'',email:d.email||'',telefono:d.telefono||'',contacto:d.contacto||'',dir:d.direccion||d.sucursal||''});
   const eqTxt = d.equipos ? ` · ${d.equipos} equipos` : '';
   toast(`✓ Datos de FieldBeat aplicados${eqTxt}`, 'green');
+  if (_fbSourceReportId) {
+    const _prRid = _fbSourceReportId;
+    _fbSourceReportId = null;
+    try { _fbDb.ref('pdfReports/' + _CLIENT_ID + '/' + _prRid).update({status:'aplicado', appliedAt: Date.now()}); } catch(e) {}
+  }
+}
+
+const _prCache = {};
+let _prListenerOn = false;
+let _fbSourceReportId = null;
+
+function _prInit() {
+  if (_prListenerOn || !_fbDb) return;
+  _prListenerOn = true;
+  _fbDb.ref('pdfReports/' + _CLIENT_ID).on('value', function(snap) {
+    const v = snap.val() || {};
+    Object.keys(_prCache).forEach(function(k) { delete _prCache[k]; });
+    Object.assign(_prCache, v);
+    _prUpdateBadge();
+    const modal = document.getElementById('pr-modal');
+    if (modal && modal.style.display === 'flex') _prRender();
+  });
+}
+
+function _prUpdateBadge() {
+  const pending = Object.values(_prCache).filter(function(r) { return r.status !== 'aplicado'; }).length;
+  document.querySelectorAll('.pr-badge').forEach(function(b) {
+    if (pending > 0) { b.textContent = pending; b.style.display = 'flex'; }
+    else b.style.display = 'none';
+  });
+}
+
+function _prOpenPicker() {
+  if (typeof currentView !== 'undefined' && currentView !== 'cotizador') {
+    switchView('cotizador');
+  }
+  const modal = document.getElementById('pr-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  const s = document.getElementById('pr-search');
+  if (s) s.value = '';
+  _prRender();
+}
+
+function _prClose() {
+  const modal = document.getElementById('pr-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function _prEsc(s) {
+  return String(s || '').replace(/[&<>"']/g, function(c) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function _prRender() {
+  const list = document.getElementById('pr-list');
+  if (!list) return;
+  const qEl = document.getElementById('pr-search');
+  const q = (qEl ? qEl.value : '').toLowerCase();
+  let rows = Object.keys(_prCache).map(function(id) { return Object.assign({id: id}, _prCache[id]); });
+  rows.sort(function(a,b) { return (b.uploadedAt||0) - (a.uploadedAt||0); });
+  if (q) rows = rows.filter(function(r) {
+    return (r.fileName||'').toLowerCase().indexOf(q) > -1 || (r.workerName||'').toLowerCase().indexOf(q) > -1;
+  });
+
+  if (!rows.length) {
+    list.innerHTML = '<div style="padding:32px 10px;text-align:center;color:var(--t3);font-size:13px">No hay informes recibidos aun.<br>Apareceran aqui cuando un trabajador suba un PDF.</div>';
+    return;
+  }
+
+  list.innerHTML = rows.map(function(r) {
+    const d = new Date(r.uploadedAt || 0);
+    const fecha = isNaN(d.getTime()) ? '' : d.toLocaleDateString('es-CL', {day:'2-digit', month:'short', year:'numeric'}) + ' - ' + d.toLocaleTimeString('es-CL', {hour:'2-digit', minute:'2-digit'});
+    const isDone = r.status === 'aplicado';
+    const badge = isDone
+      ? '<span style="font-size:10px;font-weight:700;color:var(--green);background:var(--gbg);border:1px solid var(--gbr);border-radius:6px;padding:2px 7px;white-space:nowrap">Aplicado</span>'
+      : '<span style="font-size:10px;font-weight:700;color:var(--amber);background:var(--abg);border-radius:6px;padding:2px 7px;white-space:nowrap">Pendiente</span>';
+    return '' +
+      '<div style="display:flex;align-items:center;gap:12px;padding:11px 8px;border-bottom:1px solid var(--border)">' +
+        '<div style="width:34px;height:34px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
+          '<svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--t3)" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+        '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-size:13px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + _prEsc(r.fileName||'Informe') + '</div>' +
+          '<div style="font-size:11.5px;color:var(--t3);margin-top:2px">' + _prEsc(r.workerName||'-') + ' - ' + fecha + '</div>' +
+        '</div>' +
+        badge +
+        '<button onclick="_prUse(\'' + r.id + '\')" style="flex-shrink:0;background:var(--teal);color:#fff;border:none;border-radius:7px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Usar</button>' +
+      '</div>';
+  }).join('');
+}
+
+async function _prUse(id) {
+  const r = _prCache[id];
+  if (!r) return;
+  _prClose();
+  const modal = document.getElementById('fb-modal');
+  const body  = document.getElementById('fb-modal-body');
+  const sub   = document.getElementById('fb-modal-sub');
+  if (!modal || !body || !sub) return;
+  modal.style.display = 'flex';
+  sub.textContent = 'Analizando informe...';
+  body.innerHTML = '<div style="text-align:center;padding:32px;color:var(--t3);font-size:13px">Procesando informe...</div>';
+  try {
+    const text = r.rawText || '';
+    const hasKey = CONFIG.llm && CONFIG.llm.apiKey && CONFIG.llm.apiKey.trim();
+    let data = null;
+    if (hasKey) data = await _parseFbWithLlm(text);
+    if (!data) data = _parseFbText(text);
+    if (!data.taskId) { const m = text.match(/task_id=(\d+)/); if (m) data.taskId = m[1]; }
+    const vexMatches = text.match(/VEX[\s\-]\d+/gi) || [];
+    const vexSet = Array.from(new Set(vexMatches)).length;
+    if (vexSet > 0) data.equipos = vexSet;
+    _fbParsedData = data;
+    _fbSourceReportId = id;
+    _showFbPreview(data);
+  } catch(e) {
+    console.error('[Informes recibidos]', e);
+    body.innerHTML = '<div style="color:var(--red);padding:20px;font-size:13px">No se pudo procesar este informe.</div>';
+    sub.textContent = 'Error al procesar';
+  }
 }
 // ────────────────────────────────────────────────────────────────────────────
 
