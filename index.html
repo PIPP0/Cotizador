@@ -2985,6 +2985,8 @@ function getConvProb(svcRaw, segRaw) {
   // Sin tasa configurada → 0
   return 0;
 }
+function _liveProb(r){ return r.estado==='Ganada'?100 : r.estado==='Perdida'?0 : getConvProb(r.svc, r.seg); }
+
 
 // ══════════════════════════════════════════════════
 //  EDICIÓN VALORES — página completa
@@ -3585,7 +3587,7 @@ async function analyzePipeline() {
 
   const today2 = new Date().toISOString().slice(0,10);
   const pipeline_summary = (PIPELINE||[]).slice(0,20).map(r=>
-    `- ${r.cliente||'?'} | ${r.svc||''} | ${r.monto?'$'+r.monto.toLocaleString('es-CL'):''} | Prob:${r.prob||'?'}% | Estado:${r.estado||'?'} | Vence:${r.vence||'?'}`
+    `- ${r.cliente||'?'} | ${r.svc||''} | ${r.monto?'$'+r.monto.toLocaleString('es-CL'):''} | Prob:${_liveProb(r)}% | Estado:${r.estado||'?'} | Vence:${r.vence||'?'}`
   ).join('\n');
 
   const total_monto = (PIPELINE||[]).reduce((a,r)=>a+(r.monto||0),0);
@@ -4621,7 +4623,7 @@ function renderAlerts() {
   PIPELINE.filter(r=>r.estado==='En revisión'&&r.monto>10000000).slice(0,2).forEach(r => {
     alerts.push({ cls:'a-info', svg:SVG.info,
       title:'Revisión pendiente — monto alto',
-      body:`${r.id} (${r.cliente}) por $${(r.monto/1000000).toFixed(1)}M lleva tiempo en revisión. Prob. ${r.prob}%.` });
+      body:`${r.id} (${r.cliente}) por $${(r.monto/1000000).toFixed(1)}M lleva tiempo en revisión. Prob. ${_liveProb(r)}%.` });
   });
 
   // Oportunidad de renovación (Ganadas)
@@ -5116,7 +5118,7 @@ function openModal(id){
         <div class="modal-field"><div class="modal-field-label">Subtotal</div><div class="modal-field-value">$${(r.monto/1.19).toLocaleString('es-CL',{maximumFractionDigits:0})}</div></div>
         <div class="modal-field"><div class="modal-field-label">IVA 19%</div><div class="modal-field-value">$${ivaAmt.toLocaleString('es-CL')}</div></div>
         <div class="modal-field"><div class="modal-field-label">Total</div><div class="modal-field-value" style="color:var(--teal);font-size:16px">$${r.monto.toLocaleString('es-CL')}</div></div>
-        <div class="modal-field"><div class="modal-field-label">Prob. conversión IA <span class="ab">✦</span></div><div class="modal-field-value" style="color:${probColor(r.prob)};font-size:18px">${r.prob}%</div></div>
+        <div class="modal-field"><div class="modal-field-label">Prob. conversión IA <span class="ab">✦</span></div><div class="modal-field-value" style="color:${probColor(_liveProb(r))};font-size:18px">${_liveProb(r)}%</div></div>
       </div>
     </div>
     <div class="modal-section">
@@ -5244,7 +5246,7 @@ function dismissAlert(id){
 function exportCSV(){
   if(!PIPELINE || PIPELINE.length === 0){ toast('No hay cotizaciones para exportar', 'warn'); return; }
   const headers=['ID','Cliente','Segmento','Servicio','Sistema','Monto','Prob. Conversión','Estado','Vence'];
-  const rows=PIPELINE.map(r=>[r.id,r.cliente,r.seg,r.svc,r.sys,r.monto,r.prob+'%',r.estado,r.vence]);
+  const rows=PIPELINE.map(r=>[r.id,r.cliente,r.seg,r.svc,r.sys,r.monto,_liveProb(r)+'%',r.estado,r.vence]);
   const csv=[headers,...rows].map(r=>r.join(',')).join('\n');
   const blob=new Blob([csv],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
@@ -7297,7 +7299,7 @@ async function sendChat() {
   // Build context
   const todayStr = new Date().toISOString().slice(0,10);
   const pl_ctx = (PIPELINE||[]).slice(0,15).map(r=>
-    `${r.cliente||'?'} | ${r.svc||''} | $${(r.monto||0).toLocaleString('es-CL')} | Prob:${r.prob||'?'}% | ${r.estado||'?'} | Vence:${r.vence||'?'}`
+    `${r.cliente||'?'} | ${r.svc||''} | $${(r.monto||0).toLocaleString('es-CL')} | Prob:${_liveProb(r)}% | ${r.estado||'?'} | Vence:${r.vence||'?'}`
   ).join('\n');
   const total_m = (PIPELINE||[]).reduce((a,r)=>a+(r.monto||0),0);
 
