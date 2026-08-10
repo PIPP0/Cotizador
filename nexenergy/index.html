@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Subir informe</title>
+<link rel="icon" href="data:,">
+<style>
+:root{
+  --dark:#252530;--teal:#8C5BB3;--teal2:#7a4d97;
+  --bg:#f0f3f6;--surface:#fff;--border:#dde4ea;--border2:#c5d0d9;
+  --t1:#252530;--t2:#3d3d4f;--t3:#737380;--t4:#aaaabc;
+  --green:#0fa06a;--gbg:#eaf7f1;--gbr:#9ae8c8;
+  --red:#d63b3b;--rbg:#fdf0f0;
+  --r:10px;--r2:7px;
+  --sh:0 1px 4px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --sh2:0 4px 18px rgba(0,0,0,.1),0 2px 6px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden;max-width:100%}
+body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;
+  display:flex;align-items:center;justify-content:center;padding:20px}
+
+.card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  box-shadow:var(--sh2);padding:28px 24px;}
+
+.brand{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:24px}
+.brand img{max-width:150px;max-height:56px;object-fit:contain;margin-bottom:10px}
+.brand .name{font-size:17px;font-weight:800;color:var(--t1)}
+.brand .sub{font-size:12.5px;color:var(--t3);margin-top:3px}
+
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:6px}
+.field input[type=text]{width:100%;padding:12px 14px;border:1.5px solid var(--border2);border-radius:var(--r2);
+  font-size:15px;color:var(--t1);background:var(--surface);outline:none;transition:border-color .15s}
+.field input[type=text]:focus{border-color:var(--teal)}
+
+.file-drop{border:2px dashed var(--border2);border-radius:var(--r2);padding:22px 14px;text-align:center;
+  cursor:pointer;transition:border-color .15s,background .15s;position:relative}
+.file-drop:active{background:#faf8fb}
+.file-drop.has-file{border-color:var(--teal);border-style:solid;background:#faf8fb}
+.file-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.file-drop .icon{font-size:26px;margin-bottom:6px}
+.file-drop .txt{font-size:13px;color:var(--t2);font-weight:600}
+.file-drop .sub{font-size:11.5px;color:var(--t3);margin-top:3px}
+
+.btn{width:100%;padding:14px;border:none;border-radius:var(--r2);font-size:15px;font-weight:700;
+  cursor:pointer;transition:opacity .15s,transform .1s;color:#fff;background:var(--teal)}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+
+.msg{font-size:12.5px;text-align:center;margin-top:12px;color:var(--t3)}
+.msg.error{color:var(--red)}
+
+.success{text-align:center;padding:12px 0}
+.success .icon{width:56px;height:56px;border-radius:50%;background:var(--gbg);border:1.5px solid var(--gbr);
+  display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+.success h2{font-size:17px;color:var(--t1);margin-bottom:6px}
+.success p{font-size:13px;color:var(--t3);margin-bottom:22px;line-height:1.5}
+
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;
+  display:inline-block;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="brand">
+    <img id="brand-logo" class="hidden" alt="">
+    <div class="name" id="brand-name">Subir informe</div>
+    <div class="sub">Envía tu informe en PDF a la plataforma</div>
+  </div>
+
+  <form id="upload-form">
+    <div class="field">
+      <label for="worker-name">Tu nombre</label>
+      <input type="text" id="worker-name" placeholder="Ej: Juan Pérez" autocomplete="name" required>
+    </div>
+
+    <div class="field">
+      <label>Informe PDF</label>
+      <div class="file-drop" id="file-drop">
+        <input type="file" id="pdf-input" accept="application/pdf,.pdf" required>
+        <div class="icon">📄</div>
+        <div class="txt" id="file-drop-txt">Toca para elegir el PDF</div>
+        <div class="sub" id="file-drop-sub">Desde tus archivos, correo o descargas</div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn" id="submit-btn">Enviar</button>
+    <div class="msg" id="form-msg"></div>
+  </form>
+
+  <div class="success hidden" id="success-view">
+    <div class="icon">✓</div>
+    <h2>Informe enviado correctamente</h2>
+    <p>Ya quedó disponible en la plataforma para generar la cotización.</p>
+    <button class="btn" id="another-btn">Enviar otro informe</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+// ── Config del cliente vía ?c= ──────────────────────────────────────────────
+const params = new URLSearchParams(location.search);
+const CLIENT_ID = params.get('c') || 'nexenergy';
+
+const FIREBASE_CFG = {
+  apiKey:            "AIzaSyCRDMyF4mQarVxW0DVbyoWo_cPgj0vcuLk",
+  authDomain:        "cotizador-e6a9a.firebaseapp.com",
+  databaseURL:       "https://cotizador-e6a9a-default-rtdb.firebaseio.com",
+  projectId:         "cotizador-e6a9a",
+  storageBucket:     "cotizador-e6a9a.firebasestorage.app",
+  messagingSenderId: "1094882801270",
+  appId:             "1:1094882801270:web:48b2d19b69373d3bc89157"
+};
+firebase.initializeApp(FIREBASE_CFG);
+const fbDb = firebase.database();
+
+// ── Branding dinámico desde config/<cliente> ────────────────────────────────
+fbDb.ref('config/' + CLIENT_ID).once('value').then(snap => {
+  const c = snap.val();
+  if (!c) return;
+  const logoEl = document.getElementById('brand-logo');
+  const nameEl = document.getElementById('brand-name');
+  if (c.logoSrc) { logoEl.src = c.logoSrc; logoEl.classList.remove('hidden'); nameEl.classList.add('hidden'); }
+  else { nameEl.textContent = [c.nameA, c.nameB].filter(Boolean).join(' '); }
+  if (c.colors && c.colors.teal) {
+    const tealVal = c.colors.teal.charAt(0) === '#' ? c.colors.teal : '#' + c.colors.teal;
+    document.documentElement.style.setProperty('--teal', tealVal);
+  }
+}).catch(() => {});
+
+// ── Selección de archivo ────────────────────────────────────────────────────
+const pdfInput   = document.getElementById('pdf-input');
+const fileDrop    = document.getElementById('file-drop');
+const fileDropTxt = document.getElementById('file-drop-txt');
+const fileDropSub = document.getElementById('file-drop-sub');
+
+pdfInput.addEventListener('change', () => {
+  const f = pdfInput.files[0];
+  if (!f) return;
+  fileDrop.classList.add('has-file');
+  fileDropTxt.textContent = f.name;
+  fileDropSub.textContent = (f.size / 1024 / 1024).toFixed(1) + ' MB · toca para cambiar';
+});
+
+// ── Extracción de texto del PDF (misma lógica que el importador FieldBeat) ──
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function extractPdfText(file) {
+  if (!window.pdfjsLib) {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+  const ab  = await file.arrayBuffer();
+  const pdf = await window.pdfjsLib.getDocument({data: ab}).promise;
+  let out = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page    = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const byY = {};
+    for (const item of content.items) {
+      if (!item.str) continue;
+      const y = Math.round(item.transform[5]);
+      if (!byY[y]) byY[y] = [];
+      byY[y].push({str: item.str, x: item.transform[4]});
+    }
+    const ys    = Object.keys(byY).map(Number).sort((a,b) => b - a);
+    const lines = ys.map(y => byY[y].sort((a,b) => a.x - b.x).map(i => i.str).join(' '));
+    out += lines.join('\n') + '\n';
+  }
+  return out;
+}
+
+// ── Envío ────────────────────────────────────────────────────────────────
+const form       = document.getElementById('upload-form');
+const submitBtn  = document.getElementById('submit-btn');
+const formMsg    = document.getElementById('form-msg');
+const successView= document.getElementById('success-view');
+const anotherBtn = document.getElementById('another-btn');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const workerName = document.getElementById('worker-name').value.trim();
+  const file = pdfInput.files[0];
+
+  formMsg.textContent = '';
+  formMsg.classList.remove('error');
+
+  if (!workerName) { formMsg.textContent = 'Escribe tu nombre.'; formMsg.classList.add('error'); return; }
+  if (!file) { formMsg.textContent = 'Elige un archivo PDF.'; formMsg.classList.add('error'); return; }
+  if (file.type && file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+    formMsg.textContent = 'El archivo debe ser un PDF.'; formMsg.classList.add('error'); return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner"></span>Procesando…';
+
+  try {
+    const rawText = await extractPdfText(file);
+    if (!rawText || !rawText.trim()) {
+      throw new Error('No se pudo leer contenido del PDF. Asegúrate de que no sea una imagen escaneada.');
+    }
+
+    submitBtn.innerHTML = '<span class="spinner"></span>Enviando…';
+
+    const newRef = fbDb.ref('pdfReports/' + CLIENT_ID).push();
+    await newRef.set({
+      fileName: file.name,
+      workerName: workerName,
+      uploadedAt: Date.now(),
+      rawText: rawText.slice(0, 15000),
+      status: 'pendiente'
+    });
+
+    form.classList.add('hidden');
+    successView.classList.remove('hidden');
+  } catch (err) {
+    console.error('[trabajador upload]', err);
+    formMsg.textContent = err && err.message ? err.message : 'Ocurrió un error al enviar el informe. Intenta de nuevo.';
+    formMsg.classList.add('error');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Enviar';
+  }
+});
+
+anotherBtn.addEventListener('click', () => {
+  form.reset();
+  fileDrop.classList.remove('has-file');
+  fileDropTxt.textContent = 'Toca para elegir el PDF';
+  fileDropSub.textContent = 'Desde tus archivos, correo o descargas';
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Enviar';
+  formMsg.textContent = '';
+  successView.classList.add('hidden');
+  form.classList.remove('hidden');
+});
+</script>
+</body>
+</html>
