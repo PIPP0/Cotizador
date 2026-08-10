@@ -130,7 +130,8 @@ fbDb.ref('config/' + CLIENT_ID).once('value').then(snap => {
   if (c.logoSrc) { logoEl.src = c.logoSrc; logoEl.classList.remove('hidden'); nameEl.classList.add('hidden'); }
   else { nameEl.textContent = [c.nameA, c.nameB].filter(Boolean).join(' '); }
   if (c.colors && c.colors.teal) {
-    document.documentElement.style.setProperty('--teal', c.colors.teal);
+    const tealVal = c.colors.teal.charAt(0) === '#' ? c.colors.teal : '#' + c.colors.teal;
+    document.documentElement.style.setProperty('--teal', tealVal);
   }
 }).catch(() => {});
 
