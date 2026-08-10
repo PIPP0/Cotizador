@@ -5982,12 +5982,7 @@ function _applyFbData() {
   _cpSave({empresa:d.empresa||'',rut:d.rut||'',email:d.email||'',telefono:d.telefono||'',contacto:d.contacto||'',dir:d.direccion||d.sucursal||''});
   const eqTxt = d.equipos ? ` · ${d.equipos} equipos` : '';
   toast(`✓ Datos de FieldBeat aplicados${eqTxt}`, 'green');
-  if (_fbSourceReportId) {
-    const _prRid = _fbSourceReportId;
-    _fbSourceReportId = null;
-    try { _fbDb.ref('pdfReports/' + _CLIENT_ID + '/' + _prRid).update({status:'aplicado', appliedAt: Date.now()}); } catch(e) {}
   }
-}
 
 const _prCache = {};
 let _prListenerOn = false;
@@ -6747,6 +6742,7 @@ Motiva a contratar, tono profesional, en español. Sin saludo ni firma.`;
         _userCreated: true
       };
       PIPELINE.unshift(newRow);
+        if (_fbSourceReportId) { const _prRid=_fbSourceReportId; _fbSourceReportId=null; try { _fbDb.ref('pdfReports/'+_CLIENT_ID+'/'+_prRid).update({status:'aplicado', appliedAt: Date.now()}); } catch(e) {} }
       savePipelineToStorage();
       _cpSave({empresa:d.toName,rut:document.getElementById('cr')?.value||'',email:d.toEmail,telefono:document.getElementById('cp')?.value||'',contacto:document.getElementById('cct')?.value||'',dir:document.getElementById('cdir')?.value||'',svc:d.servicio});
       if(typeof renderTable==='function') renderTable();
@@ -7101,7 +7097,7 @@ async function downloadPDF(){
   toast('PDF descargado','green');
 }
 function back1(){ setNav(3,null); setNav(2,null); setNav(1,'active'); cShow(1); }
-function newQ(){ _cotStartTime=Date.now(); _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
+function newQ(){ _cotStartTime=Date.now(); _fbSourceReportId=null; _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
 </script>
 <div class="save-confirm-backdrop" id="saveConfirmBackdrop" style="position:fixed;inset:0;z-index:1199;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .25s" onclick="hideSaveConfirm()"></div>
 <div class="save-confirm" id="saveConfirm">
