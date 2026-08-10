@@ -1453,7 +1453,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
   <div class="sb-item" data-view="clientes" onclick="switchView('clientes')">
     <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clientes
   </div>
-  <div class="sb-item" data-view="informes" onclick="_prOpenPicker()" style="position:relative">
+  <div class="sb-item" data-view="informes" onclick="switchView('informes')" style="position:relative">
     <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Informes
     <span class="pr-badge" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--red);color:#fff;font-size:10px;font-weight:800;min-width:17px;height:17px;border-radius:9px;align-items:center;justify-content:center;padding:0 4px">0</span>
   </div>
@@ -1493,7 +1493,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
     <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     <span>Clientes</span>
   </div>
-  <div class="mn-item" data-view="informes" onclick="_prOpenPicker()" style="position:relative">
+  <div class="mn-item" data-view="informes" onclick="switchView('informes')" style="position:relative">
     <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
     <span>Informes</span>
     <span class="pr-badge" style="display:none;position:absolute;right:10px;top:2px;background:var(--red);color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:8px;align-items:center;justify-content:center;padding:0 3px">0</span>
@@ -1724,6 +1724,19 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 </div>
 
 <!-- ─── VIEW: MOTOR IA ─── -->
+<!-- VIEW: INFORMES -->
+<div class="view-panel" id="view-informes">
+<div style="margin-bottom:12px"><button class="btn-sm btn-o" onclick="switchView('dashboard')" style="font-size:11.5px;padding:6px 12px">← Dashboard</button></div>
+<div class="page-hdr">
+<div><div class="page-title">Informes <span>recibidos</span></div><div class="page-sub">Informes en PDF enviados por trabajadores en terreno</div></div>
+</div>
+<div class="card">
+<div class="card-h"><div class="ch-ic ci-t"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="card-title">Todos los informes</div><div class="card-sub">Selecciona uno para usarlo en una nueva cotización</div></div></div>
+<div style="padding:0 18px 12px"><input type="text" id="vi-search" placeholder="Buscar por archivo o trabajador..." oninput="renderInformesView()" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box"></div>
+<div id="vi-list" style="padding:0 18px 18px"></div>
+</div>
+</div>
+
 <div class="view-panel" id="view-motor">
   <div style="margin-bottom:12px"><button class="btn-sm btn-o" onclick="switchView('dashboard')" style="font-size:11.5px;padding:6px 12px">← Dashboard</button></div>
   <div class="page-hdr">
@@ -4407,6 +4420,7 @@ function switchView(v){
   if(v==='dashboard') renderAll();
   if(v==='cotizaciones') renderTable2();
   if(v==='clientes') renderClients();
+  if(v==='informes') renderInformesView();
   if(v==='edicion') renderEdicion();
   if(v==='conv') renderConvView();
   if(v==='cotizador'){ _cotStartTime=Date.now(); _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
@@ -5989,6 +6003,7 @@ function _prInit() {
     _prUpdateBadge();
     const modal = document.getElementById('pr-modal');
     if (modal && modal.style.display === 'flex') _prRender();
+    if (typeof currentView !== 'undefined' && currentView === 'informes') renderInformesView();
   });
 }
 
@@ -5998,6 +6013,42 @@ function _prUpdateBadge() {
     if (pending > 0) { b.textContent = pending; b.style.display = 'flex'; }
     else b.style.display = 'none';
   });
+}
+
+function renderInformesView() {
+  var list = document.getElementById('vi-list');
+  if (!list) return;
+  var qEl = document.getElementById('vi-search');
+  var q = (qEl ? qEl.value : '').toLowerCase();
+  var rows = Object.keys(_prCache).map(function(id) { return Object.assign({id: id}, _prCache[id]); });
+  rows.sort(function(a,b) { return (b.uploadedAt||0) - (a.uploadedAt||0); });
+  if (q) rows = rows.filter(function(r) {
+    return (r.fileName||'').toLowerCase().indexOf(q) > -1 || (r.workerName||'').toLowerCase().indexOf(q) > -1;
+  });
+  if (!rows.length) {
+    list.innerHTML = '<div style="padding:32px 10px;text-align:center;color:var(--t3);font-size:13px">No hay informes recibidos a\u00fan.<br>Aparecer\u00e1n aqu\u00ed cuando un trabajador suba un PDF.</div>';
+    return;
+  }
+  list.innerHTML = rows.map(function(r) {
+    var d = new Date(r.uploadedAt || 0);
+    var fecha = isNaN(d.getTime()) ? '' : d.toLocaleDateString('es-CL', {day:'2-digit', month:'short', year:'numeric'}) + ' - ' + d.toLocaleTimeString('es-CL', {hour:'2-digit', minute:'2-digit'});
+    var isDone = r.status === 'aplicado';
+    var badge = isDone
+      ? '<span style="font-size:10px;font-weight:700;color:var(--green);background:var(--gbg);border:1px solid var(--gbr);border-radius:6px;padding:2px 7px;white-space:nowrap">Aplicado</span>'
+      : '<span style="font-size:10px;font-weight:700;color:var(--amber);background:var(--abg);border-radius:6px;padding:2px 7px;white-space:nowrap">Pendiente</span>';
+    return '' +
+      '<div style="display:flex;align-items:center;gap:12px;padding:11px 8px;border-bottom:1px solid var(--border)">' +
+      '<div style="width:34px;height:34px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">' +
+      '<svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--t3)" stroke-width="2" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+      '</div>' +
+      '<div style="flex:1;min-width:0">' +
+      '<div style="font-size:13px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + _prEsc(r.fileName||'Informe') + '</div>' +
+      '<div style="font-size:11.5px;color:var(--t3);margin-top:2px">' + _prEsc(r.workerName||'-') + ' - ' + fecha + '</div>' +
+      '</div>' +
+      badge +
+      '<button onclick="_prUse(\'' + r.id + '\')" style="flex-shrink:0;background:var(--teal);color:#fff;border:none;border-radius:7px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Usar</button>' +
+      '</div>';
+  }).join('');
 }
 
 function _prOpenPicker() {
