@@ -6044,6 +6044,7 @@ function renderInformesView() {
       '</div>' +
       badge +
       '<button onclick="_prUse(\'' + r.id + '\')" style="flex-shrink:0;background:var(--teal);color:#fff;border:none;border-radius:7px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Usar</button>' +
+'<button onclick="_prDelete(\'' + r.id + '\')" title="Eliminar informe" style="flex-shrink:0;background:var(--rbg);color:var(--red);border:none;border-radius:7px;padding:7px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:6px">\u2715</button>' +
       '</div>';
   }).join('');
 }
@@ -6063,6 +6064,20 @@ function _prOpenPicker() {
 function _prClose() {
   const modal = document.getElementById('pr-modal');
   if (modal) modal.style.display = 'none';
+}
+
+function _prDelete(id){
+  const r = _prCache[id];
+  const name = r ? (r.fileName||'este informe') : 'este informe';
+  _confirm(`¿Eliminar "${name}"? Esta acción no se puede deshacer.`, ()=>{
+    if (_fbDb) { _fbDb.ref('pdfReports/' + _CLIENT_ID + '/' + id).remove().catch(e=>console.warn('[Informes] delete error:', e)); }
+    delete _prCache[id];
+    _prUpdateBadge();
+    const modal = document.getElementById('pr-modal');
+    if (modal && modal.style.display === 'flex') _prRender();
+    if (typeof currentView !== 'undefined' && currentView === 'informes') renderInformesView();
+    toast('Informe eliminado', 'warn');
+  }, { title: 'Eliminar informe', okLabel: 'Eliminar' });
 }
 
 function _prEsc(s) {
@@ -6105,6 +6120,7 @@ function _prRender() {
         '</div>' +
         badge +
         '<button onclick="_prUse(\'' + r.id + '\')" style="flex-shrink:0;background:var(--teal);color:#fff;border:none;border-radius:7px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Usar</button>' +
+'<button onclick="_prDelete(\'' + r.id + '\')" title="Eliminar informe" style="flex-shrink:0;background:var(--rbg);color:var(--red);border:none;border-radius:7px;padding:7px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:6px">\u2715</button>' +
       '</div>';
   }).join('');
 }
