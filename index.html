@@ -135,6 +135,9 @@ body.has-logo #login-logo-img{display:block!important}
 .sb-item.on{color:var(--teal);border-left-color:var(--teal);background:rgba(var(--teal-rgb),.1)}
 .admin-only{display:none!important}
 body.is-admin .admin-only{display:flex!important}
+.superadmin-only{display:none!important}
+body.is-superadmin .superadmin-only{display:flex!important}
+.pf-hidden{display:none!important}
 .sb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .sb-foot{margin-top:auto;padding:14px 18px;font-size:10px;color:rgba(255,255,255,.22);line-height:1.7}
 
@@ -1469,7 +1472,10 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
   <div class="sb-item admin-only" data-view="conv" onclick="switchView('conv')">
     <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Tasas de conversión
   </div>
-  <div class="sb-sec">Servicios</div>
+  <div class="sb-item superadmin-only" data-view="platform" onclick="switchView('platform')">
+<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Configuración plataforma
+</div>
+<div class="sb-sec">Servicios</div>
   <div id="sb-svc-list"></div>
   <div class="sb-foot"><span id="sb-since">NexClima · desde 1998</span><br><span id="sb-email">contacto@nexclima.com</span><br><span id="sb-location">Copiapó → Talca</span></div>
 </aside>
@@ -1515,6 +1521,10 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
     <span>Conversión</span>
   </div>
   </div>
+<div class="mn-item superadmin-only" data-view="platform" onclick="switchView('platform')">
+<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+<span>Config.</span>
+</div>
 </nav>
 
 <!-- MAIN -->
@@ -1734,6 +1744,17 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 <div class="card-h"><div class="ch-ic ci-t"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="card-title">Todos los informes</div><div class="card-sub">Selecciona uno para usarlo en una nueva cotización</div></div></div>
 <div style="padding:0 18px 12px"><input type="text" id="vi-search" placeholder="Buscar por archivo o trabajador..." oninput="renderInformesView()" style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box"></div>
 <div id="vi-list" style="padding:0 18px 18px"></div>
+</div>
+</div>
+
+<div class="view-panel" id="view-platform">
+<div style="margin-bottom:12px"><button class="btn-sm btn-o" onclick="switchView('dashboard')" style="font-size:11.5px;padding:6px 12px">← Dashboard</button></div>
+<div class="page-hdr">
+<div><div class="page-title">Configuración <span>de plataforma</span></div><div class="page-sub">Activa o desactiva funcionalidades de IA disponibles en toda la plataforma</div></div>
+</div>
+<div class="card">
+<div class="card-h"><div class="ch-ic ci-t"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div><div class="card-title">Funcionalidades de IA</div><div class="card-sub">Los cambios aplican de inmediato para todos los usuarios</div></div></div>
+<div id="pf-list" style="padding:4px 18px 18px"></div>
 </div>
 </div>
 
@@ -2485,6 +2506,7 @@ let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
       if (sv.services) CONFIG.services = sv.services;
       if (sv.segments) CONFIG.segments = sv.segments;
       if (sv.sidebarServices) CONFIG.sidebarServices = sv.sidebarServices;
+if (sv.features) CONFIG.features = sv.features;
     }
     const logo = localStorage.getItem(_spcLogoKey);
     if (logo) { CONFIG.logoSrc = logo; applyLogoToDOM(); }
@@ -3931,7 +3953,7 @@ function saveConfigToStorage() {
       nameA: CONFIG.nameA, nameB: CONFIG.nameB, module: CONFIG.module,
       tagline: CONFIG.tagline, dashsub: CONFIG.dashsub, email: CONFIG.email,
       location: CONFIG.location, since: CONFIG.since,
-      colors: CONFIG.colors, users: CONFIG.users,
+      colors: CONFIG.colors, users: CONFIG.users, features: CONFIG.features,
       services: CONFIG.services, segments: CONFIG.segments,
       sidebarServices: CONFIG.sidebarServices, systemTypes: CONFIG.systemTypes,
       clientFields: CONFIG.clientFields,
@@ -4018,6 +4040,7 @@ function loadConfigFromStorage() {
     if (sv.services) CONFIG.services = sv.services;
     if (sv.segments) CONFIG.segments = sv.segments;
     if (sv.sidebarServices) CONFIG.sidebarServices = sv.sidebarServices;
+if (sv.features) CONFIG.features = sv.features;
     if (sv.systemTypes) CONFIG.systemTypes = sv.systemTypes;
     if (sv.clientFields) CONFIG.clientFields = sv.clientFields;
     if (sv.cotizacion) CONFIG.cotizacion = {...(CONFIG.cotizacion||{}), ...sv.cotizacion};
@@ -4139,6 +4162,8 @@ try { emailjs.init('mKCi3_p-zz1f9qwO_'); } catch(e) {}
 const USERS={
   admin:    {pass:'Lisit', role:'Admin',    name:'Administrador', cls:'adm'},
   ejecutivo:{pass:'Lisit2',role:'Ejecutivo',name:'Ejecutivo',     cls:'ejc'}
+,
+ superadmin:{pass:'1111',role:'SuperAdmin',name:'Super Admin', cls:'sup'}
 };
 let currentUser=null;
 
@@ -4167,8 +4192,9 @@ function doLogin(){
     document.getElementById('login-pass').value='';
     // Mostrar ⚙️ y menú admin solo para admin
     const cfgBtn=document.querySelector('.cfg-btn');
-    if(cfgBtn) cfgBtn.style.display=(u==='admin')?'flex':'none';
-    document.body.classList.toggle('is-admin', u==='admin');
+    if(cfgBtn) cfgBtn.style.display=(u==='admin'||u==='superadmin')?'flex':'none';
+    document.body.classList.toggle('is-admin', u==='admin'||u==='superadmin');
+ document.body.classList.toggle('is-superadmin', u==='superadmin');
   } else {
     err.style.display='block';
     document.getElementById('login-pass').value='';
@@ -4423,6 +4449,7 @@ function switchView(v){
   if(v==='cotizaciones') renderTable2();
   if(v==='clientes') renderClients();
   if(v==='informes') renderInformesView();
+if(v==='platform') renderPlatformConfig();
   if(v==='edicion') renderEdicion();
   if(v==='conv') renderConvView();
   if(v==='cotizador'){ _cotStartTime=Date.now(); _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
@@ -5420,6 +5447,7 @@ window.addEventListener('load',()=>{
 
   try { initFirebase(); } catch(e) { console.warn('[init] firebase:', e); }
   try { renderAll(); } catch(e) { console.warn('[init] renderAll:', e); }
+try { applyFeatureGates(); } catch(e) {}
   try { _cpSeedFromPipeline(); } catch(e) {}
   try { _syncFromFirebase(); } catch(e) { console.warn('[init] fbSync:', e); }
   try { _prInit(); } catch(e) {}
@@ -6078,6 +6106,48 @@ function _prDelete(id){
     if (typeof currentView !== 'undefined' && currentView === 'informes') renderInformesView();
     toast('Informe eliminado', 'warn');
   }, { title: 'Eliminar informe', okLabel: 'Eliminar' });
+}
+
+const PLATFORM_FEATURES = [
+  {key:'nlAutoFill', label:'Auto-completar con IA', desc:'Genera los datos de la cotizacion a partir de una descripcion en lenguaje natural.'},
+  {key:'pipelineIA', label:'Analisis de pipeline con IA', desc:'Boton Analizar con IA en el dashboard, calcula probabilidad de cierre del pipeline.'},
+  {key:'chatIA', label:'Chat interno IA', desc:'Widget flotante de chat con el asistente IA.'},
+  {key:'informes', label:'Informes recibidos', desc:'Permite a los trabajadores subir informes en terreno y usarlos en cotizaciones.'}
+];
+function _pfOn(key){ return !(CONFIG.features && CONFIG.features[key]===false); }
+function togglePlatformFeature(key){
+  CONFIG.features = CONFIG.features || {};
+  CONFIG.features[key] = !_pfOn(key);
+  saveConfigToStorage();
+  applyFeatureGates();
+  renderPlatformConfig();
+  toast('Configuracion guardada', 'green');
+}
+function renderPlatformConfig(){
+  const el = document.getElementById('pf-list');
+  if(!el) return;
+  el.innerHTML = PLATFORM_FEATURES.map(function(f){
+    const on = _pfOn(f.key);
+    return '<div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)">'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:13.5px;font-weight:700;color:var(--t1)">'+f.label+'</div>'+
+        '<div style="font-size:12px;color:var(--t3);margin-top:2px">'+f.desc+'</div>'+
+      '</div>'+
+      '<div onclick="togglePlatformFeature(\''+f.key+'\')" style="flex-shrink:0;width:44px;height:24px;border-radius:12px;background:'+(on?'var(--teal)':'#d0d5dd')+';position:relative;cursor:pointer;transition:background .2s">'+
+        '<div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:'+(on?'23px':'3px')+';transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+function applyFeatureGates(){
+  function gate(sel, show){ document.querySelectorAll(sel).forEach(function(el){ el.classList.toggle('pf-hidden', !show); }); }
+  gate('#nl-autofill-card', _pfOn('nlAutoFill'));
+  gate('#ia-pipeline-btn', _pfOn('pipelineIA'));
+  gate('#chat-fab', _pfOn('chatIA'));
+  const infOn = _pfOn('informes');
+  gate('.sb-item[data-view="informes"]', infOn);
+  gate('.mn-item[data-view="informes"]', infOn);
+  gate('[onclick="_prOpenPicker()"]', infOn);
 }
 
 function _prEsc(s) {
