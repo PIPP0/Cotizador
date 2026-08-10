@@ -75,7 +75,7 @@ body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--
   <div class="brand">
     <div class="brand-logo-row">
       <img id="brand-logo" class="hidden" alt="">
-      <span class="name" id="brand-name">Subir informe</span>
+      <span class="name hidden" id="brand-name">Subir informe</span>
     </div>
     <div class="brand-bar"></div>
     <div class="sub">Envía tu informe en PDF</div>
@@ -131,18 +131,28 @@ firebase.initializeApp(FIREBASE_CFG);
 const fbDb = firebase.database();
 
 // ── Branding dinámico desde config/<cliente> ────────────────────────────────
+const logoEl = document.getElementById('brand-logo');
+const nameEl = document.getElementById('brand-name');
 fbDb.ref('config/' + CLIENT_ID).once('value').then(snap => {
   const c = snap.val();
-  if (!c) return;
-  const logoEl = document.getElementById('brand-logo');
-  const nameEl = document.getElementById('brand-name');
-  if (c.logoSrc) { logoEl.src = c.logoSrc; logoEl.classList.remove('hidden'); nameEl.classList.add('hidden'); }
-  else { nameEl.textContent = [c.nameA, c.nameB].filter(Boolean).join(' '); }
-  if (c.colors && c.colors.teal) {
+  if (c && c.logoSrc) {
+    logoEl.onload = () => { logoEl.classList.remove('hidden'); };
+    logoEl.onerror = () => {
+      nameEl.textContent = ([c.nameA, c.nameB].filter(Boolean).join(' ')) || 'Subir informe';
+      nameEl.classList.remove('hidden');
+    };
+    logoEl.src = c.logoSrc;
+  } else {
+    nameEl.textContent = (c && [c.nameA, c.nameB].filter(Boolean).join(' ')) || 'Subir informe';
+    nameEl.classList.remove('hidden');
+  }
+  if (c && c.colors && c.colors.teal) {
     const tealVal = c.colors.teal.charAt(0) === '#' ? c.colors.teal : '#' + c.colors.teal;
     document.documentElement.style.setProperty('--teal', tealVal);
   }
-}).catch(() => {});
+}).catch(() => {
+  nameEl.classList.remove('hidden');
+});
 
 // ── Selección de archivo ────────────────────────────────────────────────────
 const pdfInput   = document.getElementById('pdf-input');
