@@ -21,13 +21,17 @@ html,body{overflow-x:hidden;max-width:100%}
 body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;
   display:flex;align-items:center;justify-content:center;padding:20px}
 
-.card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--border);border-radius:16px;
-  box-shadow:var(--sh2);padding:28px 24px;}
+.card{width:100%;max-width:400px;background:var(--surface);border-radius:16px;
+  box-shadow:var(--sh2);overflow:hidden}
 
-.brand{display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:24px}
-.brand img{max-width:150px;max-height:56px;object-fit:contain;margin-bottom:10px}
-.brand .name{font-size:17px;font-weight:800;color:var(--t1)}
-.brand .sub{font-size:12.5px;color:var(--t3);margin-top:3px}
+.brand{background:var(--dark);padding:32px;text-align:center}
+.brand-logo-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:2px;min-height:44px}
+.brand img{height:44px;width:auto;object-fit:contain;max-width:220px}
+.brand .name{font-size:20px;font-weight:800;color:#fff}
+.brand-bar{width:40px;height:3px;background:var(--teal);margin:10px auto 0;border-radius:2px}
+.brand .sub{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.45);margin-top:8px}
+
+.body{padding:28px 24px}
 
 .field{margin-bottom:16px}
 .field label{display:block;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:6px}
@@ -69,11 +73,15 @@ body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--
 
 <div class="card">
   <div class="brand">
-    <img id="brand-logo" class="hidden" alt="">
-    <div class="name" id="brand-name">Subir informe</div>
-    <div class="sub">Envía tu informe en PDF a la plataforma</div>
+    <div class="brand-logo-row">
+      <img id="brand-logo" class="hidden" alt="">
+      <span class="name" id="brand-name">Subir informe</span>
+    </div>
+    <div class="brand-bar"></div>
+    <div class="sub">Envía tu informe en PDF</div>
   </div>
 
+  <div class="body">
   <form id="upload-form">
     <div class="field">
       <label for="worker-name">Tu nombre</label>
@@ -99,6 +107,7 @@ body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--
     <h2>Informe enviado correctamente</h2>
     <p>Ya quedó disponible en la plataforma para generar la cotización.</p>
     <button class="btn" id="another-btn">Enviar otro informe</button>
+  </div>
   </div>
 </div>
 
