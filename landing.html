@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cotizador — Cotizaciones inteligentes con IA</title>
+<meta name="description" content="Cotizador es la plataforma de cotización con Inteligencia Artificial para empresas de servicios: genera propuestas en segundos, predice probabilidad de cierre y centraliza tu pipeline comercial.">
+<link rel="icon" href="data:,">
+<style>
+:root{
+  --dark:#12141c;
+  --dark2:#1a1d29;
+  --ink:#1b1d27;
+  --t1:#1b1d27;
+  --t2:#4a4d5a;
+  --t3:#7a7d8c;
+  --line:#e7e7ee;
+  --surface:#ffffff;
+  --bg:#f7f7fb;
+  --teal:#16a394;
+  --teal2:#0d8577;
+  --violet:#6d5bd0;
+  --violet2:#5847b8;
+  --orange:#e08a3c;
+  --r:16px;
+  --r2:12px;
+  --sh:0 1px 3px rgba(20,20,40,.06), 0 8px 24px -8px rgba(20,20,40,.10);
+  --sh2:0 20px 50px -20px rgba(30,20,70,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  color:var(--t1);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img,svg{display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+section{position:relative}
+
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(18,20,28,.72);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  transition:background .25s ease;
+}
+.nav-inner{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;color:#fff;letter-spacing:-.02em}
+.brand-mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--teal),var(--violet));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-mark svg{width:16px;height:16px;stroke:#fff}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{font-size:14px;font-weight:600;color:rgba(255,255,255,.72);transition:color .15s}
+.nav-links a:hover{color:#fff}
+.nav-cta{
+  display:flex;align-items:center;gap:8px;
+  background:#fff;color:var(--dark);
+  font-size:13.5px;font-weight:700;
+  padding:9px 18px;border-radius:999px;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 20px -6px rgba(255,255,255,.35)}
+.nav-toggle{display:none}
+
+.hero{
+  background:
+    radial-gradient(1100px 550px at 15% -10%, rgba(109,91,208,.35), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(22,163,148,.30), transparent 55%),
+    linear-gradient(180deg,var(--dark) 0%, var(--dark2) 100%);
+  padding:168px 0 120px;
+  color:#fff;
+  overflow:hidden;
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 900px 500px at 50% 0%, #000 40%, transparent 80%);
+  pointer-events:none;
+}
+.hero-inner{position:relative;max-width:1180px;margin:0 auto;padding:0 24px;text-align:center}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
+  padding:7px 16px;border-radius:999px;
+  font-size:12.5px;font-weight:700;letter-spacing:.03em;color:#d9d4ff;
+  margin-bottom:26px;
+}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px rgba(22,163,148,.25)}
+h1{
+  font-size:clamp(34px,5.6vw,64px);
+  font-weight:800;
+  line-height:1.08;
+  letter-spacing:-.03em;
+  max-width:880px;margin:0 auto;
+}
+h1 .grad{
+  background:linear-gradient(90deg,#8fe3d6,#b7a9ff 60%,#e3b4e0);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-sub{
+  font-size:clamp(15.5px,2vw,19px);
+  color:rgba(255,255,255,.68);
+  max-width:620px;margin:22px auto 0;
+  line-height:1.6;
+  font-weight:400;
+}
+.hero-ctas{display:flex;gap:14px;justify-content:center;margin-top:38px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:14.5px;font-weight:700;
+  padding:14px 26px;border-radius:12px;
+  cursor:pointer;border:none;
+  transition:transform .15s ease, box-shadow .2s ease, background .15s ease;
+  font-family:inherit;
+}
+.btn-primary{
+  background:linear-gradient(90deg,var(--teal),var(--violet));
+  color:#fff;
+  box-shadow:0 14px 34px -12px rgba(109,91,208,.55);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 40px -10px rgba(109,91,208,.65)}
+.btn-ghost{
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.18);
+}
+.btn-ghost:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}
+.btn svg{width:16px;height:16px}
+
+.hero-trust{
+  margin-top:56px;display:flex;gap:44px;justify-content:center;flex-wrap:wrap;
+  color:rgba(255,255,255,.5);font-size:12.5px;font-weight:600;letter-spacing:.02em;
+}
+.hero-trust b{display:block;color:#fff;font-size:24px;font-weight:800;letter-spacing:-.02em;margin-bottom:2px}
+
+.mockup-wrap{max-width:980px;margin:72px auto 0;position:relative}
+.mockup{
+  background:#fff;border-radius:18px;overflow:hidden;
+  box-shadow:var(--sh2);
+  border:1px solid rgba(255,255,255,.08);
+  transform:perspective(1400px) rotateX(3deg);
+}
+.mockup-bar{background:#eef0f4;padding:10px 16px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #e2e4ea}
+.mockup-bar span{width:10px;height:10px;border-radius:50%;background:#d7d9e2}
+.mockup-body{display:flex;min-height:340px}
+.mockup-side{width:170px;background:var(--dark);padding:18px 14px;flex-shrink:0}
+.mockup-side .lg{color:#fff;font-weight:800;font-size:12.5px;margin-bottom:20px;letter-spacing:-.02em;display:flex;align-items:center;gap:7px}
+.mockup-side .lg i{width:16px;height:16px;border-radius:5px;background:linear-gradient(135deg,var(--teal),var(--violet));display:block}
+.mockup-item{
+  font-size:11px;color:rgba(255,255,255,.55);font-weight:600;
+  padding:8px 10px;border-radius:8px;margin-bottom:4px;
+}
+.mockup-item.active{background:rgba(255,255,255,.08);color:#fff}
+.mockup-main{flex:1;padding:20px 22px;background:#fbfbfd}
+.mockup-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.mockup-h .t{font-size:15px;font-weight:800;color:var(--t1);letter-spacing:-.02em}
+.mockup-h .b{font-size:10.5px;font-weight:700;background:linear-gradient(90deg,var(--teal),var(--violet));color:#fff;padding:6px 12px;border-radius:8px}
+.mockup-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.mockup-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}
+.mockup-card .n{font-size:17px;font-weight:800;color:var(--t1)}
+.mockup-card .l{font-size:10px;color:var(--t3);font-weight:600;margin-top:2px}
+.mockup-rows{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px}
+.mockup-row{display:flex;align-items:center;gap:10px;padding:8px 8px;border-bottom:1px solid #f1f1f5}
+.mockup-row:last-child{border-bottom:none}
+.mockup-row .dot2{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.mockup-row .bar{flex:1;height:5px;border-radius:3px;background:#eef0f4;overflow:hidden}
+.mockup-row .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--violet));border-radius:3px}
+.mockup-row .pct{font-size:10.5px;font-weight:700;color:var(--t2);width:30px;text-align:right}
+.mockup-float{
+  position:absolute;background:#fff;border-radius:12px;box-shadow:var(--sh);
+  padding:12px 14px;display:flex;align-items:center;gap:10px;border:1px solid var(--line);
+}
+.mockup-float .ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mockup-float .tx b{display:block;font-size:12.5px;font-weight:800;color:var(--t1)}
+.mockup-float .tx span{font-size:10.5px;color:var(--t3);font-weight:600}
+.mf1{top:-22px;right:-24px}
+.mf1 .ic{background:#e8f8f4;color:var(--teal)}
+.mf2{bottom:-20px;left:-28px}
+.mf2 .ic{background:#efecff;color:var(--violet)}
+
+.logos{padding:52px 0;background:var(--surface);border-bottom:1px solid var(--line)}
+.logos .lab{text-align:center;font-size:12px;font-weight:700;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:26px}
+.logos-row{display:flex;justify-content:center;align-items:center;gap:52px;flex-wrap:wrap;opacity:.55}
+.logos-row span{font-weight:800;font-size:15px;color:var(--t2);letter-spacing:-.01em}
+
+.sec{padding:108px 0}
+.sec-head{max-width:640px;margin:0 auto 60px;text-align:center}
+.tag{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--violet2);
+  background:#f1eeff;padding:6px 14px;border-radius:999px;margin-bottom:18px;
+}
+.sec-head h2{font-size:clamp(26px,3.4vw,38px);font-weight:800;letter-spacing:-.025em;line-height:1.18;color:var(--t1)}
+.sec-head p{font-size:16px;color:var(--t2);margin-top:14px;line-height:1.65}
+
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feat-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:28px 26px;transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.feat-card:hover{transform:translateY(-4px);box-shadow:var(--sh);border-color:transparent}
+.feat-ic{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+}
+.feat-ic svg{width:21px;height:21px;stroke-width:2}
+.fi-a{background:#e8f8f4;color:var(--teal)}
+.fi-b{background:#f1eeff;color:var(--violet)}
+.fi-c{background:#fdf1e5;color:var(--orange)}
+.feat-card h3{font-size:16.5px;font-weight:800;margin-bottom:9px;letter-spacing:-.01em;color:var(--t1)}
+.feat-card p{font-size:14px;color:var(--t2);line-height:1.65}
+
+.how{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.step{padding:0 20px;text-align:center;position:relative}
+.step-num{
+  width:52px;height:52px;border-radius:50%;
+  background:var(--dark);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:17px;margin:0 auto 20px;
+  position:relative;z-index:2;
+}
+.step:nth-child(1) .step-num{background:linear-gradient(135deg,var(--teal),var(--teal2))}
+.step:nth-child(2) .step-num{background:linear-gradient(135deg,var(--violet),var(--violet2))}
+.step:nth-child(3) .step-num{background:linear-gradient(135deg,var(--orange),#c76b1f)}
+.step:nth-child(4) .step-num{background:var(--dark)}
+.step-line{
+  position:absolute;top:26px;left:calc(50% + 40px);right:calc(-50% + 40px);
+  height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 12px);
+  z-index:1;
+}
+.step:last-child .step-line{display:none}
+.step h4{font-size:15px;font-weight:800;margin-bottom:8px;color:var(--t1)}
+.step p{font-size:13.5px;color:var(--t2);line-height:1.6;max-width:220px;margin:0 auto}
+
+.stats-band{
+  background:linear-gradient(135deg,var(--dark) 0%,#1c1730 100%);
+  color:#fff;padding:64px 0;
+}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center}
+.stat b{display:block;font-size:clamp(30px,4vw,42px);font-weight:800;letter-spacing:-.03em;
+  background:linear-gradient(90deg,#8fe3d6,#b7a9ff);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.stat span{font-size:13px;color:rgba(255,255,255,.6);font-weight:600;display:block;margin-top:6px}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.split-visual{
+  background:var(--dark);border-radius:var(--r);padding:32px;
+  box-shadow:var(--sh2);
+}
+.role-row{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:11px;padding:14px 16px;margin-bottom:10px;
+}
+.role-row:last-child{margin-bottom:0}
+.role-badge{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;
+}
+.role-row .tx b{display:block;color:#fff;font-size:13.5px;font-weight:700}
+.role-row .tx span{font-size:12px;color:rgba(255,255,255,.5)}
+.split-copy .tag{margin-bottom:16px}
+.split-copy h2{font-size:clamp(24px,3vw,32px);font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-bottom:16px}
+.split-copy p{font-size:15.5px;color:var(--t2);line-height:1.7;margin-bottom:22px}
+.check-list{display:flex;flex-direction:column;gap:12px}
+.check-list li{display:flex;align-items:flex-start;gap:11px;font-size:14.5px;color:var(--t1);font-weight:600;list-style:none}
+.check-list svg{width:19px;height:19px;color:var(--teal);flex-shrink:0;margin-top:1px}
+
+.cta-sec{
+  background:linear-gradient(180deg,var(--bg) 0%, #eeecfb 100%);
+  padding:108px 0;
+}
+.cta-card{
+  max-width:980px;margin:0 auto;
+  background:linear-gradient(135deg,var(--dark) 0%,#201a38 100%);
+  border-radius:24px;padding:0;overflow:hidden;
+  box-shadow:var(--sh2);
+  display:grid;grid-template-columns:1.05fr 1fr;
+}
+.cta-left{padding:52px 46px;color:#fff}
+.cta-left .tag{background:rgba(255,255,255,.1);color:#d9d4ff}
+.cta-left h2{font-size:clamp(24px,3vw,30px);font-weight:800;letter-spacing:-.02em;line-height:1.22;margin:16px 0 14px}
+.cta-left p{font-size:14.5px;color:rgba(255,255,255,.62);line-height:1.7;margin-bottom:26px}
+.cta-contact-item{display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:13.5px;color:rgba(255,255,255,.85);font-weight:600}
+.cta-contact-item .ic{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cta-contact-item .ic svg{width:16px;height:16px}
+
+.cta-right{background:#fff;padding:44px 40px}
+.f-row{margin-bottom:16px}
+.f-row label{display:block;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:7px;letter-spacing:.01em}
+.f-row input,.f-row textarea{
+  width:100%;border:1.5px solid var(--line);border-radius:10px;
+  padding:11px 13px;font-size:14px;font-family:inherit;color:var(--t1);
+  transition:border-color .15s ease, box-shadow .15s ease;
+  background:#fbfbfd;
+}
+.f-row input:focus,.f-row textarea:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 3.5px rgba(109,91,208,.13);background:#fff}
+.f-row textarea{resize:vertical;min-height:80px}
+.f-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-submit{
+  width:100%;justify-content:center;margin-top:6px;
+  background:linear-gradient(90deg,var(--teal),var(--violet));color:#fff;
+  box-shadow:0 12px 26px -10px rgba(109,91,208,.5);
+}
+.form-note{font-size:11.5px;color:var(--t3);text-align:center;margin-top:12px;line-height:1.5}
+.form-ok{
+  display:none;text-align:center;padding:30px 6px;
+}
+.form-ok .ic{width:52px;height:52px;border-radius:50%;background:#e8f8f4;color:var(--teal);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.form-ok .ic svg{width:26px;height:26px}
+.form-ok h4{font-size:16px;font-weight:800;margin-bottom:8px}
+.form-ok p{font-size:13.5px;color:var(--t2);line-height:1.6}
+
+footer{background:var(--dark);color:rgba(255,255,255,.55);padding:52px 0 28px}
+.foot-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;padding-bottom:34px;border-bottom:1px solid rgba(255,255,255,.08)}
+.foot-brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:15.5px}
+.foot-links{display:flex;gap:28px;flex-wrap:wrap}
+.foot-links a{font-size:13.5px;font-weight:600;color:rgba(255,255,255,.55)}
+.foot-links a:hover{color:#fff}
+.foot-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding-top:24px;font-size:12.5px}
+
+@media(max-width:900px){
+  .nav-links{display:none}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr 1fr;gap:36px 0}
+  .step-line{display:none}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:32px}
+  .split{grid-template-columns:1fr;gap:40px}
+  .cta-card{grid-template-columns:1fr}
+  .cta-left{padding:40px 32px}
+  .cta-right{padding:36px 32px}
+  .mockup-side{display:none}
+}
+@media(max-width:600px){
+  .feat-grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .f-two{grid-template-columns:1fr}
+  .hero{padding:140px 0 90px}
+  .sec{padding:76px 0}
+  .mockup-cards{grid-template-columns:1fr 1fr}
+  .mf1,.mf2{display:none}
+  .foot-top,.foot-bottom{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="brand">
+      <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></span>
+      Cotizador
+    </a>
+    <div class="nav-links">
+      <a href="#features">Características</a>
+      <a href="#how">Cómo funciona</a>
+      <a href="#roles">Equipo</a>
+      <a href="#contact">Contacto</a>
+    </div>
+    <a href="#contact" class="nav-cta">Solicitar demo</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="eyebrow"><span class="dot"></span> Cotizaciones potenciadas con Inteligencia Artificial</div>
+    <h1>Cotiza más rápido, <span class="grad">cierra más negocios</span></h1>
+    <p class="hero-sub">Cotizador es la plataforma que arma propuestas comerciales en segundos, predice qué clientes están por cerrar y le da a tu equipo un panel único para vender con datos, no con corazonadas.</p>
+    <div class="hero-ctas">
+      <a href="#contact" class="btn btn-primary">Solicitar demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a href="#features" class="btn btn-ghost">Ver características</a>
+    </div>
+    <div class="hero-trust">
+      <div><b>&minus;80%</b>tiempo de cotización</div>
+      <div><b>IA</b>en cada etapa del embudo</div>
+      <div><b>1</b>panel para todo tu equipo</div>
+    </div>
+
+    <div class="mockup-wrap">
+      <div class="mockup">
+        <div class="mockup-bar"><span></span><span></span><span></span></div>
+        <div class="mockup-body">
+          <div class="mockup-side">
+            <div class="lg"><i></i>Cotizador</div>
+            <div class="mockup-item active">Dashboard</div>
+            <div class="mockup-item">Cotizaciones</div>
+            <div class="mockup-item">Clientes</div>
+            <div class="mockup-item">Motor IA</div>
+            <div class="mockup-item">Informes</div>
+          </div>
+          <div class="mockup-main">
+            <div class="mockup-h"><span class="t">Pipeline comercial</span><span class="b">+ Analizar con IA</span></div>
+            <div class="mockup-cards">
+              <div class="mockup-card"><div class="n">18</div><div class="l">Cotizaciones activas</div></div>
+              <div class="mockup-card"><div class="n">$142M</div><div class="l">Pipeline proyectado</div></div>
+              <div class="mockup-card"><div class="n">6 min</div><div class="l">Tiempo prom. cotización</div></div>
+            </div>
+            <div class="mockup-rows">
+              <div class="mockup-row"><span class="dot2" style="background:#16a394"></span><span class="bar"><i style="width:82%"></i></span><span class="pct">82%</span></div>
+              <div class="mockup-row"><span class="dot2" style="background:#6d5bd0"></span><span class="bar"><i style="width:61%"></i></span><span class="pct">61%</span></div>
+              <div class="mockup-row"><span class="dot2" style="background:#e08a3c"></span><span class="bar"><i style="width:44%"></i></span><span class="pct">44%</span></div>
+              <div class="mockup-row"><span class="dot2" style="background:#16a394"></span><span class="bar"><i style="width:93%"></i></span><span class="pct">93%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mockup-float mf1">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+        <div class="tx"><b>Cotización enviada</b><span>Generada con IA en 6 seg.</span></div>
+      </div>
+      <div class="mockup-float mf2">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg></div>
+        <div class="tx"><b>Probabilidad de cierre</b><span>93% · Alta confianza</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="logos">
+  <div class="wrap">
+    <div class="lab">Empresas de servicios ya cotizan con Cotizador</div>
+    <div class="logos-row">
+      <span>Energía</span>
+      <span>Climatización</span>
+      <span>Construcción</span>
+      <span>Reporting</span>
+      <span>Mantención</span>
+    </div>
+  </div>
+</div>
+
+<section class="sec" id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="tag">Características</div>
+      <h2>Todo lo que tu equipo comercial necesita, en un solo lugar</h2>
+      <p>Desde armar la propuesta hasta cerrar el negocio: Cotizador conecta cada etapa de tu proceso de ventas con datos en tiempo real e Inteligencia Artificial.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-ic fi-a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></div>
+        <h3>Motor IA de cotización</h3>
+        <p>Describe la necesidad del cliente en lenguaje natural y la IA arma la propuesta completa: ítems, precios y condiciones, en segundos.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ic fi-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M18 17V9M13 17V5M8 17v-3"/></svg></div>
+        <h3>Predicción de cierre</h3>
+        <p>Cada cotización recibe una probabilidad de cierre calculada por IA en base a tu historial real, para priorizar dónde poner el foco.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ic fi-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h3>Asistente IA integrado</h3>
+        <p>Un chat interno que responde preguntas sobre tu pipeline, tus clientes y tus números, sin salir de la plataforma.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ic fi-a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+        <h3>Informes desde terreno</h3>
+        <p>Tu equipo en terreno sube informes desde el celular y esa información se convierte directamente en una cotización lista.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ic fi-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 16l4-6 3 4 5-8"/></svg></div>
+        <h3>Dashboard en tiempo real</h3>
+        <p>Pipeline, ingresos proyectados, tasa de conversión y tiempos de respuesta, actualizados al instante y sin planillas.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ic fi-c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M17 3.13a4 4 0 0 1 0 7.75M22 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+        <h3>Roles y permisos</h3>
+        <p>Administra qué puede ver y modificar cada persona de tu equipo, desde ejecutivos comerciales hasta administradores de plataforma.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec how" id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="tag">Cómo funciona</div>
+      <h2>De la necesidad del cliente a la cotización enviada</h2>
+      <p>Cuatro pasos, un solo sistema.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-line"></div>
+        <div class="step-num">1</div>
+        <h4>Configura tu marca</h4>
+        <p>Logo, colores, servicios y precios: la plataforma se adapta a tu empresa, no al revés.</p>
+      </div>
+      <div class="step">
+        <div class="step-line"></div>
+        <div class="step-num">2</div>
+        <h4>Tu equipo cotiza con IA</h4>
+        <p>Describen la necesidad del cliente y la IA arma la propuesta en segundos.</p>
+      </div>
+      <div class="step">
+        <div class="step-line"></div>
+        <div class="step-num">3</div>
+        <h4>Sigue el pipeline</h4>
+        <p>Cada cotización avanza por su estado con probabilidad de cierre estimada por IA.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Cierra más rápido</h4>
+        <p>Menos tiempo armando propuestas, más tiempo conversando con el cliente correcto.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-band">
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat"><b>&lt;10s</b><span>para generar una cotización con IA</span></div>
+      <div class="stat"><b>100%</b><span>configurable a tu marca</span></div>
+      <div class="stat"><b>3</b><span>niveles de acceso por equipo</span></div>
+      <div class="stat"><b>24/7</b><span>pipeline disponible desde cualquier lugar</span></div>
+    </div>
+  </div>
+</div>
+
+<section class="sec" id="roles">
+  <div class="wrap">
+    <div class="split">
+      <div class="split-copy">
+        <div class="tag">Pensado para equipos</div>
+        <h2>Cada persona ve exactamente lo que necesita</h2>
+        <p>Desde quien cotiza en terreno hasta quien administra la plataforma completa, cada rol tiene su propia vista y sus propios permisos.</p>
+        <ul class="check-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Ejecutivos comerciales que cotizan y hacen seguimiento del pipeline</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Administradores que gestionan precios, servicios y configuración</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Super administradores que activan o desactivan funciones de IA para todo el equipo</li>
+        </ul>
+      </div>
+      <div class="split-visual">
+        <div class="role-row">
+          <div class="role-badge" style="background:linear-gradient(135deg,#16a394,#0d8577)">E</div>
+          <div class="tx"><b>Ejecutivo</b><span>Cotiza, hace seguimiento y usa la IA</span></div>
+        </div>
+        <div class="role-row">
+          <div class="role-badge" style="background:linear-gradient(135deg,#6d5bd0,#5847b8)">A</div>
+          <div class="tx"><b>Administrador</b><span>Configura precios, servicios y usuarios</span></div>
+        </div>
+        <div class="role-row">
+          <div class="role-badge" style="background:linear-gradient(135deg,#e08a3c,#c76b1f)">S</div>
+          <div class="tx"><b>Super Admin</b><span>Activa o desactiva funciones de la plataforma</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-sec" id="contact">
+  <div class="wrap">
+    <div class="cta-card">
+      <div class="cta-left">
+        <div class="tag">Hablemos</div>
+        <h2>Lleva a tu equipo comercial al siguiente nivel</h2>
+        <p>Cuéntanos sobre tu empresa y te mostramos cómo Cotizador se adapta a tu forma de vender.</p>
+        <div class="cta-contact-item">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6 12 13 2 6"/><path d="M2 6h20v12H2z"/></svg></span>
+          <span id="contact-email-display">cristian85alegria@gmail.com</span>
+        </div>
+        <div class="cta-contact-item">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+          <span>Respuesta en menos de 24 horas hábiles</span>
+        </div>
+      </div>
+      <div class="cta-right">
+        <form id="contact-form">
+          <div class="f-two">
+            <div class="f-row">
+              <label for="cf-name">Nombre</label>
+              <input id="cf-name" type="text" required placeholder="Tu nombre">
+            </div>
+            <div class="f-row">
+              <label for="cf-company">Empresa</label>
+              <input id="cf-company" type="text" required placeholder="Nombre de tu empresa">
+            </div>
+          </div>
+          <div class="f-row">
+            <label for="cf-email">Correo</label>
+            <input id="cf-email" type="email" required placeholder="tucorreo@empresa.cl">
+          </div>
+          <div class="f-row">
+            <label for="cf-phone">Teléfono <span style="font-weight:500;color:var(--t3)">(opcional)</span></label>
+            <input id="cf-phone" type="tel" placeholder="+56 9 xxxx xxxx">
+          </div>
+          <div class="f-row">
+            <label for="cf-msg">Mensaje</label>
+            <textarea id="cf-msg" required placeholder="Cuéntanos sobre tu equipo comercial y qué te gustaría cotizar con IA"></textarea>
+          </div>
+          <button type="submit" class="btn form-submit">
+            Enviar mensaje
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <div class="form-note">Al enviar, se abrirá tu cliente de correo con el mensaje ya redactado hacia nosotros.</div>
+        </form>
+        <div class="form-ok" id="form-ok">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+          <h4>¡Listo! Revisa tu cliente de correo</h4>
+          <p>Se abrió un borrador con tu mensaje. Solo confirma el envío y te responderemos a la brevedad.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <span class="brand-mark" style="width:26px;height:26px"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" style="width:14px;height:14px"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></span>
+        Cotizador
+      </div>
+      <div class="foot-links">
+        <a href="#features">Características</a>
+        <a href="#how">Cómo funciona</a>
+        <a href="#roles">Equipo</a>
+        <a href="#contact">Contacto</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"></span> Cotizador. Todos los derechos reservados.</span>
+      <span>Hecho para equipos comerciales que quieren vender más rápido.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+const nav = document.querySelector('.nav');
+window.addEventListener('scroll', () => {
+  nav.style.background = window.scrollY > 40 ? 'rgba(18,20,28,.92)' : 'rgba(18,20,28,.72)';
+});
+const CONTACT_EMAIL = 'cristian85alegria@gmail.com';
+const form = document.getElementById('contact-form');
+const okBox = document.getElementById('form-ok');
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('cf-name').value.trim();
+  const company = document.getElementById('cf-company').value.trim();
+  const email = document.getElementById('cf-email').value.trim();
+  const phone = document.getElementById('cf-phone').value.trim();
+  const msg = document.getElementById('cf-msg').value.trim();
+  const subject = 'Nueva consulta de ' + company + ' — Cotizador';
+  const bodyLines = [
+    'Nombre: ' + name,
+    'Empresa: ' + company,
+    'Correo: ' + email,
+    phone ? 'Teléfono: ' + phone : null,
+    '',
+    'Mensaje:',
+    msg
+  ].filter(Boolean);
+  const body = bodyLines.join('\n');
+  const mailto = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  window.location.href = mailto;
+  form.style.display = 'none';
+  okBox.style.display = 'block';
+});
+</script>
+</body>
+</html>
