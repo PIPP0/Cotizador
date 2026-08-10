@@ -6,6 +6,8 @@
 (function(){
   var p=new URLSearchParams(location.search).get('c');
   if(p==='cliente4') window.location.replace('./concurso.html?_src=cliente4');
+
+  if(!p || p===''){ window.location.replace('./landing.html'); return; }
 })();
 </script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
