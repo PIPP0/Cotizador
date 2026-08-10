@@ -4177,7 +4177,7 @@ function _refreshChip(){
   document.getElementById('ud-role').textContent=currentUser.role;
 }
 // Credenciales por defecto — se sobreescriben en applyConfig() con lo guardado en CONFIG
-const _AUTH={admin:'Lisit',ejecutivo:'Lisit2'};
+const _AUTH={admin:'Lisit',ejecutivo:'Lisit2',superadmin:'1111'};
 function doLogin(){
   const u=(document.getElementById('login-user').value||'').trim().toLowerCase();
   const p=document.getElementById('login-pass').value||'';
