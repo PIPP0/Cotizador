@@ -75,7 +75,7 @@ body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--
   <div class="brand">
     <div class="brand-logo-row">
       <img id="brand-logo" class="hidden" alt="">
-      <span class="name hidden" id="brand-name">Subir informe</span>
+      <span class="name" id="brand-name">NexEnergy</span>
     </div>
     <div class="brand-bar"></div>
     <div class="sub">Envía tu informe en PDF</div>
@@ -133,26 +133,43 @@ const fbDb = firebase.database();
 // ── Branding dinámico desde config/<cliente> ────────────────────────────────
 const logoEl = document.getElementById('brand-logo');
 const nameEl = document.getElementById('brand-name');
-fbDb.ref('config/' + CLIENT_ID).once('value').then(snap => {
-  const c = snap.val();
-  if (c && c.logoSrc) {
-    logoEl.onload = () => { logoEl.classList.remove('hidden'); };
-    logoEl.onerror = () => {
-      nameEl.textContent = ([c.nameA, c.nameB].filter(Boolean).join(' ')) || 'Subir informe';
-      nameEl.classList.remove('hidden');
-    };
-    logoEl.src = c.logoSrc;
-  } else {
-    nameEl.textContent = (c && [c.nameA, c.nameB].filter(Boolean).join(' ')) || 'Subir informe';
-    nameEl.classList.remove('hidden');
-  }
-  if (c && c.colors && c.colors.teal) {
+const brandCacheKey = 'trabajadorBrand_' + CLIENT_ID;
+
+function applyBrand(c) {
+  if (!c) return;
+  if (c.colors && c.colors.teal) {
     const tealVal = c.colors.teal.charAt(0) === '#' ? c.colors.teal : '#' + c.colors.teal;
     document.documentElement.style.setProperty('--teal', tealVal);
   }
-}).catch(() => {
-  nameEl.classList.remove('hidden');
-});
+  const name = [c.nameA, c.nameB].filter(Boolean).join(' ');
+  if (name) nameEl.textContent = name;
+  if (c.logoSrc) {
+    const img = new Image();
+    img.onload = () => {
+      logoEl.src = c.logoSrc;
+      logoEl.classList.remove('hidden');
+      nameEl.classList.add('hidden');
+    };
+    img.src = c.logoSrc;
+  } else {
+    logoEl.classList.add('hidden');
+    nameEl.classList.remove('hidden');
+  }
+}
+
+// Aplica inmediatamente lo último cacheado (sin esperar red) para evitar parpadeos.
+try {
+  const cached = localStorage.getItem(brandCacheKey);
+  if (cached) applyBrand(JSON.parse(cached));
+} catch (e) {}
+
+// Luego actualiza en segundo plano desde Firebase (y refresca el cache).
+fbDb.ref('config/' + CLIENT_ID).once('value').then(snap => {
+  const c = snap.val();
+  if (!c) return;
+  applyBrand(c);
+  try { localStorage.setItem(brandCacheKey, JSON.stringify(c)); } catch (e) {}
+}).catch(() => {});
 
 // ── Selección de archivo ────────────────────────────────────────────────────
 const pdfInput   = document.getElementById('pdf-input');
