@@ -537,7 +537,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.55);padding:52px 0 28px}
         <ul class="check-list">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Ejecutivos comerciales que cotizan y hacen seguimiento del pipeline</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Administradores que gestionan precios, servicios y configuración</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Super administradores que activan o desactivan funciones de IA para todo el equipo</li>
         </ul>
       </div>
       <div class="split-visual">
@@ -548,10 +547,6 @@ footer{background:var(--dark);color:rgba(255,255,255,.55);padding:52px 0 28px}
         <div class="role-row">
           <div class="role-badge" style="background:linear-gradient(135deg,#6d5bd0,#5847b8)">A</div>
           <div class="tx"><b>Administrador</b><span>Configura precios, servicios y usuarios</span></div>
-        </div>
-        <div class="role-row">
-          <div class="role-badge" style="background:linear-gradient(135deg,#e08a3c,#c76b1f)">S</div>
-          <div class="tx"><b>Super Admin</b><span>Activa o desactiva funciones de la plataforma</span></div>
         </div>
       </div>
     </div>
@@ -567,7 +562,7 @@ footer{background:var(--dark);color:rgba(255,255,255,.55);padding:52px 0 28px}
         <p>Cuéntanos sobre tu empresa y te mostramos cómo Cotizador se adapta a tu forma de vender.</p>
         <div class="cta-contact-item">
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6 12 13 2 6"/><path d="M2 6h20v12H2z"/></svg></span>
-          <span id="contact-email-display">cristian85alegria@gmail.com</span>
+          <span id="contact-email-display">cotizadia@empresa.cl</span>
         </div>
         <div class="cta-contact-item">
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
@@ -641,7 +636,7 @@ const nav = document.querySelector('.nav');
 window.addEventListener('scroll', () => {
   nav.style.background = window.scrollY > 40 ? 'rgba(18,20,28,.92)' : 'rgba(18,20,28,.72)';
 });
-const CONTACT_EMAIL = 'cristian85alegria@gmail.com';
+const CONTACT_EMAIL = 'cotizadia@empresa.cl';
 const form = document.getElementById('contact-form');
 const okBox = document.getElementById('form-ok');
 form.addEventListener('submit', function(e){
