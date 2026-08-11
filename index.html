@@ -1358,6 +1358,9 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
           </button>
         </div>
       </div>
+      <div style="text-align:right;margin:-6px 0 14px;">
+        <a href="#" onclick="doForgotPassword();return false;" style="font-size:12px;color:var(--teal);text-decoration:none;">¿Olvidaste tu contraseña?</a>
+      </div>
       <button class="login-btn" onclick="doLogin()">Ingresar →</button>
     </div>
   </div>
@@ -4197,6 +4200,7 @@ function doLogin(){
         const teamData = snap.val();
         if(!teamData || !teamData.role){
           err.textContent = 'Esta cuenta no tiene acceso a este cliente.';
+          err.style.color='';
           err.style.display='block';
           return firebase.auth().signOut().then(function(){ firebase.auth().signInAnonymously().catch(function(){}); });
         }
@@ -4208,7 +4212,8 @@ function doLogin(){
       });
     }).catch(function(e){
       err.textContent = _authErrMsg(e);
-      err.style.display='block';
+      err.style.color='';
+          err.style.display='block';
       document.getElementById('login-pass').value='';
       document.getElementById('login-pass').focus();
     });
@@ -4222,7 +4227,8 @@ function doLogin(){
     _finishLogin(u);
   } else {
     err.textContent = 'Usuario no encontrado';
-    err.style.display='block';
+    err.style.color='';
+          err.style.display='block';
     document.getElementById('login-pass').value='';
     document.getElementById('login-pass').focus();
   }
@@ -4248,6 +4254,25 @@ function _authErrMsg(e){
     'auth/user-disabled':'Esta cuenta está deshabilitada.'
   };
   return map[e.code] || 'No se pudo iniciar sesión. Verifica tus datos.';
+}
+function doForgotPassword(){
+  const err = document.getElementById('login-err');
+  const uRaw = (document.getElementById('login-user').value||'').trim();
+  if(uRaw.indexOf('@') === -1){
+    err.style.color = '';
+    err.textContent = 'Ingresa tu correo electrónico arriba para recuperar tu contraseña.';
+    err.style.display = 'block';
+    return;
+  }
+  firebase.auth().sendPasswordResetEmail(uRaw.toLowerCase()).then(function(){
+    err.style.color = 'var(--green)';
+    err.textContent = 'Te enviamos un correo a '+uRaw+' para restablecer tu contraseña.';
+    err.style.display = 'block';
+  }).catch(function(e){
+    err.style.color = '';
+    err.textContent = _authErrMsg(e);
+    err.style.display = 'block';
+  });
 }
 function doLogout(e){
   if(e) e.stopPropagation();
