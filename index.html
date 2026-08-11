@@ -4201,6 +4201,8 @@ function doLogin(){
         if(!teamData || !teamData.role){
           err.textContent = 'Esta cuenta no tiene acceso a este cliente.';
           err.style.color='';
+          err.style.background='';
+          err.style.borderColor='';
           err.style.display='block';
           return firebase.auth().signOut().then(function(){ firebase.auth().signInAnonymously().catch(function(){}); });
         }
@@ -4213,6 +4215,8 @@ function doLogin(){
     }).catch(function(e){
       err.textContent = _authErrMsg(e);
       err.style.color='';
+      err.style.background='';
+      err.style.borderColor='';
           err.style.display='block';
       document.getElementById('login-pass').value='';
       document.getElementById('login-pass').focus();
@@ -4228,6 +4232,8 @@ function doLogin(){
   } else {
     err.textContent = 'Usuario no encontrado';
     err.style.color='';
+    err.style.background='';
+    err.style.borderColor='';
           err.style.display='block';
     document.getElementById('login-pass').value='';
     document.getElementById('login-pass').focus();
@@ -4260,16 +4266,22 @@ function doForgotPassword(){
   const uRaw = (document.getElementById('login-user').value||'').trim();
   if(uRaw.indexOf('@') === -1){
     err.style.color = '';
+    err.style.background = '';
+    err.style.borderColor = '';
     err.textContent = 'Ingresa tu correo electrónico arriba para recuperar tu contraseña.';
     err.style.display = 'block';
     return;
   }
   firebase.auth().sendPasswordResetEmail(uRaw.toLowerCase()).then(function(){
     err.style.color = 'var(--green)';
+    err.style.background = 'var(--gbg)';
+    err.style.borderColor = 'var(--gbr)';
     err.textContent = 'Te enviamos un correo a '+uRaw+' para restablecer tu contraseña.';
     err.style.display = 'block';
   }).catch(function(e){
     err.style.color = '';
+    err.style.background = '';
+    err.style.borderColor = '';
     err.textContent = _authErrMsg(e);
     err.style.display = 'block';
   });
