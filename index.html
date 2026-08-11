@@ -1140,6 +1140,25 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
       <div id="cfg-segments-list"></div>
     </div>
 
+    <!-- ── EQUIPO ── -->
+    <div class="cfg-sec" id="cfg-team-sec">
+      <div class="cfg-sec-title"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>EQUIPO</div>
+      <div id="cfg-team-list" style="margin-bottom:10px"></div>
+      <div id="cfg-team-form">
+        <div class="cfg-row"><label>Nombre</label><input type="text" id="cfg-team-new-name" placeholder="Nombre completo"></div>
+        <div class="cfg-row"><label>Correo</label><input type="email" id="cfg-team-new-email" placeholder="correo@empresa.com"></div>
+        <div class="cfg-row"><label>Rol</label>
+          <select id="cfg-team-new-role">
+            <option value="ejecutivo">Ejecutivo</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <button class="cfg-apply" type="button" onclick="createTeamAccount()" id="cfg-team-create-btn" style="margin-top:8px">+ Crear cuenta</button>
+        <div id="cfg-team-msg" style="display:none;margin-top:8px;font-size:12.5px;padding:8px 12px;border-radius:7px"></div>
+      </div>
+      <div id="cfg-team-unavailable" style="display:none;font-size:12.5px;color:var(--t3)">La gestión de cuentas de equipo está disponible solo para clientes migrados a inicio de sesión seguro con correo.</div>
+    </div>
+
     <!-- ── FOOTER ACCIONES ── -->
     <div class="cfg-sec" id="cfg-footer-default">
       <button class="cfg-apply" id="cfg-apply-btn" onclick="saveCfgPanel()">Guardar y aplicar</button>
@@ -3696,6 +3715,7 @@ function openCfgPanel() {
     updateCfgLogoPreview();
     resetApplyBtn();
     try { rebuildSvcList(); rebuildSegList(); rebuildSbSvcList(); } catch(e) {}
+    try { renderTeamPanel(); } catch(e) {}
     // COTIZACIÓN
     try {
       const cot = CONFIG.cotizacion || {};
@@ -4261,6 +4281,125 @@ function _authErrMsg(e){
   };
   return map[e.code] || 'No se pudo iniciar sesión. Verifica tus datos.';
 }
+
+function _escHtml(s){
+  return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
+}
+function _genTempPassword(){
+  const arr = new Uint8Array(24);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, function(b){ return b.toString(36); }).join('').slice(0,24) + 'Aa1!';
+}
+function renderTeamPanel(){
+  const listEl = document.getElementById('cfg-team-list');
+  const formEl = document.getElementById('cfg-team-form');
+  const unavailEl = document.getElementById('cfg-team-unavailable');
+  if(!listEl) return;
+  if(!currentUser || !currentUser.email){
+    if(formEl) formEl.style.display='none';
+    if(unavailEl) unavailEl.style.display='block';
+    listEl.innerHTML='';
+    return;
+  }
+  if(formEl) formEl.style.display='block';
+  if(unavailEl) unavailEl.style.display='none';
+  listEl.innerHTML = '<div style="font-size:12.5px;color:var(--t3)">Cargando equipo…</div>';
+  _fbDb.ref('team/'+_CLIENT_ID).once('value').then(function(snap){
+    const data = snap.val() || {};
+    const uids = Object.keys(data);
+    if(!uids.length){ listEl.innerHTML = '<div style="font-size:12.5px;color:var(--t3)">Aún no hay cuentas de equipo.</div>'; return; }
+    const myUid = (firebase.auth().currentUser && firebase.auth().currentUser.uid) || null;
+    listEl.innerHTML = uids.map(function(uid){
+      const m = data[uid] || {};
+      const isSelf = (myUid === uid);
+      const roleLabelMap = {admin:'Admin', ejecutivo:'Ejecutivo', superadmin:'SuperAdmin'};
+      const roleLabel = roleLabelMap[m.role] || m.role || '';
+      let right;
+      if(isSelf){
+        right = '<span style="font-size:11.5px;color:var(--t3)">'+_escHtml(roleLabel)+'</span>';
+      } else {
+        right = '<select onchange="changeTeamRole(\''+uid+'\', this.value)" style="font-size:11.5px;padding:3px 6px;border-radius:5px;border:1px solid var(--border)">'
+          + '<option value="ejecutivo"'+(m.role==='ejecutivo'?' selected':'')+'>Ejecutivo</option>'
+          + '<option value="admin"'+(m.role==='admin'?' selected':'')+'>Admin</option>'
+          + '</select>'
+          + ' <button type="button" onclick="deleteTeamMember(\''+uid+'\')" style="border:none;background:none;color:#c0392b;cursor:pointer;font-size:11.5px">Quitar</button>';
+      }
+      return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">'
+        + '<div style="min-width:0"><div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_escHtml(m.name||m.email||uid)+'</div>'
+        + '<div style="font-size:11.5px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_escHtml(m.email||'')+'</div></div>'
+        + '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'+right+'</div></div>';
+    }).join('');
+  }).catch(function(e){
+    listEl.innerHTML = '<div style="font-size:12.5px;color:#c0392b">No se pudo cargar el equipo.</div>';
+  });
+}
+function changeTeamRole(uid, role){
+  _fbDb.ref('team/'+_CLIENT_ID+'/'+uid+'/role').set(role).then(function(){
+    renderTeamPanel();
+  }).catch(function(){
+    alert('No se pudo actualizar el rol.');
+    renderTeamPanel();
+  });
+}
+function deleteTeamMember(uid){
+  if(!confirm('¿Quitar a este usuario del equipo? Ya no podrá iniciar sesión con esta cuenta en este cliente.')) return;
+  _fbDb.ref('team/'+_CLIENT_ID+'/'+uid).remove().then(function(){
+    renderTeamPanel();
+  }).catch(function(){
+    alert('No se pudo quitar al usuario.');
+  });
+}
+function createTeamAccount(){
+  const msg = document.getElementById('cfg-team-msg');
+  const nameEl = document.getElementById('cfg-team-new-name');
+  const emailEl = document.getElementById('cfg-team-new-email');
+  const roleEl = document.getElementById('cfg-team-new-role');
+  const btn = document.getElementById('cfg-team-create-btn');
+  const name = (nameEl.value||'').trim();
+  const email = (emailEl.value||'').trim().toLowerCase();
+  const role = roleEl.value;
+  function showMsg(text, ok){
+    msg.textContent = text;
+    msg.style.display = 'block';
+    msg.style.border = '1px solid';
+    msg.style.color = ok ? 'var(--green)' : '#c0392b';
+    msg.style.background = ok ? 'var(--gbg)' : '#fdf0f0';
+    msg.style.borderColor = ok ? 'var(--gbr)' : '#f5c6c6';
+  }
+  if(!name){ showMsg('Ingresa el nombre.', false); return; }
+  if(!email || email.indexOf('@')===-1){ showMsg('Ingresa un correo válido.', false); return; }
+  if(!currentUser || !currentUser.email){ showMsg('Esta función requiere una cuenta de administrador migrada.', false); return; }
+  btn.disabled = true;
+  btn.textContent = 'Creando…';
+  const tempPass = _genTempPassword();
+  const secondary = firebase.initializeApp(firebase.app().options, 'TeamCreate_' + Date.now());
+  secondary.auth().createUserWithEmailAndPassword(email, tempPass).then(function(cred){
+    const uid = cred.user.uid;
+    return _fbDb.ref('team/'+_CLIENT_ID+'/'+uid).set({email:email, role:role, name:name}).then(function(){
+      return secondary.auth().signOut().catch(function(){});
+    }).then(function(){
+      return firebase.auth().sendPasswordResetEmail(email).catch(function(){});
+    }).then(function(){
+      return secondary.delete().catch(function(){});
+    });
+  }).then(function(){
+    showMsg('Cuenta creada. Se envió un correo a '+email+' para que configure su contraseña.', true);
+    nameEl.value=''; emailEl.value=''; roleEl.value='ejecutivo';
+    btn.disabled = false;
+    btn.textContent = '+ Crear cuenta';
+    renderTeamPanel();
+  }).catch(function(e){
+    try{ secondary.delete(); }catch(e2){}
+    const map = {
+      'auth/email-already-in-use':'Ya existe una cuenta con ese correo.',
+      'auth/invalid-email':'Correo inválido.'
+    };
+    showMsg(map[e.code] || 'No se pudo crear la cuenta.', false);
+    btn.disabled = false;
+    btn.textContent = '+ Crear cuenta';
+  });
+}
+
 function doForgotPassword(){
   const err = document.getElementById('login-err');
   const uRaw = (document.getElementById('login-user').value||'').trim();
