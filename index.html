@@ -1344,9 +1344,9 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
       <div class="login-sub" id="login-tagline">Plataforma IA · Comercial</div>
     </div>
     <div class="login-body">
-      <div class="login-err" id="login-err">Usuario no encontrado</div>
+      <div class="login-err" id="login-err">Credenciales incorrectas</div>
       <div class="login-field">
-        <label>Usuario</label>
+        <label>Usuario o correo</label>
         <input type="text" id="login-user" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <div class="login-field">
@@ -4184,31 +4184,75 @@ function _refreshChip(){
 // Credenciales por defecto — se sobreescriben en applyConfig() con lo guardado en CONFIG
 const _AUTH={admin:'Lisit',ejecutivo:'Lisit2',superadmin:'1111'};
 function doLogin(){
-  const u=(document.getElementById('login-user').value||'').trim().toLowerCase();
-  const p=document.getElementById('login-pass').value||'';
-  const err=document.getElementById('login-err');
+  const uRaw = (document.getElementById('login-user').value||'').trim();
+  const p = document.getElementById('login-pass').value||'';
+  const err = document.getElementById('login-err');
+  const isEmail = uRaw.indexOf('@') !== -1;
+
+  if(isEmail){
+    err.style.display='none';
+    firebase.auth().signInWithEmailAndPassword(uRaw.toLowerCase(), p).then(function(cred){
+      const uid = cred.user.uid;
+      return _fbDb.ref('team/'+_CLIENT_ID+'/'+uid).once('value').then(function(snap){
+        const teamData = snap.val();
+        if(!teamData || !teamData.role){
+          err.textContent = 'Esta cuenta no tiene acceso a este cliente.';
+          err.style.display='block';
+          return firebase.auth().signOut().then(function(){ firebase.auth().signInAnonymously().catch(function(){}); });
+        }
+        const role = teamData.role;
+        const clsMap = {admin:'adm', ejecutivo:'ejc', superadmin:'sup'};
+        const roleLabelMap = {admin:'Admin', ejecutivo:'Ejecutivo', superadmin:'SuperAdmin'};
+        currentUser = {id:role, role:(roleLabelMap[role]||role), name:(teamData.name||cred.user.email), cls:(clsMap[role]||'adm'), email:cred.user.email};
+        _finishLogin(role);
+      });
+    }).catch(function(e){
+      err.textContent = _authErrMsg(e);
+      err.style.display='block';
+      document.getElementById('login-pass').value='';
+      document.getElementById('login-pass').focus();
+    });
+    return;
+  }
+
+  const u = uRaw.toLowerCase();
   if(_AUTH[u]!==undefined && _AUTH[u]===p && USERS[u]){
     err.style.display='none';
-    currentUser={id:u,...USERS[u]};
-    _refreshChip();
-    document.getElementById('user-chip').style.display='flex';
-    document.getElementById('login-screen').style.display='none';
-    const pl=document.getElementById('preloader'); if(pl) pl.remove();
-    document.getElementById('login-pass').value='';
-    // Mostrar ⚙️ y menú admin solo para admin
-    const cfgBtn=document.querySelector('.cfg-btn');
-    if(cfgBtn) cfgBtn.style.display=(u==='admin'||u==='superadmin')?'flex':'none';
-    document.body.classList.toggle('is-admin', u==='admin'||u==='superadmin');
- document.body.classList.toggle('is-superadmin', u==='superadmin');
+    currentUser = {id:u,...USERS[u]};
+    _finishLogin(u);
   } else {
+    err.textContent = 'Usuario no encontrado';
     err.style.display='block';
     document.getElementById('login-pass').value='';
     document.getElementById('login-pass').focus();
   }
 }
+function _finishLogin(u){
+  _refreshChip();
+  document.getElementById('user-chip').style.display='flex';
+  document.getElementById('login-screen').style.display='none';
+  const pl=document.getElementById('preloader'); if(pl) pl.remove();
+  document.getElementById('login-pass').value='';
+  const cfgBtn=document.querySelector('.cfg-btn');
+  if(cfgBtn) cfgBtn.style.display=(u==='admin'||u==='superadmin')?'flex':'none';
+  document.body.classList.toggle('is-admin', u==='admin'||u==='superadmin');
+  document.body.classList.toggle('is-superadmin', u==='superadmin');
+}
+function _authErrMsg(e){
+  const map = {
+    'auth/wrong-password':'Contraseña incorrecta.',
+    'auth/user-not-found':'No existe una cuenta con ese correo.',
+    'auth/invalid-email':'Correo inválido.',
+    'auth/too-many-requests':'Demasiados intentos. Intenta más tarde.',
+    'auth/invalid-credential':'Correo o contraseña incorrectos.',
+    'auth/user-disabled':'Esta cuenta está deshabilitada.'
+  };
+  return map[e.code] || 'No se pudo iniciar sesión. Verifica tus datos.';
+}
 function doLogout(e){
   if(e) e.stopPropagation();
-  currentUser=null;
+  const wasFirebaseUser = !!(currentUser && currentUser.email);
+  currentUser = null;
   document.getElementById('user-chip').style.display='none';
   document.getElementById('user-chip').classList.remove('open');
   document.getElementById('login-user').value='';
@@ -4216,7 +4260,12 @@ function doLogout(e){
   document.getElementById('login-err').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.body.classList.remove('is-admin');
+  document.body.classList.remove('is-superadmin');
+  if(wasFirebaseUser){
+    firebase.auth().signOut().then(function(){ firebase.auth().signInAnonymously().catch(function(){}); });
+  }
 }
+
 function toggleUserMenu(e){
   e.stopPropagation();
   document.getElementById('user-chip').classList.toggle('open');
