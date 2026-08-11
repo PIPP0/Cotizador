@@ -8,6 +8,7 @@
   if(p==='cliente4') window.location.replace('./concurso.html?_src=cliente4');
 
   if(!p || p===''){ window.location.replace('./landing.html'); return; }
+  try{ history.replaceState(null,'','/'+encodeURIComponent(p)+'/'); }catch(e){}
 })();
 </script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
