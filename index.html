@@ -1145,10 +1145,10 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
       <div class="cfg-sec-title"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>EQUIPO</div>
       <div id="cfg-team-list" style="margin-bottom:10px"></div>
       <div id="cfg-team-form">
-        <div class="cfg-row"><label>Nombre</label><input type="text" id="cfg-team-new-name" placeholder="Nombre completo"></div>
-        <div class="cfg-row"><label>Correo</label><input type="email" id="cfg-team-new-email" placeholder="correo@empresa.com"></div>
+        <div class="cfg-row"><label>Nombre</label><input type="text" id="cfg-team-new-name" class="cfg-inp" placeholder="Nombre completo"></div>
+        <div class="cfg-row"><label>Correo</label><input type="email" id="cfg-team-new-email" class="cfg-inp" placeholder="correo@empresa.com"></div>
         <div class="cfg-row"><label>Rol</label>
-          <select id="cfg-team-new-role">
+          <select id="cfg-team-new-role" class="cfg-inp">
             <option value="ejecutivo">Ejecutivo</option>
             <option value="admin">Admin</option>
           </select>
@@ -1795,7 +1795,7 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 <div class="card">
 <div class="card-h"><div class="ch-ic ci-t"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div><div class="card-title">Cliente</div><div class="card-sub">Selecciona un cliente para ver y administrar su equipo</div></div></div>
 <div style="padding:0 20px 18px">
-<select id="sa-client-select" onchange="saSelectClient(this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px"></select>
+<select id="sa-client-select" onchange="saSelectClient(this.value)" class="cfg-inp"></select>
 </div>
 </div>
 <div class="card" id="sa-team-card" style="display:none">
@@ -1804,16 +1804,16 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 <div style="margin-bottom:14px">
 <label style="font-size:11.5px;color:var(--t3);font-weight:600">CUPO DE CUENTAS (opcional)</label>
 <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
-<input type="number" id="sa-seat-limit" min="0" style="width:110px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px" placeholder="Sin límite">
+<input type="number" id="sa-seat-limit" min="0" class="cfg-inp" style="width:110px" placeholder="Sin límite">
 <button class="btn-sm btn-o" type="button" onclick="saSaveSeatLimit()" style="font-size:11.5px;padding:6px 12px">Guardar</button>
 </div>
 </div>
 <div id="sa-team-list" style="margin-bottom:10px"></div>
 <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:6px">
-<div class="cfg-row"><label>Nombre</label><input type="text" id="sa-new-name" placeholder="Nombre completo"></div>
-<div class="cfg-row"><label>Correo</label><input type="email" id="sa-new-email" placeholder="correo@empresa.com"></div>
+<div class="cfg-row"><label>Nombre</label><input type="text" id="sa-new-name" class="cfg-inp" placeholder="Nombre completo"></div>
+<div class="cfg-row"><label>Correo</label><input type="email" id="sa-new-email" class="cfg-inp" placeholder="correo@empresa.com"></div>
 <div class="cfg-row"><label>Rol</label>
-<select id="sa-new-role"><option value="ejecutivo">Ejecutivo</option><option value="admin">Admin</option></select>
+<select id="sa-new-role" class="cfg-inp"><option value="ejecutivo">Ejecutivo</option><option value="admin">Admin</option></select>
 </div>
 <button class="cfg-apply" type="button" onclick="saCreateTeamAccount()" id="sa-create-btn" style="margin-top:8px">+ Crear cuenta</button>
 <div id="sa-team-msg" style="display:none;margin-top:8px;font-size:12.5px;padding:8px 12px;border-radius:7px"></div>
