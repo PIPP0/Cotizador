@@ -1501,6 +1501,9 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
   <div class="sb-item superadmin-only" data-view="platform" onclick="switchView('platform')">
 <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Configuración plataforma
 </div>
+<div class="sb-item superadmin-only" data-view="usuarios" onclick="switchView('usuarios')">
+<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Usuarios
+</div>
 <div class="sb-sec">Servicios</div>
   <div id="sb-svc-list"></div>
   <div class="sb-foot"><span id="sb-since">NexClima · desde 1998</span><br><span id="sb-email">contacto@nexclima.com</span><br><span id="sb-location">Copiapó → Talca</span></div>
@@ -1781,6 +1784,41 @@ input.field-error,.cfg-inp.field-error{border-color:#e74c3c!important;box-shadow
 <div class="card">
 <div class="card-h"><div class="ch-ic ci-t"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div><div class="card-title">Funcionalidades de IA</div><div class="card-sub">Los cambios aplican de inmediato para todos los usuarios</div></div></div>
 <div id="pf-list" style="padding:4px 18px 18px"></div>
+</div>
+</div>
+
+<div class="view-panel" id="view-usuarios">
+<div style="margin-bottom:12px"><button class="btn-sm btn-o" onclick="switchView('dashboard')" style="font-size:11.5px;padding:6px 12px">← Dashboard</button></div>
+<div class="page-hdr">
+<div><div class="page-title">Usuarios <span>de la plataforma</span></div><div class="page-sub">Administra las cuentas de Admin y Ejecutivo de cualquier cliente</div></div>
+</div>
+<div class="card">
+<div class="card-h"><div class="ch-ic ci-t"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div><div class="card-title">Cliente</div><div class="card-sub">Selecciona un cliente para ver y administrar su equipo</div></div></div>
+<div style="padding:0 20px 18px">
+<select id="sa-client-select" onchange="saSelectClient(this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-size:13px"></select>
+</div>
+</div>
+<div class="card" id="sa-team-card" style="display:none">
+<div class="card-h"><div class="ch-ic ci-t"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div><div class="card-title">Equipo</div><div class="card-sub" id="sa-team-sub"></div></div></div>
+<div style="padding:0 20px 18px">
+<div style="margin-bottom:14px">
+<label style="font-size:11.5px;color:var(--t3);font-weight:600">CUPO DE CUENTAS (opcional)</label>
+<div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+<input type="number" id="sa-seat-limit" min="0" style="width:110px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px" placeholder="Sin límite">
+<button class="btn-sm btn-o" type="button" onclick="saSaveSeatLimit()" style="font-size:11.5px;padding:6px 12px">Guardar</button>
+</div>
+</div>
+<div id="sa-team-list" style="margin-bottom:10px"></div>
+<div style="border-top:1px solid var(--border);padding-top:14px;margin-top:6px">
+<div class="cfg-row"><label>Nombre</label><input type="text" id="sa-new-name" placeholder="Nombre completo"></div>
+<div class="cfg-row"><label>Correo</label><input type="email" id="sa-new-email" placeholder="correo@empresa.com"></div>
+<div class="cfg-row"><label>Rol</label>
+<select id="sa-new-role"><option value="ejecutivo">Ejecutivo</option><option value="admin">Admin</option></select>
+</div>
+<button class="cfg-apply" type="button" onclick="saCreateTeamAccount()" id="sa-create-btn" style="margin-top:8px">+ Crear cuenta</button>
+<div id="sa-team-msg" style="display:none;margin-top:8px;font-size:12.5px;padding:8px 12px;border-radius:7px"></div>
+</div>
+</div>
 </div>
 </div>
 
@@ -4216,7 +4254,13 @@ function doLogin(){
     err.style.display='none';
     firebase.auth().signInWithEmailAndPassword(uRaw.toLowerCase(), p).then(function(cred){
       const uid = cred.user.uid;
-      return _fbDb.ref('team/'+_CLIENT_ID+'/'+uid).once('value').then(function(snap){
+      return _fbDb.ref('superadmins/'+uid).once('value').then(function(saSnap){
+        if(saSnap.val() === true){
+          currentUser = {id:'superadmin', role:'SuperAdmin', name:cred.user.email, cls:'sup', email:cred.user.email};
+          _finishLogin('superadmin');
+          return;
+        }
+        return _fbDb.ref('team/'+_CLIENT_ID+'/'+uid).once('value').then(function(snap){
         const teamData = snap.val();
         if(!teamData || !teamData.role){
           err.textContent = 'Esta cuenta no tiene acceso a este cliente.';
@@ -4231,6 +4275,7 @@ function doLogin(){
         const roleLabelMap = {admin:'Admin', ejecutivo:'Ejecutivo', superadmin:'SuperAdmin'};
         currentUser = {id:role, role:(roleLabelMap[role]||role), name:(teamData.name||cred.user.email), cls:(clsMap[role]||'adm'), email:cred.user.email};
         _finishLogin(role);
+      });
       });
     }).catch(function(e){
       err.textContent = _authErrMsg(e);
@@ -4371,9 +4416,19 @@ function createTeamAccount(){
   if(!currentUser || !currentUser.email){ showMsg('Esta función requiere una cuenta de administrador migrada.', false); return; }
   btn.disabled = true;
   btn.textContent = 'Creando…';
-  const tempPass = _genTempPassword();
-  const secondary = firebase.initializeApp(firebase.app().options, 'TeamCreate_' + Date.now());
-  secondary.auth().createUserWithEmailAndPassword(email, tempPass).then(function(cred){
+  _fbDb.ref('config/'+_CLIENT_ID+'/maxSeats').once('value').then(function(seatSnap){
+    const maxSeats = seatSnap.val();
+    return _fbDb.ref('team/'+_CLIENT_ID).once('value').then(function(teamSnap){
+      const count = teamSnap.val() ? Object.keys(teamSnap.val()).length : 0;
+      if(maxSeats !== null && maxSeats !== undefined && count >= maxSeats){
+        showMsg('Se alcanzó el cupo máximo de cuentas para este cliente.', false);
+        btn.disabled = false;
+        btn.textContent = '+ Crear cuenta';
+        return;
+      }
+      const tempPass = _genTempPassword();
+      const secondary = firebase.initializeApp(firebase.app().options, 'TeamCreate_' + Date.now());
+      secondary.auth().createUserWithEmailAndPassword(email, tempPass).then(function(cred){
     const uid = cred.user.uid;
     return _fbDb.ref('team/'+_CLIENT_ID+'/'+uid).set({email:email, role:role, name:name}).then(function(){
       return secondary.auth().signOut().catch(function(){});
@@ -4398,8 +4453,175 @@ function createTeamAccount(){
     btn.disabled = false;
     btn.textContent = '+ Crear cuenta';
   });
+  });
+  });
 }
 
+
+let __saClients = [];
+let __saSelectedClient = null;
+function renderUsuariosView(){
+  const sel = document.getElementById('sa-client-select');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">Cargando clientes…</option>';
+  _fbDb.ref('config').once('value').then(function(snap){
+    const data = snap.val() || {};
+    __saClients = Object.keys(data).sort();
+    if(!__saClients.length){
+      sel.innerHTML = '<option value="">No hay clientes configurados</option>';
+      return;
+    }
+    sel.innerHTML = '<option value="">Selecciona un cliente…</option>' + __saClients.map(function(c){
+      const name = (data[c] && data[c].nameA) ? data[c].nameA : c;
+      return '<option value="'+_escHtml(c)+'">'+_escHtml(name)+' ('+_escHtml(c)+')</option>';
+    }).join('');
+    if(__saSelectedClient && __saClients.indexOf(__saSelectedClient)!==-1){
+      sel.value = __saSelectedClient;
+      saSelectClient(__saSelectedClient);
+    }
+  }).catch(function(){
+    sel.innerHTML = '<option value="">No se pudo cargar la lista de clientes</option>';
+  });
+}
+function saSelectClient(clientId){
+  __saSelectedClient = clientId || null;
+  const card = document.getElementById('sa-team-card');
+  if(!clientId){ card.style.display='none'; return; }
+  card.style.display='block';
+  document.getElementById('sa-team-sub').textContent = 'Cliente: ' + clientId;
+  const msg = document.getElementById('sa-team-msg');
+  if(msg) msg.style.display='none';
+  _fbDb.ref('config/'+clientId+'/maxSeats').once('value').then(function(snap){
+    const v = snap.val();
+    document.getElementById('sa-seat-limit').value = (v===null||v===undefined) ? '' : v;
+  });
+  saRenderTeamList();
+}
+function saSaveSeatLimit(){
+  if(!__saSelectedClient) return;
+  const val = document.getElementById('sa-seat-limit').value;
+  const n = val === '' ? null : Math.max(0, parseInt(val,10)||0);
+  _fbDb.ref('config/'+__saSelectedClient+'/maxSeats').set(n).then(function(){
+    alert('Cupo actualizado.');
+  }).catch(function(){
+    alert('No se pudo guardar el cupo.');
+  });
+}
+function saRenderTeamList(){
+  const listEl = document.getElementById('sa-team-list');
+  if(!__saSelectedClient){ if(listEl) listEl.innerHTML=''; return; }
+  listEl.innerHTML = '<div style="font-size:12.5px;color:var(--t3)">Cargando equipo…</div>';
+  const clientId = __saSelectedClient;
+  _fbDb.ref('team/'+clientId).once('value').then(function(snap){
+    if(clientId !== __saSelectedClient) return;
+    const data = snap.val() || {};
+    const uids = Object.keys(data);
+    if(!uids.length){ listEl.innerHTML = '<div style="font-size:12.5px;color:var(--t3)">Aún no hay cuentas de equipo para este cliente.</div>'; return; }
+    const roleLabelMap = {admin:'Admin', ejecutivo:'Ejecutivo', superadmin:'SuperAdmin'};
+    listEl.innerHTML = uids.map(function(uid){
+      const m = data[uid] || {};
+      const roleLabel = roleLabelMap[m.role] || m.role || '';
+      return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">'
+        + '<div style="min-width:0"><div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_escHtml(m.name||m.email||uid)+'</div>'
+        + '<div style="font-size:11.5px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+_escHtml(m.email||'')+'</div></div>'
+        + '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'
+        + '<select onchange="saChangeTeamRole(\''+uid+'\', this.value)" style="font-size:11.5px;padding:3px 6px;border-radius:5px;border:1px solid var(--border)">'
+        + '<option value="ejecutivo"'+(m.role==='ejecutivo'?' selected':'')+'>Ejecutivo</option>'
+        + '<option value="admin"'+(m.role==='admin'?' selected':'')+'>Admin</option>'
+        + '</select>'
+        + ' <button type="button" onclick="saDeleteTeamMember(\''+uid+'\')" style="border:none;background:none;color:#c0392b;cursor:pointer;font-size:11.5px">Quitar</button>'
+        + '</div></div>';
+    }).join('');
+  }).catch(function(){
+    listEl.innerHTML = '<div style="font-size:12.5px;color:#c0392b">No se pudo cargar el equipo.</div>';
+  });
+}
+function saChangeTeamRole(uid, role){
+  if(!__saSelectedClient) return;
+  _fbDb.ref('team/'+__saSelectedClient+'/'+uid+'/role').set(role).then(function(){
+    saRenderTeamList();
+  }).catch(function(){
+    alert('No se pudo actualizar el rol.');
+    saRenderTeamList();
+  });
+}
+function saDeleteTeamMember(uid){
+  if(!__saSelectedClient) return;
+  const clientId = __saSelectedClient;
+  if(!confirm('¿Quitar a este usuario del equipo de '+clientId+'? Ya no podrá iniciar sesión con esta cuenta en este cliente.')) return;
+  _fbDb.ref('team/'+clientId+'/'+uid).remove().then(function(){
+    saRenderTeamList();
+  }).catch(function(){
+    alert('No se pudo quitar al usuario.');
+  });
+}
+function saCreateTeamAccount(){
+  const msg = document.getElementById('sa-team-msg');
+  const nameEl = document.getElementById('sa-new-name');
+  const emailEl = document.getElementById('sa-new-email');
+  const roleEl = document.getElementById('sa-new-role');
+  const btn = document.getElementById('sa-create-btn');
+  const name = (nameEl.value||'').trim();
+  const email = (emailEl.value||'').trim().toLowerCase();
+  const role = roleEl.value;
+  function showMsg(text, ok){
+    msg.textContent = text;
+    msg.style.display = 'block';
+    msg.style.border = '1px solid';
+    msg.style.color = ok ? 'var(--green)' : '#c0392b';
+    msg.style.background = ok ? 'var(--gbg)' : '#fdf0f0';
+    msg.style.borderColor = ok ? 'var(--gbr)' : '#f5c6c6';
+  }
+  if(!__saSelectedClient){ showMsg('Selecciona un cliente primero.', false); return; }
+  if(!name){ showMsg('Ingresa el nombre.', false); return; }
+  if(!email || email.indexOf('@')===-1){ showMsg('Ingresa un correo válido.', false); return; }
+  const clientId = __saSelectedClient;
+  btn.disabled = true;
+  btn.textContent = 'Creando…';
+  _fbDb.ref('config/'+clientId+'/maxSeats').once('value').then(function(seatSnap){
+    const maxSeats = seatSnap.val();
+    return _fbDb.ref('team/'+clientId).once('value').then(function(teamSnap){
+      const count = teamSnap.val() ? Object.keys(teamSnap.val()).length : 0;
+      if(maxSeats !== null && maxSeats !== undefined && count >= maxSeats){
+        showMsg('Se alcanzó el cupo máximo de cuentas para este cliente.', false);
+        btn.disabled = false;
+        btn.textContent = '+ Crear cuenta';
+        return;
+      }
+      const tempPass = _genTempPassword();
+      const secondary = firebase.initializeApp(firebase.app().options, 'SaTeamCreate_' + Date.now());
+      return secondary.auth().createUserWithEmailAndPassword(email, tempPass).then(function(cred){
+        const uid = cred.user.uid;
+        return _fbDb.ref('team/'+clientId+'/'+uid).set({email:email, role:role, name:name}).then(function(){
+          return secondary.auth().signOut().catch(function(){});
+        }).then(function(){
+          return firebase.auth().sendPasswordResetEmail(email).catch(function(){});
+        }).then(function(){
+          return secondary.delete().catch(function(){});
+        });
+      }).then(function(){
+        showMsg('Cuenta creada en '+clientId+'. Se envió un correo a '+email+' para que configure su contraseña.', true);
+        nameEl.value=''; emailEl.value=''; roleEl.value='ejecutivo';
+        btn.disabled = false;
+        btn.textContent = '+ Crear cuenta';
+        if(clientId === __saSelectedClient) saRenderTeamList();
+      }).catch(function(e){
+        try{ secondary.delete(); }catch(e2){}
+        const map = {
+          'auth/email-already-in-use':'Ya existe una cuenta con ese correo.',
+          'auth/invalid-email':'Correo inválido.'
+        };
+        showMsg(map[e.code] || 'No se pudo crear la cuenta.', false);
+        btn.disabled = false;
+        btn.textContent = '+ Crear cuenta';
+      });
+    });
+  }).catch(function(){
+    showMsg('No se pudo verificar el cupo de cuentas.', false);
+    btn.disabled = false;
+    btn.textContent = '+ Crear cuenta';
+  });
+}
 function doForgotPassword(){
   const err = document.getElementById('login-err');
   const uRaw = (document.getElementById('login-user').value||'').trim();
@@ -4680,6 +4902,7 @@ function switchView(v){
   if(v==='clientes') renderClients();
   if(v==='informes') renderInformesView();
 if(v==='platform') renderPlatformConfig();
+  if(v==='usuarios') renderUsuariosView();
   if(v==='edicion') renderEdicion();
   if(v==='conv') renderConvView();
   if(v==='cotizador'){ _cotStartTime=Date.now(); _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
