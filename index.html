@@ -2344,7 +2344,7 @@ const _selfScript = document.currentScript;
 // ══════════════════════════════════════════════════
 //  MULTI-TENANT — cliente por URL (?c=nombre)
 // ══════════════════════════════════════════════════
-const _CLIENT_ID    = (new URLSearchParams(window.location.search).get('c') || (location.hostname === 'cotizadia.cl' ? 'nexenergy' : 'default')).toLowerCase().replace(/[^a-z0-9_-]/g,'');
+const _CLIENT_ID    = (function(){ var q=new URLSearchParams(window.location.search).get('c'); if(q) return q; var seg=(window.location.pathname.split('/').filter(Boolean)[0]||''); if(seg) return seg; return (location.hostname === 'cotizadia.cl' ? 'nexenergy' : 'default'); })().toLowerCase().replace(/[^a-z0-9_-]/g,'');
 const _spcKey       = 'spc_'      + _CLIENT_ID;
 const _spcLogoKey   = 'spc_logo_' + _CLIENT_ID;
 const _spcLlmKey    = 'spc_llmkey_' + _CLIENT_ID; // clave separada — nunca sobrescrita por Firebase
