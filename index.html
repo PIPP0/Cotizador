@@ -17,6 +17,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <style>
 :root{
   --dark:#252530;--teal:#8C5BB3;--teal2:#7a4d97;--teal-rgb:140,91,179;--orange:#d46e3a;
@@ -3942,6 +3943,7 @@ function initFirebase() {
   try {
     firebase.initializeApp(FIREBASE_CFG);
     _fbDb = firebase.database();
+    firebase.auth().signInAnonymously().catch(function(e){ console.error('[Firebase Auth]', e); });
     console.log('[Firebase] conectado');
   } catch(e) { console.warn('[Firebase] init error:', e); }
 }
