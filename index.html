@@ -4466,7 +4466,7 @@ function renderUsuariosView(){
   sel.innerHTML = '<option value="">Cargando clientes…</option>';
   _fbDb.ref('config').once('value').then(function(snap){
     const data = snap.val() || {};
-    __saClients = Object.keys(data).sort();
+    __saClients = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion;}).sort();
     if(!__saClients.length){
       sel.innerHTML = '<option value="">No hay clientes configurados</option>';
       return;
