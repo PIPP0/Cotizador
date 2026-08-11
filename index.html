@@ -141,6 +141,7 @@ body.has-logo #login-logo-img{display:block!important}
 body.is-admin .admin-only{display:flex!important}
 .superadmin-only{display:none!important}
 body.is-superadmin .superadmin-only{display:flex!important}
+body.is-platform-admin .sb-item[data-view="dashboard"],body.is-platform-admin .sb-item[data-view="cotizador"],body.is-platform-admin .sb-item[data-view="cotizaciones"],body.is-platform-admin .sb-item[data-view="clientes"],body.is-platform-admin .sb-item[data-view="informes"],body.is-platform-admin .sb-item[data-view="motor"],body.is-platform-admin .sb-item[data-view="sgclima"],body.is-platform-admin .sb-item[data-view="edicion"],body.is-platform-admin .sb-item[data-view="conv"],body.is-platform-admin .mn-item[data-view="dashboard"],body.is-platform-admin .mn-item[data-view="cotizador"],body.is-platform-admin .mn-item[data-view="cotizaciones"],body.is-platform-admin .mn-item[data-view="clientes"],body.is-platform-admin .mn-item[data-view="informes"],body.is-platform-admin .mn-item[data-view="motor"],body.is-platform-admin .mn-item[data-view="sgclima"],body.is-platform-admin .mn-item[data-view="edicion"],body.is-platform-admin .mn-item[data-view="conv"],body.is-platform-admin #sb-svc-list,body.is-platform-admin #sb-sec-servicios,body.is-platform-admin .sb-foot{display:none!important}
 .pf-hidden{display:none!important}
 .sb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .sb-foot{margin-top:auto;padding:14px 18px;font-size:10px;color:rgba(255,255,255,.22);line-height:1.7}
@@ -1505,7 +1506,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 <div class="sb-item superadmin-only" data-view="usuarios" onclick="switchView('usuarios')">
 <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Usuarios
 </div>
-<div class="sb-sec">Servicios</div>
+<div class="sb-sec" id="sb-sec-servicios">Servicios</div>
   <div id="sb-svc-list"></div>
   <div class="sb-foot"><span id="sb-since">NexClima · desde 1998</span><br><span id="sb-email">contacto@nexclima.com</span><br><span id="sb-location">Copiapó → Talca</span></div>
 </aside>
@@ -2553,6 +2554,20 @@ if(_CLIENT_ID === 'nexenergy'){
 }
 // ─────────────────────────────────────────────────────────────────────────────
 let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+
+if(_CLIENT_ID === 'admin'){
+  CONFIG.nameA = 'Cotizadía';
+  CONFIG.nameB = '';
+  CONFIG.tagline = 'Panel de administración';
+  CONFIG.module = 'Panel de administración';
+  CONFIG.dashsub = 'Gestión de clientes y usuarios de la plataforma';
+  CONFIG.since = 'Cotizadía';
+  CONFIG.email = '';
+  CONFIG.location = '';
+  CONFIG.colors = {teal:'2D3250', orange:'7C77B9', dark:'14142B'};
+  document.body.classList.add('is-platform-admin');
+  try{ var _sbSec = document.querySelector('.sb-sec'); if(_sbSec) _sbSec.textContent = 'Plataforma'; }catch(e){}
+}
 
 // ─── Restauración INMEDIATA de colores + logo desde localStorage ────
 (function() {
@@ -4259,6 +4274,7 @@ function doLogin(){
         if(saSnap.val() === true){
           currentUser = {id:'superadmin', role:'SuperAdmin', name:cred.user.email, cls:'sup', email:cred.user.email};
           _finishLogin('superadmin');
+          if(_CLIENT_ID==='admin'){ switchView('usuarios'); }
           return;
         }
         return _fbDb.ref('team/'+_CLIENT_ID+'/'+uid).once('value').then(function(snap){
