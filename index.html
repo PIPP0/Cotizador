@@ -4060,11 +4060,23 @@ function _exitAdminImpersonation(){
   } catch(e){ console.error('_exitAdminImpersonation render error:', e); }
   switchView('tenants');
 }
-function closeCfgPanel(e) {
-  if (e && e.target !== document.getElementById('cfgOverlay')) return;
+function _reallyCloseCfgPanel() {
   document.getElementById('cfgOverlay').classList.remove('open');
   document.body.style.overflow = '';
+  _cfgDirty = false;
   if(_ADMIN_EDIT_TARGET){ _exitAdminImpersonation(); }
+}
+function closeCfgPanel(e) {
+  if (e && e.target !== document.getElementById('cfgOverlay')) return;
+  if (_cfgDirty) {
+    _confirm(
+      'Hiciste cambios (colores, logo u otros) que aún no se han guardado. Si cierras ahora se perderán.',
+      _reallyCloseCfgPanel,
+      { title: 'Cambios sin guardar', okLabel: 'Descartar cambios' }
+    );
+    return;
+  }
+  _reallyCloseCfgPanel();
 }
 // ─── Persistencia localStorage ───────────────────────────────────────
 // ─── FIREBASE ────────────────────────────────────────────────────────────────
