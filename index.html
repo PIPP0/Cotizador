@@ -4064,7 +4064,7 @@ function saveConfigToStorage() {
       nameA: CONFIG.nameA, nameB: CONFIG.nameB, module: CONFIG.module,
       tagline: CONFIG.tagline, dashsub: CONFIG.dashsub, email: CONFIG.email,
       location: CONFIG.location, since: CONFIG.since,
-      colors: CONFIG.colors, users: CONFIG.users, features: CONFIG.features,
+      colors: CONFIG.colors, users: CONFIG.users, features: CONFIG.features || null,
       services: CONFIG.services, segments: CONFIG.segments,
       sidebarServices: CONFIG.sidebarServices, systemTypes: CONFIG.systemTypes,
       clientFields: CONFIG.clientFields,
