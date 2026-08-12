@@ -4106,7 +4106,7 @@ function saveConfigToStorage() {
       } else { throw qe; }
     }
     // Guardar en Firebase (sincroniza con todos los dispositivos)
-    if (_fbDb) {
+    if (_fbDb && (_ADMIN_EDIT_TARGET || _CLIENT_ID !== 'admin')) {
       return _fbDb.ref('config/' + (_ADMIN_EDIT_TARGET || _CLIENT_ID)).set(slim).catch(e => console.warn('[Firebase] save error:', e));
     }
   } catch(e) { console.warn('[CFG] save error:', e); }
@@ -4531,7 +4531,7 @@ function renderUsuariosView(){
   sel.innerHTML = '<option value="">Cargando clientes…</option>';
   _fbDb.ref('config').once('value').then(function(snap){
     const data = snap.val() || {};
-    __saClients = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion && c!=='_template';}).sort();
+    __saClients = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion && c!=='_template' && c!=='admin';}).sort();
     if(!__saClients.length){
       sel.innerHTML = '<option value="">No hay clientes configurados</option>';
       return;
@@ -4581,7 +4581,7 @@ function renderTenantsView(){
   const _avColors = ['var(--teal)','var(--orange)','var(--gold)','var(--green)','var(--blueg)'];
   _fbDb.ref('config').once('value').then(function(snap){
     const data = snap.val() || {};
-    let ids = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion && c!=='_template';}).sort();
+    let ids = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion && c!=='_template' && c!=='admin';}).sort();
     if(q){ ids = ids.filter(function(id){ var nm=(data[id].nameA||'').toLowerCase(); return nm.indexOf(q)!==-1 || id.toLowerCase().indexOf(q)!==-1; }); }
     if(!ids.length){ el.innerHTML = '<div style="padding:14px 16px;font-size:12.5px;color:var(--t3)">'+(q?'Sin resultados para tu búsqueda.':'Aún no hay clientes creados.')+'</div>'; renderPlatformStats(); return; }
     el.innerHTML = ids.map(function(id, i){
@@ -4626,7 +4626,7 @@ function renderPlatformStats(){
   if(_CLIENT_ID!=='admin') return;
   _fbDb.ref('config').once('value').then(function(snap){
     var data = snap.val() || {};
-    var ids = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion && c!=='_template';});
+    var ids = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion && c!=='_template' && c!=='admin';});
     var elc = document.getElementById('tb-pf-clients'); if(elc) elc.textContent = ids.length;
     var elu = document.getElementById('tb-pf-users');
     if(!ids.length){ if(elu) elu.textContent = '0'; return; }
