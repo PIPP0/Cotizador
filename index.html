@@ -2600,6 +2600,7 @@ if(_CLIENT_ID === 'nexenergy'){
 // ─────────────────────────────────────────────────────────────────────────────
 let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 let _ADMIN_EDIT_TARGET = null;
+let _ADMIN_EDIT_PREV_CONFIG = null;
 
 if(_CLIENT_ID === 'admin'){
   CONFIG.nameA = 'Cotizadía';
@@ -4046,11 +4047,24 @@ function resetApplyBtn() {
   btn.textContent = 'Guardar y aplicar';
   btn.classList.remove('saved');
 }
+function _exitAdminImpersonation(){
+  document.body.classList.remove('is-admin-impersonate');
+  _ADMIN_EDIT_TARGET = null;
+  if(_ADMIN_EDIT_PREV_CONFIG){ CONFIG = _ADMIN_EDIT_PREV_CONFIG; _ADMIN_EDIT_PREV_CONFIG = null; }
+  try {
+    applyConfig();
+    rebuildSvcList();
+    rebuildSegList();
+    rebuildSbSvcList();
+    renderAll();
+  } catch(e){ console.error('_exitAdminImpersonation render error:', e); }
+  switchView('tenants');
+}
 function closeCfgPanel(e) {
   if (e && e.target !== document.getElementById('cfgOverlay')) return;
   document.getElementById('cfgOverlay').classList.remove('open');
   document.body.style.overflow = '';
-  if(_ADMIN_EDIT_TARGET){ document.body.classList.remove('is-admin-impersonate'); location.reload(); }
+  if(_ADMIN_EDIT_TARGET){ _exitAdminImpersonation(); }
 }
 // ─── Persistencia localStorage ───────────────────────────────────────
 // ─── FIREBASE ────────────────────────────────────────────────────────────────
@@ -4262,7 +4276,7 @@ function saveCfgPanel() {
   // Siempre cerrar panel y mostrar confirmación
   document.getElementById('cfgOverlay').classList.remove('open');
   document.body.style.overflow = '';
-  if(_ADMIN_EDIT_TARGET){ document.body.classList.remove('is-admin-impersonate'); toast('Cliente actualizado','green'); Promise.resolve(_cfgSaveP).catch(function(){}).then(function(){ setTimeout(function(){location.reload();}, 300); }); } else { setTimeout(showSaveConfirm, 200); }
+  if(_ADMIN_EDIT_TARGET){ toast('Cliente actualizado','green'); Promise.resolve(_cfgSaveP).catch(function(){}).then(function(){ setTimeout(function(){ _exitAdminImpersonation(); }, 300); }); } else { setTimeout(showSaveConfirm, 200); }
 }
 function resetConfig() {
   _confirm(
@@ -4680,6 +4694,7 @@ function adminEditClient(clientId){
   _fbDb.ref('config/'+clientId).once('value').then(function(snap){
     const r = snap.val() || {};
     _ADMIN_EDIT_TARGET = clientId;
+    _ADMIN_EDIT_PREV_CONFIG = JSON.parse(JSON.stringify(CONFIG));
     document.body.classList.add('is-admin-impersonate');
     CONFIG = Object.assign(JSON.parse(JSON.stringify(DEFAULT_CONFIG)), r);
     try {
