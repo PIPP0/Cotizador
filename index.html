@@ -4031,7 +4031,7 @@ function closeCfgPanel(e) {
   if (e && e.target !== document.getElementById('cfgOverlay')) return;
   document.getElementById('cfgOverlay').classList.remove('open');
   document.body.style.overflow = '';
-  if(_ADMIN_EDIT_TARGET){ _ADMIN_EDIT_TARGET=null; document.body.classList.remove('is-admin-impersonate'); location.reload(); }
+  if(_ADMIN_EDIT_TARGET){ document.body.classList.remove('is-admin-impersonate'); location.reload(); }
 }
 // ─── Persistencia localStorage ───────────────────────────────────────
 // ─── FIREBASE ────────────────────────────────────────────────────────────────
@@ -4243,7 +4243,7 @@ function saveCfgPanel() {
   // Siempre cerrar panel y mostrar confirmación
   document.getElementById('cfgOverlay').classList.remove('open');
   document.body.style.overflow = '';
-  if(_ADMIN_EDIT_TARGET){ _ADMIN_EDIT_TARGET=null; document.body.classList.remove('is-admin-impersonate'); toast('Cliente actualizado','green'); setTimeout(function(){location.reload();}, 700); } else { setTimeout(showSaveConfirm, 200); }
+  if(_ADMIN_EDIT_TARGET){ document.body.classList.remove('is-admin-impersonate'); toast('Cliente actualizado','green'); setTimeout(function(){location.reload();}, 700); } else { setTimeout(showSaveConfirm, 200); }
 }
 function resetConfig() {
   _confirm(
