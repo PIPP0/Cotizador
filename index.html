@@ -4091,8 +4091,10 @@ function initFirebase() {
 
 function saveConfigToStorage() {
   try {
-    if (CONFIG.logoSrc) { localStorage.setItem(_spcLogoKey, CONFIG.logoSrc); }
-    else { localStorage.removeItem(_spcLogoKey); }
+    if (_ADMIN_EDIT_TARGET || _CLIENT_ID !== 'admin') {
+      if (CONFIG.logoSrc) { localStorage.setItem(_spcLogoKey, CONFIG.logoSrc); }
+      else { localStorage.removeItem(_spcLogoKey); }
+    }
     const slim = {
       nameA: CONFIG.nameA, nameB: CONFIG.nameB, module: CONFIG.module,
       tagline: CONFIG.tagline, dashsub: CONFIG.dashsub, email: CONFIG.email,
@@ -4111,9 +4113,9 @@ function saveConfigToStorage() {
       convOverride: CONFIG.convOverride
     };
     try {
-      if(!_ADMIN_EDIT_TARGET) localStorage.setItem(_spcKey,JSON.stringify(slim));
+      if(!_ADMIN_EDIT_TARGET && _CLIENT_ID !== 'admin') localStorage.setItem(_spcKey,JSON.stringify(slim));
       // API key en clave dedicada — nunca sobrescrita por Firebase ni por resetConfig
-      if (!_ADMIN_EDIT_TARGET && CONFIG.llm && CONFIG.llm.apiKey) localStorage.setItem(_spcLlmKey, CONFIG.llm.apiKey);
+      if ((!_ADMIN_EDIT_TARGET && _CLIENT_ID !== 'admin') && CONFIG.llm && CONFIG.llm.apiKey) localStorage.setItem(_spcLlmKey, CONFIG.llm.apiKey);
     } catch(qe) {
       if (qe.name === 'QuotaExceededError' || qe.code === 22) {
         toast('Almacenamiento lleno — algunos cambios no se guardaron localmente', 'warn');
