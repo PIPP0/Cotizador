@@ -141,6 +141,7 @@ body.has-logo #login-logo-img{display:block!important}
 body.is-admin .admin-only{display:flex!important}
 .superadmin-only{display:none!important}
 body.is-superadmin .superadmin-only{display:flex!important}
+body.is-admin-impersonate #cfg-team-sec{display:none!important}
 body.is-platform-admin .sb-item[data-view="dashboard"],body.is-platform-admin .sb-item[data-view="cotizador"],body.is-platform-admin .sb-item[data-view="cotizaciones"],body.is-platform-admin .sb-item[data-view="clientes"],body.is-platform-admin .sb-item[data-view="informes"],body.is-platform-admin .sb-item[data-view="motor"],body.is-platform-admin .sb-item[data-view="sgclima"],body.is-platform-admin .sb-item[data-view="edicion"],body.is-platform-admin .sb-item[data-view="conv"],body.is-platform-admin .mn-item[data-view="dashboard"],body.is-platform-admin .mn-item[data-view="cotizador"],body.is-platform-admin .mn-item[data-view="cotizaciones"],body.is-platform-admin .mn-item[data-view="clientes"],body.is-platform-admin .mn-item[data-view="informes"],body.is-platform-admin .mn-item[data-view="motor"],body.is-platform-admin .mn-item[data-view="sgclima"],body.is-platform-admin .mn-item[data-view="edicion"],body.is-platform-admin .mn-item[data-view="conv"],body.is-platform-admin #sb-svc-list,body.is-platform-admin #sb-sec-servicios,body.is-platform-admin .sb-foot{display:none!important}
 .pf-hidden{display:none!important}
 .sb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
@@ -1506,6 +1507,9 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 <div class="sb-item superadmin-only" data-view="usuarios" onclick="switchView('usuarios')">
 <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Usuarios
 </div>
+<div class="sb-item superadmin-only" data-view="tenants" onclick="switchView('tenants')">
+<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>Clientes
+</div>
 <div class="sb-sec" id="sb-sec-servicios">Servicios</div>
   <div id="sb-svc-list"></div>
   <div class="sb-foot"><span id="sb-since">NexClima · desde 1998</span><br><span id="sb-email">contacto@nexclima.com</span><br><span id="sb-location">Copiapó → Talca</span></div>
@@ -1821,6 +1825,28 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 <div id="sa-team-msg" style="display:none;margin-top:8px;font-size:12.5px;padding:8px 12px;border-radius:7px"></div>
 </div>
 </div>
+</div>
+</div>
+
+<div class="view-panel" id="view-tenants">
+<div style="margin-bottom:12px"><button class="btn-sm btn-o" onclick="switchView('dashboard')" style="font-size:11.5px;padding:6px 12px">← Dashboard</button></div>
+<div class="page-hdr">
+<div><div class="page-title">Clientes <span>de la plataforma</span></div><div class="page-sub">Crea nuevos clientes y edita la configuración completa de cada uno</div></div>
+</div>
+<div class="card" style="margin-bottom:16px">
+<div class="card-h"><div class="ch-ic ci-t"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div><div><div class="card-title">Nuevo cliente</div><div class="card-sub">Se crea a partir de la plantilla base; luego puedes editarlo por completo</div></div></div>
+<div style="padding:0 20px 18px">
+<div class="cfg-row"><label>ID del cliente (para la URL, sin espacios)</label><input type="text" id="at-new-id" class="cfg-inp" placeholder="ej: clientex"></div>
+<div class="cfg-row"><label>Nombre</label><input type="text" id="at-new-name" class="cfg-inp" placeholder="Nombre visible del cliente"></div>
+<button class="cfg-apply" type="button" onclick="adminCreateClient()" id="at-create-btn" style="margin-top:8px">+ Crear cliente</button>
+<div id="at-create-msg" style="display:none;margin-top:8px;font-size:12.5px;padding:8px 12px;border-radius:7px"></div>
+</div>
+</div>
+<div class="card">
+<div class="card-h"><div class="ch-ic ci-t"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div><div><div class="card-title">Clientes existentes</div><div class="card-sub">Haz clic en Editar para abrir su configuración completa</div></div>
+<div class="card-act" onclick="adminEditTemplate()">Editar plantilla</div>
+</div>
+<div id="at-client-list" style="padding:6px 0"></div>
 </div>
 </div>
 
@@ -2554,6 +2580,7 @@ if(_CLIENT_ID === 'nexenergy'){
 }
 // ─────────────────────────────────────────────────────────────────────────────
 let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+let _ADMIN_EDIT_TARGET = null;
 
 if(_CLIENT_ID === 'admin'){
   CONFIG.nameA = 'Cotizadía';
@@ -4004,6 +4031,7 @@ function closeCfgPanel(e) {
   if (e && e.target !== document.getElementById('cfgOverlay')) return;
   document.getElementById('cfgOverlay').classList.remove('open');
   document.body.style.overflow = '';
+  if(_ADMIN_EDIT_TARGET){ _ADMIN_EDIT_TARGET=null; document.body.classList.remove('is-admin-impersonate'); location.reload(); }
 }
 // ─── Persistencia localStorage ───────────────────────────────────────
 // ─── FIREBASE ────────────────────────────────────────────────────────────────
@@ -4050,9 +4078,9 @@ function saveConfigToStorage() {
       convOverride: CONFIG.convOverride
     };
     try {
-      localStorage.setItem(_spcKey,JSON.stringify(slim));
+      if(!_ADMIN_EDIT_TARGET) localStorage.setItem(_spcKey,JSON.stringify(slim));
       // API key en clave dedicada — nunca sobrescrita por Firebase ni por resetConfig
-      if (CONFIG.llm && CONFIG.llm.apiKey) localStorage.setItem(_spcLlmKey, CONFIG.llm.apiKey);
+      if (!_ADMIN_EDIT_TARGET && CONFIG.llm && CONFIG.llm.apiKey) localStorage.setItem(_spcLlmKey, CONFIG.llm.apiKey);
     } catch(qe) {
       if (qe.name === 'QuotaExceededError' || qe.code === 22) {
         toast('Almacenamiento lleno — algunos cambios no se guardaron localmente', 'warn');
@@ -4060,7 +4088,7 @@ function saveConfigToStorage() {
     }
     // Guardar en Firebase (sincroniza con todos los dispositivos)
     if (_fbDb) {
-      _fbDb.ref('config/' + _CLIENT_ID).set(slim).catch(e => console.warn('[Firebase] save error:', e));
+      _fbDb.ref('config/' + (_ADMIN_EDIT_TARGET || _CLIENT_ID)).set(slim).catch(e => console.warn('[Firebase] save error:', e));
     }
   } catch(e) { console.warn('[CFG] save error:', e); }
 }
@@ -4215,7 +4243,7 @@ function saveCfgPanel() {
   // Siempre cerrar panel y mostrar confirmación
   document.getElementById('cfgOverlay').classList.remove('open');
   document.body.style.overflow = '';
-  setTimeout(showSaveConfirm, 200);
+  if(_ADMIN_EDIT_TARGET){ _ADMIN_EDIT_TARGET=null; document.body.classList.remove('is-admin-impersonate'); toast('Cliente actualizado','green'); setTimeout(function(){location.reload();}, 700); } else { setTimeout(showSaveConfirm, 200); }
 }
 function resetConfig() {
   _confirm(
@@ -4484,7 +4512,7 @@ function renderUsuariosView(){
   sel.innerHTML = '<option value="">Cargando clientes…</option>';
   _fbDb.ref('config').once('value').then(function(snap){
     const data = snap.val() || {};
-    __saClients = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion;}).sort();
+    __saClients = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion && c!=='_template';}).sort();
     if(!__saClients.length){
       sel.innerHTML = '<option value="">No hay clientes configurados</option>';
       return;
@@ -4525,6 +4553,77 @@ function saSaveSeatLimit(){
     alert('No se pudo guardar el cupo.');
   });
 }
+function renderTenantsView(){
+  const el = document.getElementById('at-client-list');
+  if(!el) return;
+  el.innerHTML = '<div style="padding:14px 16px;font-size:12.5px;color:var(--t3)">Cargando clientes…</div>';
+  _fbDb.ref('config').once('value').then(function(snap){
+    const data = snap.val() || {};
+    const ids = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion && c!=='_template';}).sort();
+    if(!ids.length){ el.innerHTML = '<div style="padding:14px 16px;font-size:12.5px;color:var(--t3)">Aún no hay clientes creados.</div>'; return; }
+    el.innerHTML = ids.map(function(id){
+      var name = data[id].nameA || id;
+      return '<div class="client-row" style="cursor:default">'+
+        '<div class="client-av" style="background:var(--teal)">'+_escHtml(name.charAt(0).toUpperCase())+'</div>'+
+        '<div><div class="client-name">'+_escHtml(name)+'</div><div class="client-seg">'+_escHtml(id)+'</div></div>'+
+        '<div class="client-val"><button class="row-btn" onclick="adminEditClient(\''+id+'\')">Editar</button></div>'+
+      '</div>';
+    }).join('');
+  }).catch(function(){
+    el.innerHTML = '<div style="padding:14px 16px;font-size:12.5px;color:var(--red)">No se pudo cargar la lista de clientes.</div>';
+  });
+}
+function adminCreateClient(){
+  const idEl = document.getElementById('at-new-id');
+  const nameEl = document.getElementById('at-new-name');
+  const msg = document.getElementById('at-create-msg');
+  const btn = document.getElementById('at-create-btn');
+  function showMsg(text, ok){
+    msg.textContent = text; msg.style.display='block';
+    msg.style.border = '1px solid'; msg.style.borderColor = ok ? 'var(--gbr)' : '#f5b3b3';
+    msg.style.color = ok ? 'var(--green)' : 'var(--red)'; msg.style.background = ok ? 'var(--gbg)' : 'var(--rbg)';
+  }
+  const rawId = (idEl.value||'').trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');
+  const name = (nameEl.value||'').trim();
+  if(!rawId || rawId.length<2){ showMsg('Ingresa un ID válido (mínimo 2 caracteres, sin espacios).', false); return; }
+  if(rawId==='admin' || rawId==='_template' || rawId==='default'){ showMsg('Ese ID está reservado, usa otro.', false); return; }
+  if(!name){ showMsg('Ingresa un nombre para el cliente.', false); return; }
+  btn.disabled = true; btn.textContent = 'Creando…';
+  _fbDb.ref('config/'+rawId).once('value').then(function(snap){
+    if(snap.val()){ var err = new Error('exists'); err.code='exists'; throw err; }
+    return _fbDb.ref('config/_template').once('value');
+  }).then(function(tplSnap){
+    const base = tplSnap.val() || DEFAULT_CONFIG;
+    const nc = JSON.parse(JSON.stringify(base));
+    nc.nameA = name; nc.nameB = '';
+    return _fbDb.ref('config/'+rawId).set(nc);
+  }).then(function(){
+    showMsg('Cliente creado. Ya puedes editarlo o crear cuentas en Usuarios.', true);
+    idEl.value=''; nameEl.value='';
+    renderTenantsView();
+  }).catch(function(e){
+    if(e && e.code==='exists'){ showMsg('Ya existe un cliente con ese ID.', false); }
+    else { showMsg('No se pudo crear el cliente.', false); }
+  }).then(function(){
+    btn.disabled = false; btn.textContent = '+ Crear cliente';
+  });
+}
+function adminEditClient(clientId){
+  _fbDb.ref('config/'+clientId).once('value').then(function(snap){
+    const r = snap.val() || {};
+    _ADMIN_EDIT_TARGET = clientId;
+    document.body.classList.add('is-admin-impersonate');
+    CONFIG = Object.assign(JSON.parse(JSON.stringify(DEFAULT_CONFIG)), r);
+    try {
+      applyConfig();
+      rebuildSvcList();
+      rebuildSegList();
+      rebuildSbSvcList();
+    } catch(e){ console.error('adminEditClient render error:', e); }
+    openCfgPanel();
+  }).catch(function(){ alert('No se pudo cargar la configuración de este cliente.'); });
+}
+function adminEditTemplate(){ adminEditClient('_template'); }
 function saRenderTeamList(){
   const listEl = document.getElementById('sa-team-list');
   if(!__saSelectedClient){ if(listEl) listEl.innerHTML=''; return; }
@@ -4921,6 +5020,7 @@ function switchView(v){
   if(v==='informes') renderInformesView();
 if(v==='platform') renderPlatformConfig();
   if(v==='usuarios') renderUsuariosView();
+  if(v==='tenants') renderTenantsView();
   if(v==='edicion') renderEdicion();
   if(v==='conv') renderConvView();
   if(v==='cotizador'){ _cotStartTime=Date.now(); _resetCotizador(); [1,2,3,4].forEach(n=>setNav(n,n===1?'active':null)); cShow(1); }
