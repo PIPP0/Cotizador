@@ -4088,7 +4088,7 @@ function saveConfigToStorage() {
     }
     // Guardar en Firebase (sincroniza con todos los dispositivos)
     if (_fbDb) {
-      _fbDb.ref('config/' + (_ADMIN_EDIT_TARGET || _CLIENT_ID)).set(slim).catch(e => console.warn('[Firebase] save error:', e));
+      return _fbDb.ref('config/' + (_ADMIN_EDIT_TARGET || _CLIENT_ID)).set(slim).catch(e => console.warn('[Firebase] save error:', e));
     }
   } catch(e) { console.warn('[CFG] save error:', e); }
 }
@@ -4230,7 +4230,7 @@ function saveCfgPanel() {
     if (_c.orange) { _r.setProperty('--orange','#'+_c.orange); _r.setProperty('--nx-orange','#'+_c.orange); }
     if (_c.dark)   { _r.setProperty('--dark','#'+_c.dark); _r.setProperty('--nx-dark','#'+_c.dark); }
   })();
-  saveConfigToStorage();
+  var _cfgSaveP = saveConfigToStorage();
   try {
     applyConfig();
     rebuildSvcList();
@@ -4243,7 +4243,7 @@ function saveCfgPanel() {
   // Siempre cerrar panel y mostrar confirmación
   document.getElementById('cfgOverlay').classList.remove('open');
   document.body.style.overflow = '';
-  if(_ADMIN_EDIT_TARGET){ document.body.classList.remove('is-admin-impersonate'); toast('Cliente actualizado','green'); setTimeout(function(){location.reload();}, 700); } else { setTimeout(showSaveConfirm, 200); }
+  if(_ADMIN_EDIT_TARGET){ document.body.classList.remove('is-admin-impersonate'); toast('Cliente actualizado','green'); Promise.resolve(_cfgSaveP).catch(function(){}).then(function(){ setTimeout(function(){location.reload();}, 300); }); } else { setTimeout(showSaveConfirm, 200); }
 }
 function resetConfig() {
   _confirm(
