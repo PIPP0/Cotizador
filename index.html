@@ -142,6 +142,10 @@ body.is-admin .admin-only{display:flex!important}
 .superadmin-only{display:none!important}
 body.is-superadmin .superadmin-only{display:flex!important}
 body.is-admin-impersonate #cfg-team-sec{display:none!important}
+#tb-stat-pf-clients,#tb-stat-pf-users,#btn-new-client{display:none!important}
+body.is-platform-admin #tb-stat-pipeline,body.is-platform-admin #tb-stat-conv,body.is-platform-admin #btn-new-cotizacion{display:none!important}
+body.is-platform-admin #tb-stat-pf-clients,body.is-platform-admin #tb-stat-pf-users{display:flex!important}
+body.is-platform-admin #btn-new-client{display:inline-flex!important}
 body.is-platform-admin .sb-item[data-view="dashboard"],body.is-platform-admin .sb-item[data-view="cotizador"],body.is-platform-admin .sb-item[data-view="cotizaciones"],body.is-platform-admin .sb-item[data-view="clientes"],body.is-platform-admin .sb-item[data-view="informes"],body.is-platform-admin .sb-item[data-view="motor"],body.is-platform-admin .sb-item[data-view="sgclima"],body.is-platform-admin .sb-item[data-view="edicion"],body.is-platform-admin .sb-item[data-view="conv"],body.is-platform-admin .mn-item[data-view="dashboard"],body.is-platform-admin .mn-item[data-view="cotizador"],body.is-platform-admin .mn-item[data-view="cotizaciones"],body.is-platform-admin .mn-item[data-view="clientes"],body.is-platform-admin .mn-item[data-view="informes"],body.is-platform-admin .mn-item[data-view="motor"],body.is-platform-admin .mn-item[data-view="sgclima"],body.is-platform-admin .mn-item[data-view="edicion"],body.is-platform-admin .mn-item[data-view="conv"],body.is-platform-admin #sb-svc-list,body.is-platform-admin #sb-sec-servicios,body.is-platform-admin .sb-foot{display:none!important}
 .pf-hidden{display:none!important}
 .sb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
@@ -1413,18 +1417,27 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
   </a>
   <div class="sep"></div>
   <span class="logo-mod" id="topbar-module">Dashboard IA · Comercial</span>
-  <div class="tb-stat">
+  <div class="tb-stat" id="tb-stat-pipeline">
     <div class="tb-v" id="tb-pipeline">$142.8M</div>
     <div class="tb-l">Pipeline activo</div>
   </div>
-  <div class="tb-stat">
+  <div class="tb-stat" id="tb-stat-conv">
     <div class="tb-v t" id="tb-conv">78%</div>
     <div class="tb-l">Conv. promedio IA</div>
+  </div>
+  <div class="tb-stat" id="tb-stat-pf-clients">
+    <div class="tb-v t" id="tb-pf-clients">—</div>
+    <div class="tb-l">Clientes</div>
+  </div>
+  <div class="tb-stat" id="tb-stat-pf-users">
+    <div class="tb-v" id="tb-pf-users">—</div>
+    <div class="tb-l">Usuarios totales</div>
   </div>
   <div class="topbar-r">
     <span class="chip chip-out chip-clock" id="clock">--:--:--</span>
     <span class="chip chip-live"><span class="ldot"></span>IA activa</span>
-    <a class="btn-new" href="#" onclick="event.preventDefault();switchView('cotizador')">+ Nueva cotización</a>
+    <a class="btn-new" id="btn-new-cotizacion" href="#" onclick="event.preventDefault();switchView('cotizador')">+ Nueva cotización</a>
+    <a class="btn-new" id="btn-new-client" href="#" onclick="event.preventDefault();switchView('tenants');setTimeout(function(){var el=document.getElementById('at-new-id'); if(el) el.focus();},50);">+ Nuevo cliente</a>
     <button class="cfg-btn" onclick="openCfgPanel()" title="Configurar plataforma ⚙️">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
@@ -1845,6 +1858,12 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 <div class="card">
 <div class="card-h"><div class="ch-ic ci-t"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div><div><div class="card-title">Clientes existentes</div><div class="card-sub">Haz clic en Editar para abrir su configuración completa</div></div>
 <div class="card-act" onclick="adminEditTemplate()">Editar plantilla</div>
+</div>
+<div style="padding:12px 20px 0">
+<div class="search-bar">
+<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+<input type="text" id="at-search" placeholder="Buscar cliente o ID..." oninput="renderTenantsView()">
+</div>
 </div>
 <div id="at-client-list" style="padding:6px 0"></div>
 </div>
@@ -4303,7 +4322,7 @@ function doLogin(){
         if(saSnap.val() === true){
           currentUser = {id:'superadmin', role:'SuperAdmin', name:cred.user.email, cls:'sup', email:cred.user.email};
           _finishLogin('superadmin');
-          if(_CLIENT_ID==='admin'){ switchView('usuarios'); }
+          if(_CLIENT_ID==='admin'){ switchView('usuarios'); renderPlatformStats(); }
           return;
         }
         return _fbDb.ref('team/'+_CLIENT_ID+'/'+uid).once('value').then(function(snap){
@@ -4557,21 +4576,70 @@ function renderTenantsView(){
   const el = document.getElementById('at-client-list');
   if(!el) return;
   el.innerHTML = '<div style="padding:14px 16px;font-size:12.5px;color:var(--t3)">Cargando clientes…</div>';
+  const _sEl = document.getElementById('at-search');
+  const q = (_sEl && _sEl.value ? _sEl.value : '').trim().toLowerCase();
+  const _avColors = ['var(--teal)','var(--orange)','var(--gold)','var(--green)','var(--blueg)'];
   _fbDb.ref('config').once('value').then(function(snap){
     const data = snap.val() || {};
-    const ids = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion && c!=='_template';}).sort();
-    if(!ids.length){ el.innerHTML = '<div style="padding:14px 16px;font-size:12.5px;color:var(--t3)">Aún no hay clientes creados.</div>'; return; }
-    el.innerHTML = ids.map(function(id){
-      var name = data[id].nameA || id;
-      return '<div class="client-row" style="cursor:default">'+
-        '<div class="client-av" style="background:var(--teal)">'+_escHtml(name.charAt(0).toUpperCase())+'</div>'+
-        '<div><div class="client-name">'+_escHtml(name)+'</div><div class="client-seg">'+_escHtml(id)+'</div></div>'+
-        '<div class="client-val"><button class="row-btn" onclick="adminEditClient(\''+id+'\')">Editar</button></div>'+
+    let ids = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion && c!=='_template';}).sort();
+    if(q){ ids = ids.filter(function(id){ var nm=(data[id].nameA||'').toLowerCase(); return nm.indexOf(q)!==-1 || id.toLowerCase().indexOf(q)!==-1; }); }
+    if(!ids.length){ el.innerHTML = '<div style="padding:14px 16px;font-size:12.5px;color:var(--t3)">'+(q?'Sin resultados para tu búsqueda.':'Aún no hay clientes creados.')+'</div>'; renderPlatformStats(); return; }
+    el.innerHTML = ids.map(function(id, i){
+      var d = data[id];
+      var name = d.nameA || id;
+      var created = d._createdAt ? new Date(d._createdAt).toLocaleDateString('es-CL',{day:'2-digit',month:'short',year:'numeric'}) : null;
+      var color = _avColors[i % _avColors.length];
+      return '<div class="client-row">'+
+        '<div class="client-av" style="background:'+color+'">'+_escHtml(name.charAt(0).toUpperCase())+'</div>'+
+        '<div><div class="client-name">'+_escHtml(name)+'</div><div class="client-seg">'+_escHtml(id)+(created?' · creado '+created:'')+' · <span id="at-uc-'+id+'">…</span> usuarios</div></div>'+
+        '<div class="client-val" style="display:flex;gap:6px;align-items:center">'+
+          '<button class="row-btn" onclick="adminEditClient(\''+id+'\')">Editar</button>'+
+          '<button class="row-btn del" onclick="adminDeleteClient(\''+id+'\')">Eliminar</button>'+
+        '</div>'+
       '</div>';
     }).join('');
+    ids.forEach(function(id){
+      _fbDb.ref('team/'+id).once('value').then(function(tsnap){
+        var t = tsnap.val();
+        var n = t ? Object.keys(t).length : 0;
+        var elu = document.getElementById('at-uc-'+id);
+        if(elu) elu.textContent = n;
+      }).catch(function(){});
+    });
+    renderPlatformStats();
   }).catch(function(){
     el.innerHTML = '<div style="padding:14px 16px;font-size:12.5px;color:var(--red)">No se pudo cargar la lista de clientes.</div>';
   });
+}
+function adminDeleteClient(id){
+  if(!confirm('¿Eliminar el cliente "'+id+'"? Esta acción no se puede deshacer y borrará su configuración y equipo.')) return;
+  Promise.all([
+    _fbDb.ref('config/'+id).remove(),
+    _fbDb.ref('team/'+id).remove()
+  ]).then(function(){
+    renderTenantsView();
+  }).catch(function(){
+    alert('No se pudo eliminar el cliente.');
+  });
+}
+function renderPlatformStats(){
+  if(_CLIENT_ID!=='admin') return;
+  _fbDb.ref('config').once('value').then(function(snap){
+    var data = snap.val() || {};
+    var ids = Object.keys(data).filter(function(c){var v=data[c];return v && typeof v==='object' && !Array.isArray(v) && (v.nameA||v.nameB) && v.cotizacion && c!=='_template';});
+    var elc = document.getElementById('tb-pf-clients'); if(elc) elc.textContent = ids.length;
+    var elu = document.getElementById('tb-pf-users');
+    if(!ids.length){ if(elu) elu.textContent = '0'; return; }
+    var total = 0, pending = ids.length;
+    ids.forEach(function(id){
+      _fbDb.ref('team/'+id).once('value').then(function(tsnap){
+        var t = tsnap.val();
+        total += t ? Object.keys(t).length : 0;
+        pending--;
+        if(pending===0 && elu) elu.textContent = total;
+      }).catch(function(){ pending--; if(pending===0 && elu) elu.textContent = total; });
+    });
+  }).catch(function(){});
 }
 function adminCreateClient(){
   const idEl = document.getElementById('at-new-id');
@@ -4595,7 +4663,7 @@ function adminCreateClient(){
   }).then(function(tplSnap){
     const base = tplSnap.val() || DEFAULT_CONFIG;
     const nc = JSON.parse(JSON.stringify(base));
-    nc.nameA = name; nc.nameB = '';
+    nc.nameA = name; nc.nameB = ''; nc._createdAt = Date.now();
     return _fbDb.ref('config/'+rawId).set(nc);
   }).then(function(){
     showMsg('Cliente creado. Ya puedes editarlo o crear cuentas en Usuarios.', true);
