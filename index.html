@@ -2651,6 +2651,7 @@ if(_CLIENT_ID === 'admin'){
   CONFIG.location = '';
   CONFIG.colors = {teal:'2D3250', orange:'7C77B9', dark:'14142B'};
   document.body.classList.add('is-platform-admin');
+  try{ var _lsl2 = document.getElementById('login-signup-link'); if(_lsl2) _lsl2.style.display='none'; }catch(e){}
   try{ var _sbSec = document.querySelector('.sb-sec'); if(_sbSec) _sbSec.textContent = 'Plataforma'; }catch(e){}
   try{ var _lb = document.getElementById('logo-b'); if(_lb) _lb.textContent = ''; }catch(e){}
 }
