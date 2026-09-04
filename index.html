@@ -4626,23 +4626,21 @@ function _trInitItems(){
   var list = document.getElementById('tr-items-list');
   if(list && list.children.length===0){ _trAddItem(); }
 }
-var _trGeminiKey = 'AIzaSyAnOyL-Y8veL9rH23Y_94E_a301d-s90-U';
 var _trAssistCountKey = 'cotizadia_trial_assist_count';
+var _trWorkerUrl = 'https://icy-glade-e489.futuroiadesarrollo.workers.dev';
 function _trAssistCount(){ return parseInt(localStorage.getItem(_trAssistCountKey)||'0',10); }
 async function _trCallGemini(prompt){
   if(_trAssistCount() >= 8){ throw new Error('límite de sugerencias alcanzado'); }
-  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=' + _trGeminiKey;
-  var res = await fetch(url, {
+  var res = await fetch(_trWorkerUrl, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+    body: JSON.stringify({prompt: prompt})
   });
-  if(!res.ok){ throw new Error('error de IA ('+res.status+')'); }
-  var data = await res.json();
+  var data = await res.json().catch(function(){ return null; });
+  if(!res.ok){ throw new Error((data && data.error) || ('error de IA ('+res.status+')')); }
   localStorage.setItem(_trAssistCountKey, String(_trAssistCount()+1));
-  var text = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
-  if(!text) throw new Error('la IA no devolvió texto');
-  return text.trim();
+  if(!data || !data.text) throw new Error('la IA no devolvió texto');
+  return data.text.trim();
 }
 async function _trAssistItem(id){
   var row = document.querySelector('.tr-item-row[data-id="'+id+'"]');
