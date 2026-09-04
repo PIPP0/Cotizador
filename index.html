@@ -4642,7 +4642,7 @@ async function _trCallGemini(prompt){
   if(!data || !data.text) throw new Error('la IA no devolvió texto');
   return data.text.trim();
 }
-function _trHasAccount(){ try{ return !!(window.firebase && firebase.auth && firebase.auth().currentUser); }catch(e){ return false; } }
+function _trHasAccount(){ try{ var u = window.firebase && firebase.auth ? firebase.auth().currentUser : null; return !!(u && !u.isAnonymous); }catch(e){ return false; } }
 function _trAuthGateHtml(){
   return '<div style="margin-bottom:8px;color:var(--t2)">✨ Las sugerencias con IA son exclusivas para cuentas registradas.</div>'+
     '<a href="/registro/" target="_blank" style="display:inline-block;background:var(--teal);color:#fff;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;text-decoration:none">Crear cuenta gratis →</a>';
