@@ -1483,55 +1483,51 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
     </div>
   </div>
 
-  <div id="trial-card" style="max-width:560px;margin:40px auto 80px;padding:0 24px;">
-    <div style="border:1px solid var(--border,#dde4ea);border-radius:16px;padding:28px;box-shadow:0 10px 30px rgba(0,0,0,.06);">
-      <div style="font-weight:800;font-size:19px;margin-bottom:4px;">Prueba la herramienta gratis</div>
-      <div style="font-size:13px;color:#8a8698;margin-bottom:20px;">Envía hasta 3 cotizaciones reales a tus clientes, sin crear una cuenta.</div>
-      <div id="trial-err" style="display:none;background:#fdece9;color:#c0392b;border:1px solid #f5b3b3;padding:10px 12px;border-radius:9px;font-size:13px;margin-bottom:14px;"></div>
-      <div id="trial-ok" style="display:none;background:#eaf7f1;color:#0fa06a;border:1px solid #b7e4cc;padding:10px 12px;border-radius:9px;font-size:13px;margin-bottom:14px;"></div>
-
-      <div id="trial-form">
-        <div style="margin-bottom:12px;">
-          <label style="display:block;font-size:11.5px;font-weight:700;color:#8a8698;text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;">Nombre de tu empresa</label>
-          <input type="text" id="tr-company" style="width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--border,#dde4ea);border-radius:9px;font-size:14px;">
-        </div>
-        <div style="margin-bottom:12px;">
-          <label style="display:block;font-size:11.5px;font-weight:700;color:#8a8698;text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;">Tu correo (empresa) — para responder</label>
-          <input type="email" id="tr-company-email" placeholder="contacto@tuempresa.cl" style="width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--border,#dde4ea);border-radius:9px;font-size:14px;">
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
-          <div>
-            <label style="display:block;font-size:11.5px;font-weight:700;color:#8a8698;text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;">Nombre del cliente</label>
-            <input type="text" id="tr-client-name" style="width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--border,#dde4ea);border-radius:9px;font-size:14px;">
-          </div>
-          <div>
-            <label style="display:block;font-size:11.5px;font-weight:700;color:#8a8698;text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;">Correo del cliente</label>
-            <input type="email" id="tr-client-email" style="width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--border,#dde4ea);border-radius:9px;font-size:14px;">
-          </div>
-        </div>
-        <div style="margin-bottom:12px;">
-          <label style="display:block;font-size:11.5px;font-weight:700;color:#8a8698;text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;">¿Qué le estás cotizando?</label>
-          <input type="text" id="tr-service" placeholder="Ej: Mantención preventiva de climatización" style="width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--border,#dde4ea);border-radius:9px;font-size:14px;">
-        </div>
-        <div style="margin-bottom:12px;">
-          <label style="display:block;font-size:11.5px;font-weight:700;color:#8a8698;text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;">Monto total (CLP)</label>
-          <input type="number" id="tr-amount" placeholder="245000" style="width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--border,#dde4ea);border-radius:9px;font-size:14px;">
-        </div>
-        <div style="margin-bottom:16px;">
-          <label style="display:block;font-size:11.5px;font-weight:700;color:#8a8698;text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;">Mensaje breve (opcional)</label>
-          <textarea id="tr-message" rows="2" style="width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid var(--border,#dde4ea);border-radius:9px;font-size:14px;font-family:inherit;resize:vertical;"></textarea>
-        </div>
-        <button type="button" id="trial-btn" class="login-btn" onclick="doTrialSend()">Enviar cotización de prueba →</button>
-        <div id="trial-counter" style="text-align:center;font-size:12px;color:#8a8698;margin-top:10px;">Te quedan 3 de 3 envíos de prueba en este navegador.</div>
-      </div>
-
-      <div id="trial-limit" style="display:none;text-align:center;padding:10px 0;">
-        <div style="font-weight:700;font-size:15px;margin-bottom:8px;">Ya usaste tus 3 cotizaciones de prueba</div>
-        <div style="font-size:13px;color:#8a8698;margin-bottom:16px;">Crea tu cuenta gratis para seguir cotizando sin límites, con tu marca y tu propio panel.</div>
-        <a href="/registro/" style="display:inline-block;background:var(--teal);color:#fff;padding:12px 22px;border-radius:10px;font-weight:700;text-decoration:none;font-size:14px;">Crear cuenta gratis →</a>
-      </div>
-    </div>
+  <div id="trial-card" style="max-width:900px;margin:-60px auto 60px;padding:32px;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(20,20,43,0.15);position:relative;z-index:5">
+  <h3 style="margin:0 0 6px;font-size:22px;color:var(--dark)">Prueba la herramienta gratis</h3>
+  <p style="margin:0 0 20px;color:#6b6b7a;font-size:14px">Arma una cotización real con ítems, IA de apoyo y envíala a un cliente. Tienes <span id="trial-counter">3</span> envíos de prueba disponibles.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+    <div><label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:4px">Nombre de tu empresa</label><input id="tr-company" type="text" placeholder="Ej: Servicios ABC" style="width:100%;padding:10px 12px;border:1px solid #e2e2e8;border-radius:10px;font-size:14px;box-sizing:border-box"></div>
+    <div><label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:4px">Correo de la empresa (remitente)</label><input id="tr-company-email" type="email" placeholder="contacto@tuempresa.cl" style="width:100%;padding:10px 12px;border:1px solid #e2e2e8;border-radius:10px;font-size:14px;box-sizing:border-box"></div>
+    <div><label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:4px">Nombre del cliente</label><input id="tr-client-name" type="text" placeholder="Nombre del destinatario" style="width:100%;padding:10px 12px;border:1px solid #e2e2e8;border-radius:10px;font-size:14px;box-sizing:border-box"></div>
+    <div><label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:4px">Correo del cliente</label><input id="tr-client-email" type="email" placeholder="cliente@correo.com" style="width:100%;padding:10px 12px;border:1px solid #e2e2e8;border-radius:10px;font-size:14px;box-sizing:border-box"></div>
   </div>
+  <div style="margin-bottom:6px"><label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:4px">Servicio</label>
+    <select id="tr-service" style="width:100%;padding:10px 12px;border:1px solid #e2e2e8;border-radius:10px;font-size:14px;box-sizing:border-box">
+      <option value="Mantención">Mantención</option>
+      <option value="Instalación">Instalación</option>
+      <option value="Climatización">Climatización</option>
+      <option value="Calidad del aire">Calidad del aire</option>
+      <option value="Ingeniería / Proyectos">Ingeniería / Proyectos</option>
+      <option value="Servicio remoto">Servicio remoto</option>
+      <option value="Otro">Otro</option>
+    </select>
+  </div>
+  <div style="margin:18px 0 8px;display:flex;align-items:center;justify-content:space-between">
+    <label style="font-size:13px;font-weight:700;color:var(--dark)">Ítems de la cotización</label>
+    <button type="button" onclick="_trAddItem()" style="background:transparent;border:1px solid var(--teal);color:var(--teal);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Agregar ítem</button>
+  </div>
+  <div id="tr-items-list"></div>
+  <div style="margin-top:10px;padding:14px 16px;background:#f8fafb;border-radius:12px">
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:#555;padding:3px 0"><span>Subtotal</span><span id="tr-subtotal">$0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:#555;padding:3px 0"><span>IVA (19%)</span><span id="tr-iva">$0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:700;color:var(--dark);padding:6px 0 0;border-top:2px solid var(--dark);margin-top:4px"><span>TOTAL</span><span id="tr-total">$0</span></div>
+  </div>
+  <div style="margin-top:18px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <label style="font-size:12px;color:#6b6b7a">Mensaje de introducción para el cliente</label>
+      <button type="button" onclick="_trAssistIntro()" id="tr-intro-assist-btn" style="background:transparent;border:none;color:var(--teal);font-size:12px;font-weight:700;cursor:pointer">✨ Sugerir con IA</button>
+    </div>
+    <textarea id="tr-message" rows="3" placeholder="Ej: Junto con saludar, le adjuntamos la cotización solicitada..." style="width:100%;padding:10px 12px;border:1px solid #e2e2e8;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:inherit"></textarea>
+    <div id="tr-intro-assist-box" style="display:none;margin-top:8px;padding:10px 12px;background:#f3f0fa;border-radius:10px;font-size:13px;color:#333"></div>
+  </div>
+  <p style="font-size:11px;color:#9a9aa8;margin:14px 0 0">✨ Los textos sugeridos se generan automáticamente con IA. Revísalos siempre antes de usarlos — tú decides qué se envía.</p>
+  <button type="button" id="trial-btn" onclick="doTrialSend()" class="login-btn" style="width:100%;margin-top:18px">Enviar cotización de prueba →</button>
+  <div id="trial-limit" style="display:none;margin-top:16px;padding:16px;background:var(--dark);border-radius:12px;text-align:center">
+    <p style="color:#fff;font-size:14px;margin:0 0 10px">Ya usaste tus 3 cotizaciones de prueba.</p>
+    <a href="/registro/" style="display:inline-block;background:var(--teal);color:#fff;padding:10px 22px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none">Crear cuenta gratis →</a>
+  </div>
+</div>
 
   <div style="background:var(--dark,#14142B);color:#fff;padding:50px 24px;text-align:center;">
     <div style="font-size:22px;font-weight:800;margin-bottom:10px;">¿Listo para cotizar sin límites?</div>
@@ -2788,7 +2784,7 @@ else if(_CLIENT_ID === 'cotizar'){
     document.getElementById('login-screen').style.display='none';
     var _ss2 = document.getElementById('signup-screen'); if(_ss2) _ss2.style.display='none';
     var _lp = document.getElementById('landing-screen'); if(_lp) _lp.style.display='block';
-    setTimeout(function(){ try{ _trialRefreshUI(); }catch(e){} }, 0);
+    setTimeout(function(){ try{ _trialRefreshUI(); _trInitItems(); }catch(e){} }, 0);
   }catch(e){}
 }
 
@@ -4567,87 +4563,223 @@ function doSignup(){
   });
 }
 function _trialCountKey(){ return 'cotizadia_trial_count'; }
-function _trialCount(){ return parseInt(localStorage.getItem(_trialCountKey())||'0',10) || 0; }
+function _trialCount(){ return parseInt(localStorage.getItem(_trialCountKey())||'0',10); }
 function _trialRefreshUI(){
-  const used = _trialCount();
-  const left = Math.max(0, 3 - used);
-  const counterEl = document.getElementById('trial-counter');
-  const formEl = document.getElementById('trial-form');
-  const limitEl = document.getElementById('trial-limit');
-  if(!counterEl) return;
-  if(left <= 0){
-    if(formEl) formEl.style.display = 'none';
-    if(limitEl) limitEl.style.display = 'block';
-  } else {
-    counterEl.textContent = 'Te quedan ' + left + ' de 3 envíos de prueba en este navegador.';
+  var c = _trialCount();
+  var left = Math.max(0, 3-c);
+  var ce = document.getElementById('trial-counter'); if(ce) ce.textContent = left;
+  var btn = document.getElementById('trial-btn');
+  var lim = document.getElementById('trial-limit');
+  if(c>=3){ if(btn) btn.style.display='none'; if(lim) lim.style.display='block'; }
+  else { if(btn) btn.style.display='block'; if(lim) lim.style.display='none'; }
+}
+var _trItemSeq = 0;
+function _trItemRowHtml(id){
+  return '<div class="tr-item-row" data-id="'+id+'" style="border:1px solid #eef0f3;border-radius:10px;padding:12px;margin-bottom:10px">'+
+    '<div style="display:flex;gap:8px;align-items:flex-start">'+
+      '<input type="text" class="tr-item-desc" placeholder="Descripción del ítem" style="flex:1;padding:8px 10px;border:1px solid #e2e2e8;border-radius:8px;font-size:13px" oninput="_trRecalc()">'+
+      '<button type="button" onclick="_trRemoveItem('+id+')" style="background:transparent;border:none;color:#c94b4b;font-size:18px;cursor:pointer;padding:4px 8px" title="Quitar">×</button>'+
+    '</div>'+
+    '<div style="display:flex;gap:8px;margin-top:8px;align-items:center">'+
+      '<input type="number" class="tr-item-qty" value="1" min="1" style="width:70px;padding:8px 10px;border:1px solid #e2e2e8;border-radius:8px;font-size:13px" oninput="_trRecalc()">'+
+      '<span style="font-size:12px;color:#999">x</span>'+
+      '<input type="number" class="tr-item-price" placeholder="Precio unitario" style="flex:1;padding:8px 10px;border:1px solid #e2e2e8;border-radius:8px;font-size:13px" oninput="_trRecalc()">'+
+      '<button type="button" onclick="_trAssistItem('+id+')" style="background:transparent;border:none;color:var(--teal);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">✨ Mejorar texto</button>'+
+      '<span class="tr-item-total" style="font-weight:700;font-size:13px;color:var(--dark);white-space:nowrap;min-width:80px;text-align:right">$0</span>'+
+    '</div>'+
+    '<div class="tr-item-assist-box" style="display:none;margin-top:8px;padding:8px 10px;background:#f3f0fa;border-radius:8px;font-size:12px;color:#333"></div>'+
+  '</div>';
+}
+function _trAddItem(){
+  var id = ++_trItemSeq;
+  var list = document.getElementById('tr-items-list');
+  if(list){ var div = document.createElement('div'); div.innerHTML = _trItemRowHtml(id); list.appendChild(div.firstChild); }
+  _trRecalc();
+}
+function _trRemoveItem(id){
+  var row = document.querySelector('.tr-item-row[data-id="'+id+'"]');
+  if(row) row.remove();
+  _trRecalc();
+}
+function _trFmtCLP(n){
+  n = Math.round(n||0);
+  return '$' + n.toLocaleString('es-CL');
+}
+function _trRecalc(){
+  var rows = document.querySelectorAll('.tr-item-row');
+  var subtotal = 0;
+  rows.forEach(function(row){
+    var qty = parseFloat(row.querySelector('.tr-item-qty').value)||0;
+    var price = parseFloat(row.querySelector('.tr-item-price').value)||0;
+    var tot = qty*price;
+    subtotal += tot;
+    var totEl = row.querySelector('.tr-item-total');
+    if(totEl) totEl.textContent = _trFmtCLP(tot);
+  });
+  var iva = subtotal*0.19;
+  var total = subtotal+iva;
+  var se = document.getElementById('tr-subtotal'); if(se) se.textContent = _trFmtCLP(subtotal);
+  var ie = document.getElementById('tr-iva'); if(ie) ie.textContent = _trFmtCLP(iva);
+  var te = document.getElementById('tr-total'); if(te) te.textContent = _trFmtCLP(total);
+}
+function _trInitItems(){
+  var list = document.getElementById('tr-items-list');
+  if(list && list.children.length===0){ _trAddItem(); }
+}
+var _trGeminiKey = 'AIzaSyAnOyL-Y8veL9rH23Y_94E_a301d-s90-U';
+var _trAssistCountKey = 'cotizadia_trial_assist_count';
+function _trAssistCount(){ return parseInt(localStorage.getItem(_trAssistCountKey)||'0',10); }
+async function _trCallGemini(prompt){
+  if(_trAssistCount() >= 8){ throw new Error('límite de sugerencias alcanzado'); }
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + _trGeminiKey;
+  var res = await fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+  });
+  if(!res.ok){ throw new Error('error de IA ('+res.status+')'); }
+  var data = await res.json();
+  localStorage.setItem(_trAssistCountKey, String(_trAssistCount()+1));
+  var text = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
+  if(!text) throw new Error('la IA no devolvió texto');
+  return text.trim();
+}
+async function _trAssistItem(id){
+  var row = document.querySelector('.tr-item-row[data-id="'+id+'"]');
+  if(!row) return;
+  var descInput = row.querySelector('.tr-item-desc');
+  var box = row.querySelector('.tr-item-assist-box');
+  var raw = descInput.value.trim();
+  if(!raw){ alert('Escribe primero una breve descripción del ítem.'); return; }
+  box.style.display='block';
+  box.innerHTML = 'Generando sugerencia con IA…';
+  try{
+    var prompt = 'Eres un asistente que redacta descripciones profesionales y breves (máximo 20 palabras) para ítems de una cotización comercial en español de Chile. Reescribe de forma clara y profesional, sin inventar datos técnicos ni precios, el siguiente ítem: "'+raw+'". Responde solo con la descripción mejorada, sin comillas ni explicaciones.';
+    var suggestion = await _trCallGemini(prompt);
+    box.innerHTML = '<div style="margin-bottom:8px">"'+suggestion.replace(/</g,'&lt;')+'"</div>'+
+      '<button type="button" onclick="_trApplyItem('+id+')" style="background:var(--teal);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;margin-right:6px">Usar sugerencia</button>'+
+      '<button type="button" onclick="this.closest(\'.tr-item-assist-box\').style.display=\'none\'" style="background:transparent;border:1px solid #ccc;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer">Descartar</button>';
+    box.setAttribute('data-suggestion', suggestion);
+  }catch(err){
+    box.innerHTML = 'No se pudo generar la sugerencia ('+(err.message||'error')+'). Intenta de nuevo.';
   }
 }
-function doTrialSend(){
-  const used = _trialCount();
-  if(used >= 3){ _trialRefreshUI(); return; }
-  const company = (document.getElementById('tr-company').value||'').trim();
-  const companyEmail = (document.getElementById('tr-company-email').value||'').trim().toLowerCase();
-  const clientName = (document.getElementById('tr-client-name').value||'').trim();
-  const clientEmail = (document.getElementById('tr-client-email').value||'').trim().toLowerCase();
-  const service = (document.getElementById('tr-service').value||'').trim();
-  const amountRaw = (document.getElementById('tr-amount').value||'').trim();
-  const message = (document.getElementById('tr-message').value||'').trim();
-  const errEl = document.getElementById('trial-err');
-  const okEl = document.getElementById('trial-ok');
-  const btn = document.getElementById('trial-btn');
-  function showErr(m){ errEl.textContent = m; errEl.style.display = 'block'; okEl.style.display = 'none'; }
-  errEl.style.display = 'none'; okEl.style.display = 'none';
-  if(!company){ showErr('Ingresa el nombre de tu empresa.'); return; }
-  if(!companyEmail || companyEmail.indexOf('@')===-1){ showErr('Ingresa un correo de empresa válido.'); return; }
-  if(!clientName){ showErr('Ingresa el nombre del cliente.'); return; }
-  if(!clientEmail || clientEmail.indexOf('@')===-1){ showErr('Ingresa un correo de cliente válido.'); return; }
-  if(!service){ showErr('Describe qué le estás cotizando.'); return; }
-  const amount = parseInt(amountRaw.replace(/[^0-9]/g,''),10);
-  if(!amount || amount <= 0){ showErr('Ingresa un monto válido.'); return; }
-  const amountFmt = '$' + amount.toLocaleString('es-CL');
-  btn.disabled = true; btn.textContent = 'Enviando…';
-  const cotId = 'DEMO-' + Date.now().toString().slice(-6);
-  emailjs.send('service_oa9hbgk','template_1hljlkf', {
-    reply_to:         companyEmail,
-    subject:          'Cotización ' + cotId + ' · ' + company,
-    to_email:         clientEmail,
-    to_name:          clientName,
-    cot_id:           cotId,
-    servicio:         service,
-    segmento:         '',
-    fecha:            new Date().toLocaleDateString('es-CL'),
-    items_rows:       '',
-    subtotal:         '',
-    iva:              '',
-    total:            amountFmt,
-    tip:              '',
-    email_intro:      message || ('Junto con saludar, te compartimos la cotización de ' + service + '.'),
-    name:             company,
-    company_name:     company,
-    company_email:    companyEmail,
-    company_location: '',
-    company_since:    '',
-    company_tagline:  'Cotización generada con Cotizadía',
-    company_logo:     '',
-    company_dark:     '#252530',
-    company_teal:     '#8C5BB3',
-    email:            companyEmail
-  }).then(function(){
-    localStorage.setItem(_trialCountKey(), String(used + 1));
-    okEl.textContent = '✓ Cotización enviada a ' + clientEmail;
-    okEl.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Enviar cotización de prueba →';
-    document.getElementById('tr-client-name').value = '';
-    document.getElementById('tr-client-email').value = '';
-    document.getElementById('tr-service').value = '';
-    document.getElementById('tr-amount').value = '';
-    document.getElementById('tr-message').value = '';
-    _trialRefreshUI();
-  }).catch(function(e){
-    btn.disabled = false; btn.textContent = 'Enviar cotización de prueba →';
-    showErr('No se pudo enviar. Intenta nuevamente.');
-  });
+function _trApplyItem(id){
+  var row = document.querySelector('.tr-item-row[data-id="'+id+'"]');
+  if(!row) return;
+  var box = row.querySelector('.tr-item-assist-box');
+  var suggestion = box.getAttribute('data-suggestion');
+  if(suggestion){ row.querySelector('.tr-item-desc').value = suggestion; }
+  box.style.display='none';
 }
+async function _trAssistIntro(){
+  var msgEl = document.getElementById('tr-message');
+  var box = document.getElementById('tr-intro-assist-box');
+  var service = (document.getElementById('tr-service')||{}).value || 'servicio';
+  var clientName = (document.getElementById('tr-client-name')||{}).value || '';
+  var raw = msgEl.value.trim();
+  box.style.display='block';
+  box.innerHTML = 'Generando sugerencia con IA…';
+  try{
+    var prompt = 'Eres un asistente que redacta mensajes breves y profesionales en español de Chile para acompañar el envío de una cotización comercial de "'+service+'"'+(clientName?(' al cliente "'+clientName+'"'):'')+'. '+(raw?('Mejora este borrador: "'+raw+'".'):'Redacta un mensaje de introducción cordial y profesional de 2-3 frases.')+' No inventes precios ni plazos. Responde solo con el mensaje final, sin comillas ni explicaciones.';
+    var suggestion = await _trCallGemini(prompt);
+    box.innerHTML = '<div style="margin-bottom:8px">"'+suggestion.replace(/</g,'&lt;')+'"</div>'+
+      '<button type="button" onclick="_trApplyIntro()" style="background:var(--teal);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;margin-right:6px">Usar sugerencia</button>'+
+      '<button type="button" onclick="document.getElementById(\'tr-intro-assist-box\').style.display=\'none\'" style="background:transparent;border:1px solid #ccc;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer">Descartar</button>';
+    box.setAttribute('data-suggestion', suggestion);
+  }catch(err){
+    box.innerHTML = 'No se pudo generar la sugerencia ('+(err.message||'error')+'). Intenta de nuevo.';
+  }
+}
+function _trApplyIntro(){
+  var box = document.getElementById('tr-intro-assist-box');
+  var suggestion = box.getAttribute('data-suggestion');
+  if(suggestion){ document.getElementById('tr-message').value = suggestion; }
+  box.style.display='none';
+}
+async function doTrialSend(){
+  if(_trialCount()>=3){ _trialRefreshUI(); return; }
+  var company = (document.getElementById('tr-company').value||'').trim();
+  var companyEmail = (document.getElementById('tr-company-email').value||'').trim();
+  var clientName = (document.getElementById('tr-client-name').value||'').trim();
+  var clientEmail = (document.getElementById('tr-client-email').value||'').trim();
+  var service = document.getElementById('tr-service').value;
+  var message = (document.getElementById('tr-message').value||'').trim();
+  if(!company || !companyEmail || !clientName || !clientEmail){
+    alert('Completa empresa, correo de empresa, nombre y correo del cliente.');
+    return;
+  }
+  var rows = document.querySelectorAll('.tr-item-row');
+  if(rows.length===0){ alert('Agrega al menos un ítem a la cotización.'); return; }
+  var items = [];
+  var subtotal = 0;
+  rows.forEach(function(row){
+    var desc = (row.querySelector('.tr-item-desc').value||'').trim();
+    var qty = parseFloat(row.querySelector('.tr-item-qty').value)||0;
+    var price = parseFloat(row.querySelector('.tr-item-price').value)||0;
+    if(desc && qty>0 && price>0){
+      var tot = qty*price;
+      subtotal += tot;
+      items.push({desc:desc, qty:qty, tot:tot});
+    }
+  });
+  if(items.length===0){ alert('Completa descripción, cantidad y precio de al menos un ítem.'); return; }
+  var iva = subtotal*0.19;
+  var total = subtotal+iva;
+  var itemsRows = '';
+  items.forEach(function(it, i){
+    var bg = i%2===0 ? '#ffffff' : '#f8fafb';
+    itemsRows += '<tr style="background:'+bg+'"><td style="padding:10px 14px;font-size:13px;color:#252530;border-bottom:1px solid #eef0f3">'+it.desc.replace(/</g,'&lt;')+'</td><td style="text-align:center;padding:10px 8px;font-size:13px;color:#737380;border-bottom:1px solid #eef0f3;width:40px">'+it.qty+'</td><td style="text-align:right;padding:10px 14px;font-size:13px;font-weight:700;color:#252530;border-bottom:1px solid #eef0f3;white-space:nowrap">'+_trFmtCLP(it.tot)+'</td></tr>';
+  });
+  itemsRows += '<tr><td colspan="3" style="padding:0"></td></tr>';
+  itemsRows += '<tr><td style="padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">Subtotal</td><td></td><td style="text-align:right;padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">'+_trFmtCLP(subtotal)+'</td></tr>';
+  itemsRows += '<tr><td style="padding:4px 14px;font-size:13px;color:#555555">IVA (19%)</td><td></td><td style="text-align:right;padding:4px 14px;font-size:13px;color:#555555">'+_trFmtCLP(iva)+'</td></tr>';
+  itemsRows += '<tr><td style="padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">TOTAL</td><td></td><td style="text-align:right;padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">'+_trFmtCLP(total)+'</td></tr>';
+  var btn = document.getElementById('trial-btn');
+  var origText = btn ? btn.textContent : '';
+  if(btn){ btn.disabled = true; btn.textContent = 'Enviando…'; }
+  var cotId = 'DEMO-' + Date.now().toString().slice(-6);
+  var fecha = new Date().toLocaleDateString('es-CL');
+  try{
+    await emailjs.send('service_oa9hbgk','template_1hljlkf', {
+      reply_to: companyEmail,
+      subject: 'Cotización de ' + company,
+      to_email: clientEmail,
+      to_name: clientName,
+      cot_id: cotId,
+      servicio: service,
+      segmento: '',
+      fecha: fecha,
+      items_rows: itemsRows,
+      subtotal: _trFmtCLP(subtotal),
+      iva: _trFmtCLP(iva),
+      total: _trFmtCLP(total),
+      tip: '',
+      email_intro: message,
+      name: clientName,
+      company_name: company,
+      company_email: companyEmail,
+      company_location: '',
+      company_since: '',
+      company_tagline: 'Cotización generada con Cotizadía',
+      company_logo: '',
+      company_dark: '#252530',
+      company_teal: '#8C5BB3',
+      email: clientEmail
+    });
+    localStorage.setItem(_trialCountKey(), String(_trialCount()+1));
+    _trialRefreshUI();
+    alert('¡Cotización enviada a ' + clientEmail + '!');
+    document.querySelectorAll('.tr-item-row').forEach(function(r){ r.remove(); });
+    _trInitItems();
+    document.getElementById('tr-message').value = '';
+  }catch(err){
+    alert('No se pudo enviar la cotización. Intenta de nuevo.');
+  }finally{
+    if(btn){ btn.disabled = false; btn.textContent = origText; }
+  }
+}
+
 function doLogin(){
   const uRaw = (document.getElementById('login-user').value||'').trim();
   const p = document.getElementById('login-pass').value||'';
