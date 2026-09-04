@@ -1387,7 +1387,45 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
       <div style="text-align:right;margin:-6px 0 14px;">
         <a href="#" onclick="doForgotPassword();return false;" style="font-size:12px;color:var(--teal);text-decoration:none;">¿Olvidaste tu contraseña?</a>
       </div>
+      <div id="login-signup-link" style="text-align:center;margin-top:10px;font-size:12px;color:#8a8698;">¿No tienes cuenta? <a href="/cotizar/" style="color:var(--teal);text-decoration:none;font-weight:600;">Regístrate gratis</a></div>
       <button class="login-btn" onclick="doLogin()">Ingresar →</button>
+    </div>
+  </div>
+</div>
+
+<div id="signup-screen" style="display:none;position:fixed;inset:0;z-index:99999;background:#f0f3f6;align-items:center;justify-content:center;padding:20px;">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">
+        <span class="login-logo-txt">Cotizad<span style="color:var(--orange)">ía</span></span>
+      </div>
+      <div class="login-bar"></div>
+      <div class="login-sub">Crea tu cuenta gratis</div>
+    </div>
+    <div class="login-body">
+      <div class="login-err" id="signup-err"></div>
+      <div class="login-field">
+        <label>Nombre de tu empresa</label>
+        <input type="text" id="su-company" autocomplete="off">
+      </div>
+      <div class="login-field">
+        <label>Correo de contacto de tu empresa</label>
+        <input type="email" id="su-contact-email" autocomplete="off" placeholder="contacto@tuempresa.cl">
+      </div>
+      <div class="login-field">
+        <label>Tu correo (para iniciar sesión)</label>
+        <input type="email" id="su-email" autocomplete="off">
+      </div>
+      <div class="login-field">
+        <label>Contraseña</label>
+        <input type="password" id="su-pass" autocomplete="off" onkeydown="if(event.key==='Enter')doSignup()">
+      </div>
+      <div class="login-field">
+        <label>Confirmar contraseña</label>
+        <input type="password" id="su-pass2" autocomplete="off" onkeydown="if(event.key==='Enter')doSignup()">
+      </div>
+      <button class="login-btn" id="signup-btn" onclick="doSignup()">Crear cuenta gratis →</button>
+      <div style="text-align:center;margin-top:10px;font-size:12px;color:#8a8698;">¿Ya tienes cuenta? <a href="/" style="color:var(--teal);text-decoration:none;font-weight:600;">Inicia sesión</a></div>
     </div>
   </div>
 </div>
@@ -2615,6 +2653,19 @@ if(_CLIENT_ID === 'admin'){
   document.body.classList.add('is-platform-admin');
   try{ var _sbSec = document.querySelector('.sb-sec'); if(_sbSec) _sbSec.textContent = 'Plataforma'; }catch(e){}
   try{ var _lb = document.getElementById('logo-b'); if(_lb) _lb.textContent = ''; }catch(e){}
+else if(_CLIENT_ID === 'cotizar'){
+  CONFIG.nameA = 'Cotizadía';
+  CONFIG.nameB = '';
+  CONFIG.tagline = 'Regístrate gratis';
+  CONFIG.colors = {teal:'2D3250', orange:'7C77B9', dark:'14142B'};
+  document.body.classList.add('is-public-signup');
+  try{ var _lsl = document.getElementById('login-signup-link'); if(_lsl) _lsl.style.display='none'; }catch(e){}
+  try{
+    document.getElementById('login-screen').style.display='none';
+    var _ss = document.getElementById('signup-screen'); if(_ss) _ss.style.display='flex';
+  }catch(e){}
+}
+
 }
 
 // ─── Restauración INMEDIATA de colores + logo desde localStorage ────
@@ -3425,6 +3476,7 @@ function sendConvEmail() {
   const company = (CONFIG.nameA||'') + (CONFIG.nameB||'');
   sendBtn.disabled = true; sendBtn.textContent = 'Enviando…';
   emailjs.send('service_oa9hbgk','template_1hljlkf',{
+    reply_to:        (CONFIG.email||''),
     subject:          subject,
     to_email:         to,
     to_name:          q.cliente||q.client||'',
@@ -4334,6 +4386,60 @@ function _refreshChip(){
 }
 // Credenciales por defecto — se sobreescriben en applyConfig() con lo guardado en CONFIG
 const _AUTH={admin:'Lisit',ejecutivo:'Lisit2',superadmin:'1111'};
+function _slugify(s){
+  return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,30);
+}
+function doSignup(){
+  const company = (document.getElementById('su-company').value||'').trim();
+  const contactEmail = (document.getElementById('su-contact-email').value||'').trim().toLowerCase();
+  const accEmail = (document.getElementById('su-email').value||'').trim().toLowerCase();
+  const pass = document.getElementById('su-pass').value||'';
+  const pass2 = document.getElementById('su-pass2').value||'';
+  const err = document.getElementById('signup-err');
+  const btn = document.getElementById('signup-btn');
+  function showErr(m){ err.textContent=m; err.style.display='block'; }
+  err.style.display='none';
+  if(!company || company.length<2){ showErr('Ingresa el nombre de tu empresa.'); return; }
+  if(!contactEmail || contactEmail.indexOf('@')===-1){ showErr('Ingresa un correo de contacto válido.'); return; }
+  if(!accEmail || accEmail.indexOf('@')===-1){ showErr('Ingresa un correo válido para tu cuenta.'); return; }
+  if(pass.length<6){ showErr('La contraseña debe tener al menos 6 caracteres.'); return; }
+  if(pass!==pass2){ showErr('Las contraseñas no coinciden.'); return; }
+  const reserved = ['admin','_template','default','cotizar'];
+  let slug = _slugify(company);
+  if(!slug) slug = 'empresa';
+  if(reserved.indexOf(slug)!==-1) slug = slug+'-1';
+  btn.disabled = true; btn.textContent = 'Creando cuenta…';
+  function tryCreate(candidate, attempt){
+    return _fbDb.ref('config/'+candidate).once('value').then(function(snap){
+      if(snap.exists()){
+        if(attempt>8){ throw {code:'exists'}; }
+        return tryCreate(candidate.replace(/-\d+$/,'')+'-'+(attempt+1), attempt+1);
+      }
+      return candidate;
+    });
+  }
+  tryCreate(slug, 0).then(function(finalSlug){
+    return firebase.auth().createUserWithEmailAndPassword(accEmail, pass).then(function(cred){
+      const uid = cred.user.uid;
+      const nc = Object.assign(JSON.parse(JSON.stringify(DEFAULT_CONFIG)), {
+        nameA: company, nameB: '', email: contactEmail, _createdAt: Date.now()
+      });
+      return _fbDb.ref('config/'+finalSlug).set(nc).then(function(){
+        return _fbDb.ref('team/'+finalSlug+'/'+uid).set({ role:'admin', name: company, email: accEmail });
+      }).then(function(){
+        return firebase.auth().signOut();
+      }).then(function(){
+        window.location.href = '/'+finalSlug+'/?bienvenido=1';
+      });
+    });
+  }).catch(function(e){
+    btn.disabled = false; btn.textContent = 'Crear cuenta gratis →';
+    if(e && e.code==='auth/email-already-in-use'){ showErr('Ese correo ya tiene una cuenta. Inicia sesión.'); }
+    else if(e && e.code==='auth/weak-password'){ showErr('La contraseña es muy débil.'); }
+    else if(e && e.code==='auth/invalid-email'){ showErr('El correo no es válido.'); }
+    else { showErr('No se pudo crear la cuenta. Intenta nuevamente.'); }
+  });
+}
 function doLogin(){
   const uRaw = (document.getElementById('login-user').value||'').trim();
   const p = document.getElementById('login-pass').value||'';
@@ -7434,6 +7540,7 @@ Motiva a contratar, tono profesional, en español. Sin saludo ni firma.`;
   }
 
   emailjs.send('service_oa9hbgk','template_1hljlkf',{
+    reply_to:        (CONFIG.email||''),
     subject:         'Cotización '+qId+' · '+company,
     to_email:        d.toEmail,
     to_name:         d.toName,
@@ -7670,6 +7777,7 @@ function sendModalEmail(id){
   const svgSend='<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" style="margin-right:4px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
   if(btn){ btn.disabled=true; btn.textContent='Enviando…'; }
   emailjs.send('service_oa9hbgk','template_1hljlkf',{
+    reply_to:        (CONFIG.email||''),
     subject:'Cotización '+r.id+' · '+company,
     to_email:r.email,
     to_name:r.cliente,
