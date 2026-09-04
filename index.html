@@ -2653,6 +2653,7 @@ if(_CLIENT_ID === 'admin'){
   document.body.classList.add('is-platform-admin');
   try{ var _sbSec = document.querySelector('.sb-sec'); if(_sbSec) _sbSec.textContent = 'Plataforma'; }catch(e){}
   try{ var _lb = document.getElementById('logo-b'); if(_lb) _lb.textContent = ''; }catch(e){}
+}
 else if(_CLIENT_ID === 'cotizar'){
   CONFIG.nameA = 'Cotizadía';
   CONFIG.nameB = '';
@@ -2666,7 +2667,6 @@ else if(_CLIENT_ID === 'cotizar'){
   }catch(e){}
 }
 
-}
 
 // ─── Restauración INMEDIATA de colores + logo desde localStorage ────
 (function() {
