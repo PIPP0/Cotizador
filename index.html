@@ -4631,7 +4631,7 @@ var _trAssistCountKey = 'cotizadia_trial_assist_count';
 function _trAssistCount(){ return parseInt(localStorage.getItem(_trAssistCountKey)||'0',10); }
 async function _trCallGemini(prompt){
   if(_trAssistCount() >= 8){ throw new Error('límite de sugerencias alcanzado'); }
-  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + _trGeminiKey;
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=' + _trGeminiKey;
   var res = await fetch(url, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
