@@ -2551,6 +2551,7 @@ const DEFAULT_CONFIG = {
   nameB:    '',
   module:   'Dashboard IA · Comercial',
   tagline:  'Plataforma IA · Comercial',
+  plan: { tier: 'team', status: 'active' }, // 'free' | 'pro' | 'team' — default 'team' = acceso completo para clientes existentes sin dato explícito
   dashsub:  'Métricas en tiempo real · Motor IA · Plataforma Comercial',
   email:    'contacto@lisit.cl',
   location: 'Chile',
@@ -4320,6 +4321,7 @@ function _syncFromFirebase() {
     const r = snapshot.val();
     if (!r) return;
     ['nameA','nameB','module','tagline','dashsub','email','location','since'].forEach(k => { if (r[k] !== undefined) CONFIG[k] = r[k]; });
+    if (r.plan) CONFIG.plan = Object.assign({tier:'team',status:'active'}, CONFIG.plan||{}, r.plan);
     if (r.colors) { CONFIG.colors.teal = r.colors.teal || CONFIG.colors.teal; CONFIG.colors.orange = r.colors.orange || CONFIG.colors.orange; CONFIG.colors.dark = r.colors.dark || CONFIG.colors.dark; }
     if (r.users) CONFIG.users = r.users;
     if (r.services) CONFIG.services = r.services;
