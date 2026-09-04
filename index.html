@@ -4642,6 +4642,11 @@ async function _trCallGemini(prompt){
   if(!data || !data.text) throw new Error('la IA no devolvió texto');
   return data.text.trim();
 }
+function _trHasAccount(){ try{ return !!(window.firebase && firebase.auth && firebase.auth().currentUser); }catch(e){ return false; } }
+function _trAuthGateHtml(){
+  return '<div style="margin-bottom:8px;color:var(--t2)">✨ Las sugerencias con IA son exclusivas para cuentas registradas.</div>'+
+    '<a href="/registro/" target="_blank" style="display:inline-block;background:var(--teal);color:#fff;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;text-decoration:none">Crear cuenta gratis →</a>';
+}
 async function _trAssistItem(id){
   var row = document.querySelector('.tr-item-row[data-id="'+id+'"]');
   if(!row) return;
@@ -4650,6 +4655,7 @@ async function _trAssistItem(id){
   var raw = descInput.value.trim();
   if(!raw){ alert('Escribe primero una breve descripción del ítem.'); return; }
   box.style.display='block';
+  if(!_trHasAccount()){ box.innerHTML = _trAuthGateHtml(); return; }
   box.innerHTML = 'Generando sugerencia con IA…';
   try{
     var prompt = 'Eres un asistente que redacta descripciones profesionales y breves (máximo 20 palabras) para ítems de una cotización comercial en español de Chile. Reescribe de forma clara y profesional, sin inventar datos técnicos ni precios, el siguiente ítem: "'+raw+'". Responde solo con la descripción mejorada, sin comillas ni explicaciones.';
@@ -4677,6 +4683,7 @@ async function _trAssistIntro(){
   var clientName = (document.getElementById('tr-client-name')||{}).value || '';
   var raw = msgEl.value.trim();
   box.style.display='block';
+  if(!_trHasAccount()){ box.innerHTML = _trAuthGateHtml(); return; }
   box.innerHTML = 'Generando sugerencia con IA…';
   try{
     var prompt = 'Eres un asistente que redacta mensajes breves y profesionales en español de Chile para acompañar el envío de una cotización comercial de "'+service+'"'+(clientName?(' al cliente "'+clientName+'"'):'')+'. '+(raw?('Mejora este borrador: "'+raw+'".'):'Redacta un mensaje de introducción cordial y profesional de 2-3 frases.')+' No inventes precios ni plazos. Responde solo con el mensaje final, sin comillas ni explicaciones.';
