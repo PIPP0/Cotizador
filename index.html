@@ -4551,6 +4551,8 @@ function doSignup(){
       return _fbDb.ref('config/'+finalSlug).set(nc).then(function(){
         return _fbDb.ref('team/'+finalSlug+'/'+uid).set({ role:'admin', name: company, email: accEmail });
       }).then(function(){
+        return _fbDb.ref('userClients/'+uid+'/'+finalSlug).set(true).catch(function(){});
+      }).then(function(){
         return firebase.auth().signOut();
       }).then(function(){
         window.location.href = '/'+finalSlug+'/?bienvenido=1';
@@ -4649,6 +4651,26 @@ function _trAuthGateHtml(){
   return '<div style="margin-bottom:8px;color:var(--t2)">✨ Las sugerencias con IA son exclusivas para cuentas registradas.</div>'+
     '<a href="/registro/" target="_blank" style="display:inline-block;background:var(--teal);color:#fff;border-radius:6px;padding:6px 14px;font-size:12px;font-weight:700;text-decoration:none">Crear cuenta gratis →</a>';
 }
+function _trUpgradeGateHtml(){
+  return '<div style="margin-bottom:8px;color:var(--t2)">✨ Las sugerencias con IA son parte de los planes Pro/Team.</div>'+
+    '<div style="font-size:12px;color:var(--t2)">Entra a tu panel y revisa "Plan y facturación" para mejorar tu plan.</div>';
+}
+function _trResolveAiAllowed(){
+  try{
+    var u = window.firebase && firebase.auth ? firebase.auth().currentUser : null;
+    if(!u || u.isAnonymous) return Promise.resolve(false);
+    return _fbDb.ref('userClients/'+u.uid).once('value').then(function(snap){
+      var clients = snap.val();
+      var ids = clients ? Object.keys(clients) : [];
+      if(ids.length===0) return true; // no se pudo resolver el cliente del usuario: no cortar acceso (fail-open)
+      return Promise.all(ids.map(function(cid){
+        return _fbDb.ref('config/'+cid+'/plan/tier').once('value').then(function(s){ return s.val(); });
+      })).then(function(tiers){
+        return tiers.some(function(t){ return t !== 'free'; }); // null/undefined = clientes antiguos sin plan explícito -> permitido
+      });
+    }).catch(function(){ return true; });
+  }catch(e){ return Promise.resolve(false); }
+}
 async function _trAssistItem(id){
   var row = document.querySelector('.tr-item-row[data-id="'+id+'"]');
   if(!row) return;
@@ -4658,6 +4680,8 @@ async function _trAssistItem(id){
   if(!raw){ alert('Escribe primero una breve descripción del ítem.'); return; }
   box.style.display='block';
   if(!_trHasAccount()){ box.innerHTML = _trAuthGateHtml(); return; }
+  box.innerHTML = 'Verificando tu plan…';
+  if(!(await _trResolveAiAllowed())){ box.innerHTML = _trUpgradeGateHtml(); return; }
   box.innerHTML = 'Generando sugerencia con IA…';
   try{
     var prompt = 'Eres un asistente que redacta descripciones profesionales y breves (máximo 20 palabras) para ítems de una cotización comercial en español de Chile. Reescribe de forma clara y profesional, sin inventar datos técnicos ni precios, el siguiente ítem: "'+raw+'". Responde solo con la descripción mejorada, sin comillas ni explicaciones.';
@@ -4686,6 +4710,8 @@ async function _trAssistIntro(){
   var raw = msgEl.value.trim();
   box.style.display='block';
   if(!_trHasAccount()){ box.innerHTML = _trAuthGateHtml(); return; }
+  box.innerHTML = 'Verificando tu plan…';
+  if(!(await _trResolveAiAllowed())){ box.innerHTML = _trUpgradeGateHtml(); return; }
   box.innerHTML = 'Generando sugerencia con IA…';
   try{
     var prompt = 'Eres un asistente que redacta mensajes breves y profesionales en español de Chile para acompañar el envío de una cotización comercial de "'+service+'"'+(clientName?(' al cliente "'+clientName+'"'):'')+'. '+(raw?('Mejora este borrador: "'+raw+'".'):'Redacta un mensaje de introducción cordial y profesional de 2-3 frases.')+' No inventes precios ni plazos. Responde solo con el mensaje final, sin comillas ni explicaciones.';
@@ -4818,6 +4844,7 @@ function doLogin(){
         const clsMap = {admin:'adm', ejecutivo:'ejc', superadmin:'sup'};
         const roleLabelMap = {admin:'Admin', ejecutivo:'Ejecutivo', superadmin:'SuperAdmin'};
         currentUser = {id:role, role:(roleLabelMap[role]||role), name:(teamData.name||cred.user.email), cls:(clsMap[role]||'adm'), email:cred.user.email};
+        _fbDb.ref('userClients/'+uid+'/'+_CLIENT_ID).set(true).catch(function(){});
         _finishLogin(role);
       });
       });
@@ -4975,6 +5002,8 @@ function createTeamAccount(){
       secondary.auth().createUserWithEmailAndPassword(email, tempPass).then(function(cred){
     const uid = cred.user.uid;
     return _fbDb.ref('team/'+_CLIENT_ID+'/'+uid).set({email:email, role:role, name:name}).then(function(){
+      return _fbDb.ref('userClients/'+uid+'/'+_CLIENT_ID).set(true).catch(function(){});
+    }).then(function(){
       return secondary.auth().signOut().catch(function(){});
     }).then(function(){
       return firebase.auth().sendPasswordResetEmail(email).catch(function(){});
@@ -5258,6 +5287,8 @@ function saCreateTeamAccount(){
       return secondary.auth().createUserWithEmailAndPassword(email, tempPass).then(function(cred){
         const uid = cred.user.uid;
         return _fbDb.ref('team/'+clientId+'/'+uid).set({email:email, role:role, name:name}).then(function(){
+          return _fbDb.ref('userClients/'+uid+'/'+clientId).set(true).catch(function(){});
+        }).then(function(){
           return secondary.auth().signOut().catch(function(){});
         }).then(function(){
           return firebase.auth().sendPasswordResetEmail(email).catch(function(){});
