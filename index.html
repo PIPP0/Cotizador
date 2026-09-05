@@ -4863,10 +4863,8 @@ function _trCollectFormData(){
     var bg = i%2===0 ? '#ffffff' : '#f8fafb';
     itemsRows += '<tr style="background:'+bg+'"><td style="padding:10px 14px;font-size:13px;color:#252530;border-bottom:1px solid #eef0f3">'+it.desc.replace(/</g,'&lt;')+'</td><td style="text-align:center;padding:10px 8px;font-size:13px;color:#737380;border-bottom:1px solid #eef0f3;width:40px">'+it.qty+'</td><td style="text-align:right;padding:10px 14px;font-size:13px;font-weight:700;color:#252530;border-bottom:1px solid #eef0f3;white-space:nowrap">'+_trFmtCLP(it.tot)+'</td></tr>';
   });
-  itemsRows += '<tr><td colspan="3" style="padding:0"></td></tr>';
-  itemsRows += '<tr><td style="padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">Subtotal</td><td></td><td style="text-align:right;padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">'+_trFmtCLP(subtotal)+'</td></tr>';
-  itemsRows += '<tr><td style="padding:4px 14px;font-size:13px;color:#555555">IVA (19%)</td><td></td><td style="text-align:right;padding:4px 14px;font-size:13px;color:#555555">'+_trFmtCLP(iva)+'</td></tr>';
-  itemsRows += '<tr><td style="padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">TOTAL</td><td></td><td style="text-align:right;padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">'+_trFmtCLP(total)+'</td></tr>';
+  itemsRows += '<tr><td colspan="3" style="padding:10px 14px 0"><table role="presentation" width="100%" style="border-collapse:collapse"><tr><td style="padding:3px 0;font-size:13px;color:#555555">Subtotal</td><td style="text-align:right;padding:3px 0;font-size:13px;color:#555555">'+_trFmtCLP(subtotal)+'</td></tr><tr><td style="padding:3px 0;font-size:13px;color:#555555">IVA (19%)</td><td style="text-align:right;padding:3px 0;font-size:13px;color:#555555">'+_trFmtCLP(iva)+'</td></tr></table></td></tr>';
+  itemsRows += '<tr><td colspan="3" style="padding:14px"><table role="presentation" width="100%" style="border-collapse:collapse;background:#252530;background:linear-gradient(135deg,#252530,#8C5BB3 160%);border-radius:10px"><tr><td style="padding:14px 18px;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.4px">TOTAL</td><td style="padding:14px 18px;color:#ffffff;font-size:21px;font-weight:800;text-align:right">'+_trFmtCLP(total)+'</td></tr></table></td></tr>';
   return {
     company:company, companyEmail:companyEmail, clientName:clientName, clientEmail:clientEmail,
     service:service, message:message, items:items, subtotal:subtotal, iva:iva, total:total, itemsRows:itemsRows
@@ -8077,10 +8075,9 @@ function _buildEmailData(){
   const sub2=document.getElementById('ts').textContent||'—';
   const iva2=document.getElementById('ti').textContent||'—';
   const tot2=document.getElementById('tt').textContent||'—';
-  itemsRows+=`<tr><td colspan="3" style="padding:0"></td></tr>`;
-  itemsRows+=`<tr><td style="padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">Subtotal</td><td></td><td style="text-align:right;padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">${sub2}</td></tr>`;
-  itemsRows+=`<tr><td style="padding:4px 14px;font-size:13px;color:#555555">IVA (19%)</td><td></td><td style="text-align:right;padding:4px 14px;font-size:13px;color:#555555">${iva2}</td></tr>`;
-  itemsRows+=`<tr><td style="padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">TOTAL</td><td></td><td style="text-align:right;padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">${tot2}</td></tr>`;
+  const _dk1=(CONFIG.colors&&CONFIG.colors.dark)||'252530', _tl1=(CONFIG.colors&&CONFIG.colors.teal)||'8C5BB3';
+  itemsRows+=`<tr><td colspan="3" style="padding:10px 14px 0"><table role="presentation" width="100%" style="border-collapse:collapse"><tr><td style="padding:3px 0;font-size:13px;color:#555555">Subtotal</td><td style="text-align:right;padding:3px 0;font-size:13px;color:#555555">${sub2}</td></tr><tr><td style="padding:3px 0;font-size:13px;color:#555555">IVA (19%)</td><td style="text-align:right;padding:3px 0;font-size:13px;color:#555555">${iva2}</td></tr></table></td></tr>`;
+  itemsRows+=`<tr><td colspan="3" style="padding:14px"><table role="presentation" width="100%" style="border-collapse:collapse;background:#${_dk1};background:linear-gradient(135deg,#${_dk1},#${_tl1} 160%);border-radius:10px"><tr><td style="padding:14px 18px;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.4px">TOTAL</td><td style="padding:14px 18px;color:#ffffff;font-size:21px;font-weight:800;text-align:right">${tot2}</td></tr></table></td></tr>`;
   return {toEmail,toName,total,sub,iva,tipText,itemsRows,
     servicio:sn[svc]||svc,segmento:sgn2[seg]||seg,svcKey:svc};
 }
@@ -8356,12 +8353,11 @@ function sendModalEmail(id){
   const _ivaPct=CONFIG.cotizacion?.iva??19;
   const subAmt=Math.round(r.monto/(1+_ivaPct/100));
   const ivaAmt=r.monto-subAmt;
+  const _dk2=(CONFIG.colors&&CONFIG.colors.dark)||'252530', _tl2=(CONFIG.colors&&CONFIG.colors.teal)||'8C5BB3';
   const itemsRows=
     `<tr><td style="padding:10px 14px;font-size:13px;color:#252530;border-bottom:1px solid #eef0f3">${r.svc} — ${r.sys}</td><td style="text-align:center;padding:10px 8px;font-size:13px;color:#737380;border-bottom:1px solid #eef0f3;width:40px">1</td><td style="text-align:right;padding:10px 14px;font-size:13px;font-weight:700;color:#252530;border-bottom:1px solid #eef0f3;white-space:nowrap">$${subAmt.toLocaleString('es-CL')}</td></tr>`+
-    `<tr><td colspan="3" style="padding:0"></td></tr>`+
-    `<tr><td style="padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">Subtotal</td><td></td><td style="text-align:right;padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">$${subAmt.toLocaleString('es-CL')}</td></tr>`+
-    `<tr><td style="padding:4px 14px;font-size:13px;color:#555555">IVA (${_ivaPct}%)</td><td></td><td style="text-align:right;padding:4px 14px;font-size:13px;color:#555555">$${ivaAmt.toLocaleString('es-CL')}</td></tr>`+
-    `<tr><td style="padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">TOTAL</td><td></td><td style="text-align:right;padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">$${r.monto.toLocaleString('es-CL')}</td></tr>`;
+    `<tr><td colspan="3" style="padding:10px 14px 0"><table role="presentation" width="100%" style="border-collapse:collapse"><tr><td style="padding:3px 0;font-size:13px;color:#555555">Subtotal</td><td style="text-align:right;padding:3px 0;font-size:13px;color:#555555">$${subAmt.toLocaleString('es-CL')}</td></tr><tr><td style="padding:3px 0;font-size:13px;color:#555555">IVA (${_ivaPct}%)</td><td style="text-align:right;padding:3px 0;font-size:13px;color:#555555">$${ivaAmt.toLocaleString('es-CL')}</td></tr></table></td></tr>`+
+    `<tr><td colspan="3" style="padding:14px"><table role="presentation" width="100%" style="border-collapse:collapse;background:#${_dk2};background:linear-gradient(135deg,#${_dk2},#${_tl2} 160%);border-radius:10px"><tr><td style="padding:14px 18px;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.4px">TOTAL</td><td style="padding:14px 18px;color:#ffffff;font-size:21px;font-weight:800;text-align:right">$${r.monto.toLocaleString('es-CL')}</td></tr></table></td></tr>`;
   const btn=document.getElementById('modal-send-btn');
   const svgSend='<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" style="margin-right:4px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
   if(btn){ btn.disabled=true; btn.textContent='Enviando…'; }
