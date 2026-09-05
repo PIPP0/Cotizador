@@ -3617,7 +3617,7 @@ function sendConvEmail() {
   const subject = `${tipo} · ${q.id||''} · ${q.cliente||q.client||''}`;
   const company = (CONFIG.nameA||'') + (CONFIG.nameB||'');
   sendBtn.disabled = true; sendBtn.textContent = 'Enviando…';
-  emailjs.send('service_oa9hbgk','template_1hljlkf',{
+  emailjs.send('service_uth1gc6','template_1hljlkf',{
     reply_to:        (CONFIG.email||''),
     subject:          subject,
     to_email:         to,
@@ -4794,7 +4794,7 @@ async function doTrialSend(){
   var cotId = 'DEMO-' + Date.now().toString().slice(-6);
   var fecha = new Date().toLocaleDateString('es-CL');
   try{
-    await emailjs.send('service_oa9hbgk','template_1hljlkf', {
+    await emailjs.send('service_uth1gc6','template_1hljlkf', {
       reply_to: companyEmail,
       subject: 'Cotización de ' + company,
       to_email: clientEmail,
@@ -7983,7 +7983,7 @@ Motiva a contratar, tono profesional, en español. Sin saludo ni firma.`;
     emailIntro = `Adjuntamos la cotización de ${d.servicio} para ${d.toName||'su empresa'}. Este servicio le permitirá ${_benefit}. Quedamos disponibles para coordinar los próximos pasos.`;
   }
 
-  emailjs.send('service_oa9hbgk','template_1hljlkf',{
+  emailjs.send('service_uth1gc6','template_1hljlkf',{
     reply_to:        (CONFIG.email||''),
     subject:         'Cotización '+qId+' · '+company,
     to_email:        d.toEmail,
@@ -8220,7 +8220,7 @@ function sendModalEmail(id){
   const btn=document.getElementById('modal-send-btn');
   const svgSend='<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" style="margin-right:4px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
   if(btn){ btn.disabled=true; btn.textContent='Enviando…'; }
-  emailjs.send('service_oa9hbgk','template_1hljlkf',{
+  emailjs.send('service_uth1gc6','template_1hljlkf',{
     reply_to:        (CONFIG.email||''),
     subject:'Cotización '+r.id+' · '+company,
     to_email:r.email,
