@@ -1521,6 +1521,21 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
       <option value="Otro">Otro</option>
     </select>
   </div>
+  <div style="margin:18px 0 8px"><label style="font-size:13px;font-weight:700;color:var(--dark)">✨ Personaliza tu marca (opcional)</label></div>
+  <div style="display:grid;grid-template-columns:auto auto 1fr;gap:12px;align-items:end;margin-bottom:14px">
+    <div>
+      <label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:4px">Color principal</label>
+      <input id="tr-color-teal" type="color" value="#8C5BB3" style="width:56px;height:38px;padding:2px;border:1px solid #e2e2e8;border-radius:10px;box-sizing:border-box;cursor:pointer">
+    </div>
+    <div>
+      <label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:4px">Color oscuro</label>
+      <input id="tr-color-dark" type="color" value="#252530" style="width:56px;height:38px;padding:2px;border:1px solid #e2e2e8;border-radius:10px;box-sizing:border-box;cursor:pointer">
+    </div>
+    <div>
+      <label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:4px">URL de tu logo</label>
+      <input id="tr-logo-url" type="url" placeholder="https://tuempresa.cl/logo.png" style="width:100%;padding:10px 12px;border:1px solid #e2e2e8;border-radius:10px;font-size:14px;box-sizing:border-box">
+    </div>
+  </div>
   <div style="margin:18px 0 8px;display:flex;align-items:center;justify-content:space-between">
     <label style="font-size:13px;font-weight:700;color:var(--dark)">Ítems de la cotización</label>
     <button type="button" onclick="_trAddItem()" style="background:transparent;border:1px solid var(--teal);color:var(--teal);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">+ Agregar ítem</button>
@@ -4837,6 +4852,9 @@ function _trCollectFormData(){
   var clientEmail = (document.getElementById('tr-client-email').value||'').trim();
   var service = document.getElementById('tr-service').value;
   var message = (document.getElementById('tr-message').value||'').trim();
+  var teal = (document.getElementById('tr-color-teal').value||'#8C5BB3').replace('#','');
+  var dark = (document.getElementById('tr-color-dark').value||'#252530').replace('#','');
+  var logoUrl = (document.getElementById('tr-logo-url').value||'').trim();
   if(!company || !companyEmail || !clientName || !clientEmail){
     alert('Completa empresa, correo de empresa, nombre y correo del cliente.');
     return null;
@@ -4864,26 +4882,29 @@ function _trCollectFormData(){
     itemsRows += '<tr style="background:'+bg+'"><td style="padding:10px 14px;font-size:13px;color:#252530;border-bottom:1px solid #eef0f3">'+it.desc.replace(/</g,'&lt;')+'</td><td style="text-align:center;padding:10px 8px;font-size:13px;color:#737380;border-bottom:1px solid #eef0f3;width:40px">'+it.qty+'</td><td style="text-align:right;padding:10px 14px;font-size:13px;font-weight:700;color:#252530;border-bottom:1px solid #eef0f3;white-space:nowrap">'+_trFmtCLP(it.tot)+'</td></tr>';
   });
   itemsRows += '<tr><td colspan="3" style="padding:10px 14px 0"><table role="presentation" width="100%" style="border-collapse:collapse"><tr><td style="padding:3px 0;font-size:13px;color:#555555 !important">Subtotal</td><td style="text-align:right;padding:3px 0;font-size:13px;color:#555555 !important">'+_trFmtCLP(subtotal)+'</td></tr><tr><td style="padding:3px 0;font-size:13px;color:#555555 !important">IVA (19%)</td><td style="text-align:right;padding:3px 0;font-size:13px;color:#555555 !important">'+_trFmtCLP(iva)+'</td></tr></table></td></tr>';
-  itemsRows += '<tr><td colspan="3" style="padding:14px"><table role="presentation" width="100%" bgcolor="#252530" style="border-collapse:collapse;background:#252530;background:linear-gradient(135deg,#252530,#8C5BB3 160%);border-radius:10px"><tr><td style="padding:14px 18px;color:#ffffff !important;font-size:12.5px;font-weight:700;letter-spacing:.4px">TOTAL</td><td style="padding:14px 18px;color:#ffffff !important;font-size:21px;font-weight:800;text-align:right">'+_trFmtCLP(total)+'</td></tr></table></td></tr>';
+  itemsRows += '<tr><td colspan="3" style="padding:14px"><table role="presentation" width="100%" bgcolor="#'+dark+'" style="border-collapse:collapse;background:#'+dark+';background:linear-gradient(135deg,#'+dark+',#'+teal+' 160%);border-radius:10px"><tr><td style="padding:14px 18px;color:#ffffff !important;font-size:12.5px;font-weight:700;letter-spacing:.4px">TOTAL</td><td style="padding:14px 18px;color:#ffffff !important;font-size:21px;font-weight:800;text-align:right">'+_trFmtCLP(total)+'</td></tr></table></td></tr>';
   return {
     company:company, companyEmail:companyEmail, clientName:clientName, clientEmail:clientEmail,
-    service:service, message:message, items:items, subtotal:subtotal, iva:iva, total:total, itemsRows:itemsRows
+    service:service, message:message, items:items, subtotal:subtotal, iva:iva, total:total, itemsRows:itemsRows,
+    teal:teal, dark:dark, logoUrl:logoUrl
   };
 }
 
 function _trBuildPreviewHtml(d){
-  return '<div style="background:#252530;color:#fff;padding:18px 20px;display:flex;justify-content:space-between;align-items:center">'+
-      '<div style="font-weight:800;font-size:15px">'+d.company.replace(/</g,'&lt;')+'</div>'+
-      '<div style="font-size:11px;color:#c9c9d4">Cotización generada con Cotizadía</div>'+
+  var logo = d.logoUrl || _DEFAULT_LOGO_URL;
+  return '<div style="background:linear-gradient(135deg,#'+d.dark+',#'+d.teal+' 160%);padding:20px;display:flex;align-items:center;gap:12px">'+
+      '<div style="background:#fff;border-radius:10px;padding:5px;display:flex"><img src="'+logo+'" width="34" height="34" style="display:block;border-radius:6px" onerror="this.style.display=\'none\'"></div>'+
+      '<div><div style="color:#fff;font-weight:800;font-size:15px">'+d.company.replace(/</g,'&lt;')+'</div>'+
+      '<div style="font-size:11px;color:rgba(255,255,255,.7)">Cotización generada con Cotizadía</div></div>'+
     '</div>'+
-    '<div style="background:#eef6f9;padding:12px 20px">'+
+    '<div style="padding:14px 20px 0"><div style="background:#f8fafb;border-left:4px solid #'+d.teal+';border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between">'+
       '<div style="font-weight:700;font-size:13px;color:#252530">Cotización para '+d.clientName.replace(/</g,'&lt;')+'</div>'+
       '<div style="font-size:12px;color:#6b6b7a">'+d.service+' · '+new Date().toLocaleDateString('es-CL')+'</div>'+
-    '</div>'+
+    '</div></div>'+
     '<div style="padding:16px 20px">'+
       (d.message ? '<div style="font-size:13px;color:#444;margin-bottom:14px">'+d.message.replace(/</g,'&lt;')+'</div>' : '')+
       '<table style="width:100%;border-collapse:collapse">'+
-        '<thead><tr style="background:#252530;color:#fff"><td style="padding:8px 14px;font-size:11px;font-weight:700">DESCRIPCIÓN</td><td style="padding:8px;font-size:11px;font-weight:700;text-align:center">CANT.</td><td style="padding:8px 14px;font-size:11px;font-weight:700;text-align:right">TOTAL</td></tr></thead>'+
+        '<thead><tr style="background:#f8fafb;color:#8a8698"><td style="padding:8px 14px;font-size:11px;font-weight:700">DESCRIPCIÓN</td><td style="padding:8px;font-size:11px;font-weight:700;text-align:center">CANT.</td><td style="padding:8px 14px;font-size:11px;font-weight:700;text-align:right">TOTAL</td></tr></thead>'+
         '<tbody>'+d.itemsRows+'</tbody>'+
       '</table>'+
     '</div>'+
@@ -4936,9 +4957,9 @@ async function _trConfirmSend(){
       company_location: '',
       company_since: '',
       company_tagline: 'Cotización generada con Cotizadía',
-      company_logo: _DEFAULT_LOGO_URL,
-      company_dark: '#252530',
-      company_teal: '#8C5BB3',
+      company_logo: d.logoUrl || _DEFAULT_LOGO_URL,
+      company_dark: '#'+d.dark,
+      company_teal: '#'+d.teal,
       email: d.clientEmail
     });
     localStorage.setItem(_trialCountKey(), String(_trialCount()+1));
