@@ -2603,6 +2603,7 @@ const _CLIENT_ID    = (function(){ var q=new URLSearchParams(window.location.sea
 const _spcKey       = 'spc_'      + _CLIENT_ID;
 const _spcLogoKey   = 'spc_logo_' + _CLIENT_ID;
 const _spcLlmKey    = 'spc_llmkey_' + _CLIENT_ID; // clave separada — nunca sobrescrita por Firebase
+const _DEFAULT_LOGO_URL = 'https://cotizadia.cl/default-logo.svg'; // logo genérico usado en correos cuando el cliente no subió el suyo
 
 // ══════════════════════════════════════════════════
 //  CONFIG — personalización SaaS
@@ -3687,7 +3688,7 @@ function sendConvEmail() {
     company_location: CONFIG.location || '',
     company_since:    (CONFIG.since||'').replace(/^Desde\s+/i,''),
     company_tagline:  CONFIG.tagline  || '',
-    company_logo:     (CONFIG.logoUrl||'').startsWith('data:') ? '' : (CONFIG.logoUrl||''),
+    company_logo:     (CONFIG.logoUrl||'').startsWith('data:') ? _DEFAULT_LOGO_URL : (CONFIG.logoUrl||_DEFAULT_LOGO_URL),
     company_dark:     '#' + ((CONFIG.colors&&CONFIG.colors.dark)  || '252530'),
     company_teal:     '#' + ((CONFIG.colors&&CONFIG.colors.teal)  || '1e95a6'),
     email:            CONFIG.email    || ''
@@ -4937,7 +4938,7 @@ async function _trConfirmSend(){
       company_location: '',
       company_since: '',
       company_tagline: 'Cotización generada con Cotizadía',
-      company_logo: '',
+      company_logo: _DEFAULT_LOGO_URL,
       company_dark: '#252530',
       company_teal: '#8C5BB3',
       email: d.clientEmail
@@ -8148,7 +8149,7 @@ Motiva a contratar, tono profesional, en español. Sin saludo ni firma.`;
     company_location:CONFIG.location || '',
     company_since:   (CONFIG.since||'').replace(/^Desde\s+/i,''),
     company_tagline: CONFIG.tagline  || '',
-    company_logo:    (CONFIG.logoUrl||'').startsWith('data:') ? '' : (CONFIG.logoUrl||''),
+    company_logo:    (CONFIG.logoUrl||'').startsWith('data:') ? _DEFAULT_LOGO_URL : (CONFIG.logoUrl||_DEFAULT_LOGO_URL),
     company_dark:    '#' + (CONFIG.colors.dark  || '252530'),
     company_teal:    '#' + (CONFIG.colors.teal  || '1e95a6'),
     email:           CONFIG.email    || ''
@@ -8385,7 +8386,7 @@ function sendModalEmail(id){
     company_location:CONFIG.location||'',
     company_since:(CONFIG.since||'').replace(/^Desde\s+/i,''),
     company_tagline:CONFIG.tagline||'',
-    company_logo:(CONFIG.logoUrl||'').startsWith('data:') ? '' : (CONFIG.logoUrl||''),
+    company_logo:(CONFIG.logoUrl||'').startsWith('data:') ? _DEFAULT_LOGO_URL : (CONFIG.logoUrl||_DEFAULT_LOGO_URL),
     company_dark:'#'+(CONFIG.colors.dark||'252530'),
     company_teal:'#'+(CONFIG.colors.teal||'1e95a6'),
     email:CONFIG.email||''
