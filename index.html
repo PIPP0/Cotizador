@@ -2812,6 +2812,10 @@ else if(_CLIENT_ID === 'cotizar'){
 
 // ─── Restauración INMEDIATA de colores + logo desde localStorage ────
 (function() {
+  if (['admin','_template','cotizar','registro'].indexOf(_CLIENT_ID) !== -1) {
+    try { localStorage.removeItem(_spcKey); } catch(e) {} // autolimpia contaminación residual de antes de este fix
+    return;
+  }
   try {
     const raw = localStorage.getItem(_spcKey);
     if (raw) {
@@ -4296,6 +4300,7 @@ function initFirebase() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function saveConfigToStorage() {
+  if (['admin','_template','cotizar','registro'].indexOf(_CLIENT_ID) !== -1) return; // rutas virtuales: nunca persisten config propia
   try {
     if (CONFIG.logoSrc) { localStorage.setItem(_spcLogoKey, CONFIG.logoSrc); }
     else { localStorage.removeItem(_spcLogoKey); }
@@ -4369,6 +4374,10 @@ function _syncFromFirebase() {
 }
 
 function loadConfigFromStorage() {
+  if (['admin','_template','cotizar','registro'].indexOf(_CLIENT_ID) !== -1) {
+    try { localStorage.removeItem(_spcKey); } catch(e) {} // autolimpia contaminación residual de antes de este fix
+    return false;
+  }
   try {
     const raw = localStorage.getItem(_spcKey);
     if (!raw) return false;
