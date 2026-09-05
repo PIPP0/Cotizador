@@ -1019,6 +1019,9 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 .ce-add-row input:focus{border-color:var(--teal)}
 .ce-add-btn{padding:6px 12px;background:var(--teal);color:#fff;border:none;border-radius:7px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;transition:.12s}
 .ce-add-btn:hover{opacity:.85}
+#tr-color-teal::-webkit-color-swatch-wrapper,#tr-color-dark::-webkit-color-swatch-wrapper{padding:0;border-radius:50%;overflow:hidden}
+#tr-color-teal::-webkit-color-swatch,#tr-color-dark::-webkit-color-swatch{border:none;border-radius:50%}
+#tr-color-teal::-moz-color-swatch,#tr-color-dark::-moz-color-swatch{border:none;border-radius:50%}
 </style>
 <script>
 /* Aplicar colores guardados antes del primer render — evita flash */
@@ -1521,19 +1524,19 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
       <option value="Otro">Otro</option>
     </select>
   </div>
-  <div style="margin:18px 0 8px"><label style="font-size:13px;font-weight:700;color:var(--dark)">✨ Personaliza tu marca (opcional)</label></div>
-  <div style="display:grid;grid-template-columns:auto auto 1fr;gap:12px;align-items:end;margin-bottom:14px">
-    <div>
-      <label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:4px">Color principal</label>
-      <input id="tr-color-teal" type="color" value="#8C5BB3" style="width:56px;height:38px;padding:2px;border:1px solid #e2e2e8;border-radius:10px;box-sizing:border-box;cursor:pointer">
+  <div style="margin:20px 0 8px"><label style="font-size:13px;font-weight:700;color:var(--dark)">✨ Personaliza tu marca (opcional)</label></div>
+  <div style="display:flex;gap:22px;align-items:center;margin-bottom:16px;padding:16px 18px;background:#fafafc;border:1px solid #eef0f3;border-radius:16px">
+    <div style="text-align:center;flex:0 0 auto">
+      <input id="tr-color-teal" type="color" value="#8C5BB3" style="-webkit-appearance:none;appearance:none;width:44px;height:44px;padding:0;border:none;border-radius:50%;box-shadow:0 0 0 3px #fff,0 0 0 4px #e2e2e8,0 3px 8px rgba(20,20,43,.12);cursor:pointer;background:none">
+      <div style="font-size:11px;color:#6b6b7a;margin-top:8px;white-space:nowrap">Color principal</div>
     </div>
-    <div>
-      <label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:4px">Color oscuro</label>
-      <input id="tr-color-dark" type="color" value="#252530" style="width:56px;height:38px;padding:2px;border:1px solid #e2e2e8;border-radius:10px;box-sizing:border-box;cursor:pointer">
+    <div style="text-align:center;flex:0 0 auto">
+      <input id="tr-color-dark" type="color" value="#252530" style="-webkit-appearance:none;appearance:none;width:44px;height:44px;padding:0;border:none;border-radius:50%;box-shadow:0 0 0 3px #fff,0 0 0 4px #e2e2e8,0 3px 8px rgba(20,20,43,.12);cursor:pointer;background:none">
+      <div style="font-size:11px;color:#6b6b7a;margin-top:8px;white-space:nowrap">Color oscuro</div>
     </div>
-    <div>
-      <label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:4px">URL de tu logo</label>
-      <input id="tr-logo-url" type="url" placeholder="https://tuempresa.cl/logo.png" style="width:100%;padding:10px 12px;border:1px solid #e2e2e8;border-radius:10px;font-size:14px;box-sizing:border-box">
+    <div style="flex:1">
+      <label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:5px">URL de tu logo</label>
+      <input id="tr-logo-url" type="url" placeholder="https://tuempresa.cl/logo.png" style="width:100%;padding:10px 12px;border:1px solid #e2e2e8;border-radius:10px;font-size:14px;box-sizing:border-box;background:#fff">
     </div>
   </div>
   <div style="margin:18px 0 8px;display:flex;align-items:center;justify-content:space-between">
