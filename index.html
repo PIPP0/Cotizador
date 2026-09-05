@@ -1484,10 +1484,21 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
   </div>
 
   <div id="trial-card" style="max-width:900px;margin:-60px auto 60px;padding:32px;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(20,20,43,0.15);position:relative;z-index:5">
-  <div id="tr-step-indicator" style="display:flex;gap:6px;margin-bottom:16px">
-    <div id="tr-dot-1" style="height:4px;flex:1;border-radius:4px;background:var(--teal)"></div>
-    <div id="tr-dot-2" style="height:4px;flex:1;border-radius:4px;background:#e2e2e8"></div>
-    <div id="tr-dot-3" style="height:4px;flex:1;border-radius:4px;background:#e2e2e8"></div>
+  <div id="tr-step-indicator" style="display:flex;align-items:flex-start;margin-bottom:32px">
+    <div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto">
+      <div id="tr-circle-1" style="width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800">1</div>
+      <div id="tr-label-1" style="font-size:11.5px;font-weight:700;color:var(--dark);margin-top:7px;white-space:nowrap">Tus datos</div>
+    </div>
+    <div id="tr-track-1" style="flex:1;height:2px;background:#e2e2e8;margin:14px 8px 0;border-radius:2px"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto">
+      <div id="tr-circle-2" style="width:30px;height:30px;border-radius:50%;background:#e2e2e8;color:#9a9aa8;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800">2</div>
+      <div id="tr-label-2" style="font-size:11.5px;font-weight:700;color:#9a9aa8;margin-top:7px;white-space:nowrap">Revisar</div>
+    </div>
+    <div id="tr-track-2" style="flex:1;height:2px;background:#e2e2e8;margin:14px 8px 0;border-radius:2px"></div>
+    <div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto">
+      <div id="tr-circle-3" style="width:30px;height:30px;border-radius:50%;background:#e2e2e8;color:#9a9aa8;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800">3</div>
+      <div id="tr-label-3" style="font-size:11.5px;font-weight:700;color:#9a9aa8;margin-top:7px;white-space:nowrap">Enviado</div>
+    </div>
   </div>
 
   <div id="tr-step-1">
@@ -4799,8 +4810,19 @@ function _trGoToStep(n){
   [1,2,3].forEach(function(i){
     var el = document.getElementById('tr-step-'+i);
     if(el) el.style.display = (i===n) ? 'block' : 'none';
-    var dot = document.getElementById('tr-dot-'+i);
-    if(dot) dot.style.background = (i<=n) ? 'var(--teal)' : '#e2e2e8';
+    var done = i < n, current = i === n;
+    var circle = document.getElementById('tr-circle-'+i);
+    if(circle){
+      circle.style.background = (done||current) ? 'var(--teal)' : '#e2e2e8';
+      circle.style.color = (done||current) ? '#fff' : '#9a9aa8';
+      circle.textContent = done ? '✓' : String(i);
+    }
+    var label = document.getElementById('tr-label-'+i);
+    if(label) label.style.color = (done||current) ? 'var(--dark)' : '#9a9aa8';
+  });
+  [1,2].forEach(function(i){
+    var track = document.getElementById('tr-track-'+i);
+    if(track) track.style.background = (i < n) ? 'var(--teal)' : '#e2e2e8';
   });
   var card = document.getElementById('trial-card');
   if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
