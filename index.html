@@ -1484,6 +1484,13 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
   </div>
 
   <div id="trial-card" style="max-width:900px;margin:-60px auto 60px;padding:32px;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(20,20,43,0.15);position:relative;z-index:5">
+  <div id="tr-step-indicator" style="display:flex;gap:6px;margin-bottom:16px">
+    <div id="tr-dot-1" style="height:4px;flex:1;border-radius:4px;background:var(--teal)"></div>
+    <div id="tr-dot-2" style="height:4px;flex:1;border-radius:4px;background:#e2e2e8"></div>
+    <div id="tr-dot-3" style="height:4px;flex:1;border-radius:4px;background:#e2e2e8"></div>
+  </div>
+
+  <div id="tr-step-1">
   <h3 style="margin:0 0 6px;font-size:22px;color:var(--dark)">Prueba la herramienta gratis</h3>
   <p style="margin:0 0 20px;color:#6b6b7a;font-size:14px">Arma una cotización real con ítems, IA de apoyo y envíala a un cliente. Tienes <span id="trial-counter">3</span> envíos de prueba disponibles.</p>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
@@ -1522,10 +1529,37 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
     <div id="tr-intro-assist-box" style="display:none;margin-top:8px;padding:10px 12px;background:#f3f0fa;border-radius:10px;font-size:13px;color:#333"></div>
   </div>
   <p style="font-size:11px;color:#9a9aa8;margin:14px 0 0">✨ Los textos sugeridos se generan automáticamente con IA. Revísalos siempre antes de usarlos — tú decides qué se envía.</p>
-  <button type="button" id="trial-btn" onclick="doTrialSend()" class="login-btn" style="width:100%;margin-top:18px">Enviar cotización de prueba →</button>
+  <button type="button" id="trial-btn" onclick="_trGoToPreview()" class="login-btn" style="width:100%;margin-top:18px">Ver cotización →</button>
   <div id="trial-limit" style="display:none;margin-top:16px;padding:16px;background:var(--dark);border-radius:12px;text-align:center">
     <p style="color:#fff;font-size:14px;margin:0 0 10px">Ya usaste tus 3 cotizaciones de prueba.</p>
     <a href="/registro/" style="display:inline-block;background:var(--teal);color:#fff;padding:10px 22px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none">Crear cuenta gratis →</a>
+  </div>
+  </div>
+
+  <div id="tr-step-2" style="display:none">
+    <h3 style="margin:0 0 6px;font-size:22px;color:var(--dark)">Revisa tu cotización</h3>
+    <p style="margin:0 0 20px;color:#6b6b7a;font-size:14px">Así la va a recibir tu cliente por correo. Revísala y, si está todo bien, envíala.</p>
+    <div id="tr-preview-box" style="border:1px solid #eef0f3;border-radius:14px;overflow:hidden"></div>
+    <div id="tr-send-error" style="display:none;margin-top:12px;padding:12px 14px;background:#fdf0f0;border:1px solid #f5c6c6;border-radius:10px;font-size:13px;color:#a33"></div>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button type="button" onclick="_trBackToEdit()" style="flex:1;background:transparent;border:1px solid #e2e2e8;color:var(--dark);border-radius:11px;padding:13px;font-size:14px;font-weight:700;cursor:pointer">← Editar</button>
+      <button type="button" id="trial-btn-2" onclick="_trConfirmSend()" class="login-btn" style="flex:2">Enviar cotización →</button>
+    </div>
+  </div>
+
+  <div id="tr-step-3" style="display:none;text-align:center;padding:10px 0 4px">
+    <div style="width:56px;height:56px;border-radius:50%;background:var(--gbg,#e8f7ee);color:#1e9e5f;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px">✓</div>
+    <h3 style="margin:0 0 8px;font-size:22px;color:var(--dark)">¡Tu cotización se envió con éxito!</h3>
+    <p id="tr-success-sub" style="margin:0 0 20px;color:#6b6b7a;font-size:14px"></p>
+    <div style="text-align:left;background:#f8fafb;border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;gap:10px"><span style="font-size:18px">📩</span><span style="font-size:13.5px;color:#444">Tu cliente recibirá el correo en <b id="tr-success-client-email"></b>. Si no lo ve en su bandeja principal, puede estar en spam/promociones.</span></div>
+      <div style="display:flex;gap:10px"><span style="font-size:18px">↩️</span><span style="font-size:13.5px;color:#444">Si tu cliente responde, la respuesta llega directo a <b id="tr-success-company-email"></b> — no pasa por Cotizadía.</span></div>
+      <div id="tr-success-remaining" style="display:flex;gap:10px"><span style="font-size:18px">🔁</span><span style="font-size:13.5px;color:#444"></span></div>
+    </div>
+    <div style="margin-top:22px;display:flex;flex-direction:column;gap:10px;align-items:center">
+      <button type="button" id="tr-send-another-btn" onclick="_trResetWizard()" style="background:transparent;border:1px solid var(--teal);color:var(--teal);border-radius:11px;padding:11px 22px;font-size:13.5px;font-weight:700;cursor:pointer">Enviar otra cotización de prueba</button>
+      <a href="/registro/" style="display:inline-block;background:var(--teal);color:#fff;padding:13px 26px;border-radius:11px;font-size:14px;font-weight:800;text-decoration:none">Crear cuenta gratis — sin límite de envíos →</a>
+    </div>
   </div>
 </div>
 
@@ -4759,8 +4793,21 @@ function _trApplyIntro(){
   if(suggestion){ document.getElementById('tr-message').value = suggestion; }
   box.style.display='none';
 }
-async function doTrialSend(){
-  if(_trialCount()>=3){ _trialRefreshUI(); return; }
+var _trPreviewData = null;
+
+function _trGoToStep(n){
+  [1,2,3].forEach(function(i){
+    var el = document.getElementById('tr-step-'+i);
+    if(el) el.style.display = (i===n) ? 'block' : 'none';
+    var dot = document.getElementById('tr-dot-'+i);
+    if(dot) dot.style.background = (i<=n) ? 'var(--teal)' : '#e2e2e8';
+  });
+  var card = document.getElementById('trial-card');
+  if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function _trCollectFormData(){
+  if(_trialCount()>=3){ _trialRefreshUI(); return null; }
   var company = (document.getElementById('tr-company').value||'').trim();
   var companyEmail = (document.getElementById('tr-company-email').value||'').trim();
   var clientName = (document.getElementById('tr-client-name').value||'').trim();
@@ -4769,10 +4816,10 @@ async function doTrialSend(){
   var message = (document.getElementById('tr-message').value||'').trim();
   if(!company || !companyEmail || !clientName || !clientEmail){
     alert('Completa empresa, correo de empresa, nombre y correo del cliente.');
-    return;
+    return null;
   }
   var rows = document.querySelectorAll('.tr-item-row');
-  if(rows.length===0){ alert('Agrega al menos un ítem a la cotización.'); return; }
+  if(rows.length===0){ alert('Agrega al menos un ítem a la cotización.'); return null; }
   var items = [];
   var subtotal = 0;
   rows.forEach(function(row){
@@ -4785,7 +4832,7 @@ async function doTrialSend(){
       items.push({desc:desc, qty:qty, tot:tot});
     }
   });
-  if(items.length===0){ alert('Completa descripción, cantidad y precio de al menos un ítem.'); return; }
+  if(items.length===0){ alert('Completa descripción, cantidad y precio de al menos un ítem.'); return null; }
   var iva = subtotal*0.19;
   var total = subtotal+iva;
   var itemsRows = '';
@@ -4797,49 +4844,115 @@ async function doTrialSend(){
   itemsRows += '<tr><td style="padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">Subtotal</td><td></td><td style="text-align:right;padding:7px 14px;font-size:13px;color:#555555;border-top:1px solid #eeeeee">'+_trFmtCLP(subtotal)+'</td></tr>';
   itemsRows += '<tr><td style="padding:4px 14px;font-size:13px;color:#555555">IVA (19%)</td><td></td><td style="text-align:right;padding:4px 14px;font-size:13px;color:#555555">'+_trFmtCLP(iva)+'</td></tr>';
   itemsRows += '<tr><td style="padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">TOTAL</td><td></td><td style="text-align:right;padding:10px 14px;font-size:16px;font-weight:700;color:#252530;border-top:2px solid #252530">'+_trFmtCLP(total)+'</td></tr>';
-  var btn = document.getElementById('trial-btn');
+  return {
+    company:company, companyEmail:companyEmail, clientName:clientName, clientEmail:clientEmail,
+    service:service, message:message, items:items, subtotal:subtotal, iva:iva, total:total, itemsRows:itemsRows
+  };
+}
+
+function _trBuildPreviewHtml(d){
+  return '<div style="background:#252530;color:#fff;padding:18px 20px;display:flex;justify-content:space-between;align-items:center">'+
+      '<div style="font-weight:800;font-size:15px">'+d.company.replace(/</g,'&lt;')+'</div>'+
+      '<div style="font-size:11px;color:#c9c9d4">Cotización generada con Cotizadía</div>'+
+    '</div>'+
+    '<div style="background:#eef6f9;padding:12px 20px">'+
+      '<div style="font-weight:700;font-size:13px;color:#252530">Cotización para '+d.clientName.replace(/</g,'&lt;')+'</div>'+
+      '<div style="font-size:12px;color:#6b6b7a">'+d.service+' · '+new Date().toLocaleDateString('es-CL')+'</div>'+
+    '</div>'+
+    '<div style="padding:16px 20px">'+
+      (d.message ? '<div style="font-size:13px;color:#444;margin-bottom:14px">'+d.message.replace(/</g,'&lt;')+'</div>' : '')+
+      '<table style="width:100%;border-collapse:collapse">'+
+        '<thead><tr style="background:#252530;color:#fff"><td style="padding:8px 14px;font-size:11px;font-weight:700">DESCRIPCIÓN</td><td style="padding:8px;font-size:11px;font-weight:700;text-align:center">CANT.</td><td style="padding:8px 14px;font-size:11px;font-weight:700;text-align:right">TOTAL</td></tr></thead>'+
+        '<tbody>'+d.itemsRows+'</tbody>'+
+      '</table>'+
+    '</div>'+
+    '<div style="background:#252530;color:#c9c9d4;padding:12px 20px;font-size:11.5px;text-align:center">'+
+      d.company.replace(/</g,'&lt;')+' · '+d.companyEmail.replace(/</g,'&lt;')+
+    '</div>';
+}
+
+function _trGoToPreview(){
+  var d = _trCollectFormData();
+  if(!d) return;
+  _trPreviewData = d;
+  document.getElementById('tr-preview-box').innerHTML = _trBuildPreviewHtml(d);
+  document.getElementById('tr-send-error').style.display = 'none';
+  _trGoToStep(2);
+}
+
+function _trBackToEdit(){ _trGoToStep(1); }
+
+async function _trConfirmSend(){
+  var d = _trPreviewData;
+  if(!d){ _trBackToEdit(); return; }
+  if(_trialCount()>=3){ _trialRefreshUI(); _trBackToEdit(); return; }
+  var btn = document.getElementById('trial-btn-2');
   var origText = btn ? btn.textContent : '';
   if(btn){ btn.disabled = true; btn.textContent = 'Enviando…'; }
+  var errBox = document.getElementById('tr-send-error');
+  errBox.style.display = 'none';
   var cotId = 'DEMO-' + Date.now().toString().slice(-6);
   var fecha = new Date().toLocaleDateString('es-CL');
   try{
     await emailjs.send('service_prlcpk9','template_1hljlkf', {
-      reply_to: companyEmail,
-      subject: 'Cotización de ' + company,
-      to_email: clientEmail,
-      to_name: clientName,
+      reply_to: d.companyEmail,
+      subject: 'Cotización de ' + d.company,
+      to_email: d.clientEmail,
+      to_name: d.clientName,
       cot_id: cotId,
-      servicio: service,
+      servicio: d.service,
       segmento: '',
       fecha: fecha,
-      items_rows: itemsRows,
-      subtotal: _trFmtCLP(subtotal),
-      iva: _trFmtCLP(iva),
-      total: _trFmtCLP(total),
+      items_rows: d.itemsRows,
+      subtotal: _trFmtCLP(d.subtotal),
+      iva: _trFmtCLP(d.iva),
+      total: _trFmtCLP(d.total),
       tip: '',
-      email_intro: message,
-      name: clientName,
-      company_name: company,
-      company_email: companyEmail,
+      email_intro: d.message,
+      name: d.clientName,
+      company_name: d.company,
+      company_email: d.companyEmail,
       company_location: '',
       company_since: '',
       company_tagline: 'Cotización generada con Cotizadía',
       company_logo: '',
       company_dark: '#252530',
       company_teal: '#8C5BB3',
-      email: clientEmail
+      email: d.clientEmail
     });
     localStorage.setItem(_trialCountKey(), String(_trialCount()+1));
     _trialRefreshUI();
-    alert('¡Cotización enviada a ' + clientEmail + '!');
-    document.querySelectorAll('.tr-item-row').forEach(function(r){ r.remove(); });
-    _trInitItems();
-    document.getElementById('tr-message').value = '';
+    document.getElementById('tr-success-client-email').textContent = d.clientEmail;
+    document.getElementById('tr-success-company-email').textContent = d.companyEmail;
+    var left = Math.max(0, 3-_trialCount());
+    var remSpan = document.querySelector('#tr-success-remaining span:last-child');
+    var sendAnotherBtn = document.getElementById('tr-send-another-btn');
+    if(left>0){
+      remSpan.textContent = 'Te quedan '+left+' cotizacion'+(left===1?'':'es')+' de prueba gratis.';
+      sendAnotherBtn.style.display = 'inline-block';
+    } else {
+      remSpan.textContent = 'Ya usaste tus 3 cotizaciones de prueba gratis — crea una cuenta para seguir cotizando sin límite.';
+      sendAnotherBtn.style.display = 'none';
+    }
+    _trGoToStep(3);
   }catch(err){
-    alert('No se pudo enviar la cotización. Intenta de nuevo.');
+    errBox.textContent = 'No se pudo enviar la cotización. Intenta de nuevo.';
+    errBox.style.display = 'block';
   }finally{
     if(btn){ btn.disabled = false; btn.textContent = origText; }
   }
+}
+
+function _trResetWizard(){
+  document.querySelectorAll('.tr-item-row').forEach(function(r){ r.remove(); });
+  _trInitItems();
+  document.getElementById('tr-message').value = '';
+  document.getElementById('tr-company').value = '';
+  document.getElementById('tr-company-email').value = '';
+  document.getElementById('tr-client-name').value = '';
+  document.getElementById('tr-client-email').value = '';
+  _trPreviewData = null;
+  _trGoToStep(1);
 }
 
 function doLogin(){
