@@ -19,6 +19,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 <style>
 :root{
   --dark:#252530;--teal:#8C5BB3;--teal2:#7a4d97;--teal-rgb:140,91,179;--orange:#d46e3a;
@@ -1525,7 +1526,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
     </select>
   </div>
   <div style="margin:20px 0 8px"><label style="font-size:13px;font-weight:700;color:var(--dark)">✨ Personaliza tu marca (opcional)</label></div>
-  <div style="display:flex;gap:22px;align-items:center;margin-bottom:16px;padding:16px 18px;background:#fafafc;border:1px solid #eef0f3;border-radius:16px">
+  <div style="display:flex;gap:26px;align-items:center;margin-bottom:16px;padding:22px 26px;background:#fafafc;border:1px solid #eef0f3;border-radius:16px;flex-wrap:wrap">
     <div style="text-align:center;flex:0 0 auto">
       <input id="tr-color-teal" type="color" value="#8C5BB3" style="-webkit-appearance:none;appearance:none;width:44px;height:44px;padding:0;border:none;border-radius:50%;box-shadow:0 0 0 3px #fff,0 0 0 4px #e2e2e8,0 3px 8px rgba(20,20,43,.12);cursor:pointer;background:none">
       <div style="font-size:11px;color:#6b6b7a;margin-top:8px;white-space:nowrap">Color principal</div>
@@ -1534,9 +1535,14 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
       <input id="tr-color-dark" type="color" value="#252530" style="-webkit-appearance:none;appearance:none;width:44px;height:44px;padding:0;border:none;border-radius:50%;box-shadow:0 0 0 3px #fff,0 0 0 4px #e2e2e8,0 3px 8px rgba(20,20,43,.12);cursor:pointer;background:none">
       <div style="font-size:11px;color:#6b6b7a;margin-top:8px;white-space:nowrap">Color oscuro</div>
     </div>
-    <div style="flex:1">
-      <label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:5px">URL de tu logo</label>
-      <input id="tr-logo-url" type="url" placeholder="https://tuempresa.cl/logo.png" style="width:100%;padding:10px 12px;border:1px solid #e2e2e8;border-radius:10px;font-size:14px;box-sizing:border-box;background:#fff">
+    <div style="flex:1;min-width:200px">
+      <label style="display:block;font-size:12px;color:#6b6b7a;margin-bottom:6px">Tu logo (PNG o JPG, idealmente sin fondo)</label>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <label for="tr-logo-file" style="cursor:pointer;padding:9px 16px;border:1px solid #e2e2e8;border-radius:10px;font-size:13px;font-weight:700;color:var(--dark);background:#fff;white-space:nowrap">📁 Subir logo</label>
+        <input id="tr-logo-file" type="file" accept="image/png,image/jpeg" style="display:none" onchange="_trHandleLogoFile(this)">
+        <img id="tr-logo-preview" style="display:none;width:34px;height:34px;border-radius:8px;object-fit:contain;border:1px solid #eef0f3;background:#fff" alt="Logo">
+        <span id="tr-logo-status" style="font-size:11.5px;color:#9a9aa8"></span>
+      </div>
     </div>
   </div>
   <div style="margin:18px 0 8px;display:flex;align-items:center;justify-content:space-between">
@@ -4353,10 +4359,12 @@ const FIREBASE_CFG = {
   appId:             "1:1094882801270:web:48b2d19b69373d3bc89157"
 };
 let _fbDb = null;
+let _fbStorage = null;
 function initFirebase() {
   try {
     firebase.initializeApp(FIREBASE_CFG);
     _fbDb = firebase.database();
+    try { _fbStorage = firebase.storage(); } catch(e) { console.warn('[Firebase] storage init error:', e); }
     firebase.auth().signInAnonymously().catch(function(e){ console.error('[Firebase Auth]', e); });
     console.log('[Firebase] conectado');
   } catch(e) { console.warn('[Firebase] init error:', e); }
@@ -4824,6 +4832,44 @@ function _trApplyIntro(){
   box.style.display='none';
 }
 var _trPreviewData = null;
+var _trUploadedLogoUrl = '';
+
+async function _trHandleLogoFile(input){
+  var file = input.files && input.files[0];
+  if(!file) return;
+  if(!/^image\/(png|jpeg)$/.test(file.type)){
+    alert('Solo se aceptan imágenes PNG o JPG.');
+    input.value = '';
+    return;
+  }
+  if(file.size > 2*1024*1024){
+    alert('El logo no puede pesar más de 2MB.');
+    input.value = '';
+    return;
+  }
+  var statusEl = document.getElementById('tr-logo-status');
+  var imgEl = document.getElementById('tr-logo-preview');
+  statusEl.textContent = 'Subiendo…';
+  statusEl.style.color = '#9a9aa8';
+  try{
+    if(!_fbStorage) _fbStorage = firebase.storage();
+    var ext = file.type === 'image/png' ? 'png' : 'jpg';
+    var path = 'trial-logos/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+    var ref = _fbStorage.ref().child(path);
+    await ref.put(file);
+    var url = await ref.getDownloadURL();
+    _trUploadedLogoUrl = url;
+    statusEl.textContent = '✓ Logo cargado';
+    statusEl.style.color = '#0fa06a';
+    imgEl.src = url;
+    imgEl.style.display = 'inline-block';
+  }catch(e){
+    console.warn('[trial logo upload]', e);
+    statusEl.textContent = 'No se pudo subir el logo. Intenta de nuevo.';
+    statusEl.style.color = '#c94b4b';
+    _trUploadedLogoUrl = '';
+  }
+}
 
 function _trGoToStep(n){
   [1,2,3].forEach(function(i){
@@ -4857,7 +4903,7 @@ function _trCollectFormData(){
   var message = (document.getElementById('tr-message').value||'').trim();
   var teal = (document.getElementById('tr-color-teal').value||'#8C5BB3').replace('#','');
   var dark = (document.getElementById('tr-color-dark').value||'#252530').replace('#','');
-  var logoUrl = (document.getElementById('tr-logo-url').value||'').trim();
+  var logoUrl = _trUploadedLogoUrl || '';
   if(!company || !companyEmail || !clientName || !clientEmail){
     alert('Completa empresa, correo de empresa, nombre y correo del cliente.');
     return null;
