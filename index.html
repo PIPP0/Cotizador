@@ -1598,6 +1598,23 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
   </div>
 </div>
 
+<div class="modal-overlay" id="trAlertOverlay" style="z-index:99999" onclick="if(event.target===this)_trAlertClose()">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-hdr" style="border-bottom:none;padding-bottom:8px">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--abg,#fdece2);color:var(--orange);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <button class="modal-close" onclick="_trAlertClose()">✕</button>
+    </div>
+    <div class="modal-body" style="padding-top:4px">
+      <p id="tr-alert-msg" style="font-size:13.5px;color:var(--t2,#54545e);line-height:1.55;margin-bottom:20px"></p>
+      <div style="display:flex;justify-content:flex-end">
+        <button class="btn-sm" style="background:var(--teal);color:#fff;border-color:var(--teal)" onclick="_trAlertClose()">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
   <div style="background:var(--dark,#14142B);color:#fff;padding:50px 24px;text-align:center;">
     <div style="font-size:22px;font-weight:800;margin-bottom:10px;">¿Listo para cotizar sin límites?</div>
     <div style="font-size:14px;opacity:.75;margin-bottom:22px;">Crea tu cuenta gratis y empieza a enviar cotizaciones profesionales hoy mismo.</div>
@@ -4778,7 +4795,7 @@ async function _trAssistItem(id){
   var descInput = row.querySelector('.tr-item-desc');
   var box = row.querySelector('.tr-item-assist-box');
   var raw = descInput.value.trim();
-  if(!raw){ alert('Escribe primero una breve descripción del ítem.'); return; }
+  if(!raw){ _trAlert('Escribe primero una breve descripción del ítem.'); return; }
   box.style.display='block';
   if(!_trHasAccount()){ box.innerHTML = _trAuthGateHtml(); return; }
   box.innerHTML = 'Verificando tu plan…';
@@ -4834,16 +4851,27 @@ function _trApplyIntro(){
 var _trPreviewData = null;
 var _trUploadedLogoUrl = '';
 
+function _trAlert(msg){
+  document.getElementById('tr-alert-msg').textContent = msg;
+  var ov = document.getElementById('trAlertOverlay');
+  ov.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function _trAlertClose(){
+  document.getElementById('trAlertOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 async function _trHandleLogoFile(input){
   var file = input.files && input.files[0];
   if(!file) return;
   if(!/^image\/(png|jpeg)$/.test(file.type)){
-    alert('Solo se aceptan imágenes PNG o JPG.');
+    _trAlert('Solo se aceptan imágenes PNG o JPG.');
     input.value = '';
     return;
   }
   if(file.size > 2*1024*1024){
-    alert('El logo no puede pesar más de 2MB.');
+    _trAlert('El logo no puede pesar más de 2MB.');
     input.value = '';
     return;
   }
@@ -4905,11 +4933,11 @@ function _trCollectFormData(){
   var dark = (document.getElementById('tr-color-dark').value||'#252530').replace('#','');
   var logoUrl = _trUploadedLogoUrl || '';
   if(!company || !companyEmail || !clientName || !clientEmail){
-    alert('Completa empresa, correo de empresa, nombre y correo del cliente.');
+    _trAlert('Completa empresa, correo de empresa, nombre y correo del cliente.');
     return null;
   }
   var rows = document.querySelectorAll('.tr-item-row');
-  if(rows.length===0){ alert('Agrega al menos un ítem a la cotización.'); return null; }
+  if(rows.length===0){ _trAlert('Agrega al menos un ítem a la cotización.'); return null; }
   var items = [];
   var subtotal = 0;
   rows.forEach(function(row){
@@ -4922,7 +4950,7 @@ function _trCollectFormData(){
       items.push({desc:desc, qty:qty, tot:tot});
     }
   });
-  if(items.length===0){ alert('Completa descripción, cantidad y precio de al menos un ítem.'); return null; }
+  if(items.length===0){ _trAlert('Completa descripción, cantidad y precio de al menos un ítem.'); return null; }
   var iva = subtotal*0.19;
   var total = subtotal+iva;
   var itemsRows = '';
