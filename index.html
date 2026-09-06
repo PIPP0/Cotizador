@@ -13,6 +13,9 @@
 </script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title id="page-title">Dashboard IA</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></scrit>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1445,7 +1448,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 
 <div id="signup-screen" style="display:none;position:fixed;inset:0;z-index:99999;background:#f0f3f6;flex-direction:column;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.95);backdrop-filter:blur(6px);">
-    <a href="/cotizar/" style="font-size:19px;font-weight:800;color:var(--dark);text-decoration:none;">Cotizad<span style="color:var(--orange)">ía</span></a>
+    <a href="/cotizar/" style="display:inline-flex;align-items:center;"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:26px;width:auto;display:block;"></a>
     <div style="display:flex;gap:18px;align-items:center;">
       <a href="/cotizar/" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Inicio</a>
       <a href="/" style="font-size:13.5px;font-weight:600;color:var(--teal);text-decoration:none;">Iniciar sesión</a>
@@ -1455,7 +1458,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
   <div class="login-card">
     <div class="login-header">
       <div class="login-logo">
-        <span class="login-logo-txt">Cotizad<span style="color:var(--orange)">ía</span></span>
+        <span style="display:inline-block;background:#fff;border-radius:12px;padding:10px 16px;"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:26px;width:auto;display:block;"></span>
       </div>
       <div class="login-bar"></div>
       <div class="login-sub">Crea tu cuenta gratis</div>
@@ -1492,7 +1495,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 
 <div id="landing-screen" style="display:none;position:fixed;inset:0;z-index:99998;background:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);z-index:2;">
-    <div style="font-size:19px;font-weight:800;color:var(--dark);cursor:pointer" onclick="_trShowMarketing()">Cotizad<span style="color:var(--orange)">ía</span></div>
+    <div style="display:inline-flex;align-items:center;cursor:pointer" onclick="_trShowMarketing()"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:26px;width:auto;display:block;"></div>
     <div style="display:flex;gap:18px;align-items:center;">
       <a href="javascript:void(0)" onclick="_trShowMarketing()" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Inicio</a>
       <a href="javascript:void(0)" onclick="_trShowWizard()" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Cotizar</a>
