@@ -1413,7 +1413,15 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
   </div>
 </div>
 
-<div id="signup-screen" style="display:none;position:fixed;inset:0;z-index:99999;background:#f0f3f6;align-items:center;justify-content:center;padding:20px;">
+<div id="signup-screen" style="display:none;position:fixed;inset:0;z-index:99999;background:#f0f3f6;flex-direction:column;">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.95);backdrop-filter:blur(6px);">
+    <a href="/cotizar/" style="font-size:19px;font-weight:800;color:var(--dark);text-decoration:none;">Cotizad<span style="color:var(--orange)">ía</span></a>
+    <div style="display:flex;gap:18px;align-items:center;">
+      <a href="/cotizar/" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Inicio</a>
+      <a href="/" style="font-size:13.5px;font-weight:600;color:var(--teal);text-decoration:none;">Iniciar sesión</a>
+    </div>
+  </div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto;">
   <div class="login-card">
     <div class="login-header">
       <div class="login-logo">
@@ -1448,6 +1456,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
       <button type="button" class="login-btn" style="background:transparent;color:var(--teal);border:2px solid var(--teal);box-shadow:none;margin-top:8px;" onclick="window.location.href='/'">Ingresar →</button>
       <div style="text-align:center;margin-top:10px;font-size:12px;color:#8a8698;">¿Ya tienes cuenta? <a href="/" style="color:var(--teal);text-decoration:none;font-weight:600;">Inicia sesión</a></div>
     </div>
+  </div>
   </div>
 </div>
 
