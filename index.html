@@ -165,12 +165,21 @@ body.has-logo #login-logo-img{display:block!important}
 .cz-check-ic{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .cz-check-ic svg{width:13px;height:13px;stroke-width:3}
 .cz-list-row{display:flex;align-items:flex-start;gap:12px;padding:11px 0;font-size:14.5px;line-height:1.5}
-@keyframes cz-float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-12px) rotate(-1deg)}}
-.cz-mock-float{animation:cz-float 6s ease-in-out infinite}
+@keyframes cz-float{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-16px) rotate(-.5deg)}}
+.cz-mock-float{position:relative;z-index:2;animation:cz-float 7s ease-in-out infinite}
 @keyframes cz-blob-drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-18px) scale(1.08)}}
 .cz-blob-a{animation:cz-blob-drift 11s ease-in-out infinite}
 .cz-blob-b{animation:cz-blob-drift 13s ease-in-out infinite reverse}
-@media(prefers-reduced-motion:reduce){.cz-mock-float,.cz-blob-a,.cz-blob-b{animation:none}}
+.cz-mock-wrap{position:relative;max-width:440px;margin:70px auto 0}
+.cz-mock-glow{position:absolute;inset:-40px;background:linear-gradient(120deg,var(--orange),var(--teal));filter:blur(50px);opacity:.4;border-radius:40%;z-index:0;animation:cz-glow-pulse 5s ease-in-out infinite}
+@keyframes cz-glow-pulse{0%,100%{opacity:.32;transform:scale(1)}50%{opacity:.5;transform:scale(1.06)}}
+.cz-mock-stack{position:absolute;inset:14px -14px -14px 14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:22px;transform:rotate(4deg);z-index:1}
+.cz-mock-card{position:relative;z-index:1;background:#fff;border-radius:22px;box-shadow:0 40px 90px -20px rgba(0,0,0,.55);padding:24px 26px;text-align:left;color:#252530}
+.cz-badge-pop{animation:cz-badge-pop 2.6s ease-in-out infinite}
+@keyframes cz-badge-pop{0%,80%,100%{transform:scale(1)}88%{transform:scale(1.12)}}
+@keyframes cz-fade-up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.cz-fade-up{opacity:0;animation:cz-fade-up .8s cubic-bezier(.2,.7,.2,1) forwards}
+@media(prefers-reduced-motion:reduce){.cz-mock-float,.cz-blob-a,.cz-blob-b,.cz-mock-glow,.cz-badge-pop{animation:none}.cz-fade-up{opacity:1;animation:none}}
 .chip-clock{color:rgba(255,255,255,.6);font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
 .btn-new{background:var(--teal);color:#fff;border:none;padding:7px 15px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.2px;text-decoration:none;transition:background .15s}
 .btn-new:hover{background:var(--teal2)}
@@ -1448,7 +1457,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 
 <div id="signup-screen" style="display:none;position:fixed;inset:0;z-index:99999;background:#f0f3f6;flex-direction:column;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.95);backdrop-filter:blur(6px);">
-    <a href="/cotizar/" style="display:inline-flex;align-items:center;"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:36px;width:auto;display:block;"></a>
+    <a href="/cotizar/" style="display:inline-flex;align-items:center;"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:46px;width:auto;display:block;"></a>
     <div style="display:flex;gap:18px;align-items:center;">
       <a href="/cotizar/" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Inicio</a>
       <a href="/" style="font-size:13.5px;font-weight:600;color:var(--teal);text-decoration:none;">Iniciar sesión</a>
@@ -1458,7 +1467,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
   <div class="login-card">
     <div class="login-header">
       <div class="login-logo">
-        <span style="display:inline-block;background:#fff;border-radius:14px;padding:13px 20px;"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:36px;width:auto;display:block;"></span>
+        <span style="display:inline-block;background:#fff;border-radius:16px;padding:15px 22px;"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:40px;width:auto;display:block;"></span>
       </div>
       <div class="login-bar"></div>
       <div class="login-sub">Crea tu cuenta gratis</div>
@@ -1495,7 +1504,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 
 <div id="landing-screen" style="display:none;position:fixed;inset:0;z-index:99998;background:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);z-index:2;">
-    <div style="display:inline-flex;align-items:center;cursor:pointer" onclick="_trShowMarketing()"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:36px;width:auto;display:block;"></div>
+    <div style="display:inline-flex;align-items:center;cursor:pointer" onclick="_trShowMarketing()"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:46px;width:auto;display:block;"></div>
     <div style="display:flex;gap:18px;align-items:center;">
       <a href="javascript:void(0)" onclick="_trShowMarketing()" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Inicio</a>
       <a href="javascript:void(0)" onclick="_trShowWizard()" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Cotizar</a>
@@ -1508,26 +1517,32 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
     <div class="cz-blob cz-blob-a" style="width:420px;height:420px;top:-160px;left:-120px;background:var(--orange);opacity:.35"></div>
     <div class="cz-blob cz-blob-b" style="width:360px;height:360px;bottom:-140px;right:-100px;background:var(--teal);opacity:.45"></div>
     <div style="max-width:680px;margin:0 auto;position:relative;z-index:1;">
-      <div style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);padding:7px 16px;border-radius:999px;font-size:12.5px;font-weight:700;letter-spacing:.3px;margin-bottom:22px;">✨ Gratis · Sin tarjeta · Envía cotizaciones reales</div>
-      <h1 style="font-size:46px;font-weight:800;line-height:1.12;letter-spacing:-1.2px;margin:0 0 18px;">Cotiza como una empresa grande, en minutos, con <span style="color:var(--orange)">IA</span></h1>
-      <p style="font-size:17.5px;opacity:.82;line-height:1.6;margin:0 0 34px;">Con tu marca, tus colores y tu propio correo. Arma la cotización, envíala y deja que tu cliente te responda directo a ti — sin plantillas, sin Word, sin perderla en WhatsApp.</p>
-      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <div class="cz-fade-up" style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);padding:7px 16px;border-radius:999px;font-size:12.5px;font-weight:700;letter-spacing:.3px;margin-bottom:22px;">✨ Gratis · Sin tarjeta · Envía cotizaciones reales</div>
+      <h1 class="cz-fade-up" style="animation-delay:.08s;font-size:46px;font-weight:800;line-height:1.12;letter-spacing:-1.2px;margin:0 0 18px;">Cotiza como una empresa grande, en minutos, con <span style="color:var(--orange)">IA</span></h1>
+      <p class="cz-fade-up" style="animation-delay:.16s;font-size:17.5px;opacity:.82;line-height:1.6;margin:0 0 34px;">Con tu marca, tus colores y tu propio correo. Arma la cotización, envíala y deja que tu cliente te responda directo a ti — sin plantillas, sin Word, sin perderla en WhatsApp.</p>
+      <div class="cz-fade-up" style="animation-delay:.24s;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
         <button onclick="_trShowWizard()" class="cz-pill-btn cz-pill-primary">Probar gratis ahora →</button>
         <a href="/registro/" class="cz-pill-btn cz-pill-outline">Crear cuenta gratis</a>
       </div>
     </div>
 
-    <div class="cz-mock-float" style="max-width:440px;margin:64px auto 0;background:#fff;border-radius:22px;box-shadow:0 34px 80px rgba(0,0,0,.4);padding:24px 26px;text-align:left;color:#252530;position:relative;z-index:1;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div style="font-weight:800;font-size:14px;">Cotización #DEMO-4821</div>
-        <div style="font-size:11px;background:#eaf7f1;color:#0fa06a;padding:3px 8px;border-radius:6px;font-weight:700;">Enviada</div>
+    <div class="cz-mock-wrap cz-fade-up" style="animation-delay:.36s">
+      <div class="cz-mock-glow"></div>
+      <div class="cz-mock-stack"></div>
+      <div class="cz-mock-float">
+        <div class="cz-mock-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div style="font-weight:800;font-size:14px;">Cotización #DEMO-4821</div>
+            <div class="cz-badge-pop" style="font-size:11px;background:#eaf7f1;color:#0fa06a;padding:3px 8px;border-radius:6px;font-weight:700;display:inline-flex;align-items:center;gap:4px;">✓ Enviada</div>
+          </div>
+          <div style="font-size:12.5px;color:#8a8698;margin-bottom:10px;">Para: cliente@empresa.cl</div>
+          <div style="border-top:1px dashed #e2e0ea;padding-top:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;"><span>Mantención preventiva HVAC</span><span>$180.000</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;"><span>Revisión de ductos</span><span>$65.000</span></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-weight:800;font-size:15px;border-top:1px solid #e2e0ea;margin-top:8px;padding-top:10px;"><span>Total</span><span>$245.000</span></div>
+        </div>
       </div>
-      <div style="font-size:12.5px;color:#8a8698;margin-bottom:10px;">Para: cliente@empresa.cl</div>
-      <div style="border-top:1px dashed #e2e0ea;padding-top:10px;">
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;"><span>Mantención preventiva HVAC</span><span>$180.000</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;"><span>Revisión de ductos</span><span>$65.000</span></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-weight:800;font-size:15px;border-top:1px solid #e2e0ea;margin-top:8px;padding-top:10px;"><span>Total</span><span>$245.000</span></div>
     </div>
   </div>
 
