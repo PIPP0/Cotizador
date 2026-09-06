@@ -1741,7 +1741,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
         <div style="font-size:28px;font-weight:800;color:var(--dark);margin-bottom:18px;">Gratis</div>
         <div class="cz-list-row" style="padding:7px 0"><span class="cz-check-ic" style="background:#eaf7f1;color:#0fa06a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Cotizaciones manuales ilimitadas</div>
         <div class="cz-list-row" style="padding:7px 0"><span class="cz-check-ic" style="background:#eaf7f1;color:#0fa06a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Cotizaciones en PDF</div>
-        <div class="cz-list-row" style="padding:7px 0 18px"><span class="cz-check-ic" style="background:#eaf7f1;color:#0fa06a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Marca Cotizadía</div>
+        <div class="cz-list-row" style="padding:7px 0 18px"><span class="cz-check-ic" style="background:#eaf7f1;color:#0fa06a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Marca propia (logo y colores)</div>
         <a href="/registro/" class="cz-pill-btn cz-pill-outline-dark" style="width:100%;justify-content:center;box-sizing:border-box;">Crear cuenta gratis</a>
       </div>
       <div class="cz-card" style="border:1.5px solid var(--teal);position:relative;">
@@ -1750,7 +1750,6 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
         <div style="font-size:20px;font-weight:800;color:var(--dark);margin-bottom:18px;">Próximamente</div>
         <div class="cz-list-row" style="padding:7px 0"><span class="cz-check-ic" style="background:#e3f7f4;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Todo lo de Free</div>
         <div class="cz-list-row" style="padding:7px 0"><span class="cz-check-ic" style="background:#e3f7f4;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Asistente de IA en cotizaciones</div>
-        <div class="cz-list-row" style="padding:7px 0"><span class="cz-check-ic" style="background:#e3f7f4;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Marca propia (logo y colores)</div>
         <div class="cz-list-row" style="padding:7px 0 18px"><span class="cz-check-ic" style="background:#e3f7f4;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Envío directo a tus clientes</div>
         <a href="/registro/" class="cz-pill-btn" style="width:100%;justify-content:center;box-sizing:border-box;background:var(--teal);color:#fff;">Empezar gratis</a>
       </div>
@@ -6252,8 +6251,8 @@ function closeSidebar(){
 // ══════════════════════════════════════════════════
 const MP_WORKER_URL = ''; // TODO: pegar la URL del Worker de Cloudflare (mp-worker.js) una vez desplegado
 const PLAN_TIERS = {
-  free: { label:'Free', price:0, features:['Cotizaciones manuales ilimitadas','Cotizaciones en PDF','Marca Cotizadía'] },
-  pro:  { label:'Pro',  price:null, features:['Todo lo de Free','Asistente de IA en cotizaciones','Marca propia (logo y colores)','Envío directo a tus clientes'] },
+  free: { label:'Free', price:0, features:['Cotizaciones manuales ilimitadas','Cotizaciones en PDF','Marca propia (logo y colores)'] },
+  pro:  { label:'Pro',  price:null, features:['Todo lo de Free','Asistente de IA en cotizaciones','Envío directo a tus clientes'] },
   team: { label:'Team', price:null, features:['Todo lo de Pro','Hasta 10 usuarios','Soporte prioritario'] },
 };
 function renderPlanView(){
