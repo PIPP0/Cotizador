@@ -152,7 +152,9 @@ body.has-logo #login-logo-img{display:block!important}
 .cz-blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0}
 .cz-pill-btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:16px 32px;font-size:15.5px;font-weight:800;text-decoration:none;cursor:pointer;border:none;transition:transform .2s ease,box-shadow .2s ease;font-family:inherit}
 .cz-pill-btn:hover{transform:translateY(-2px)}
-.cz-pill-primary{background:linear-gradient(120deg,var(--orange),var(--teal));color:#fff;box-shadow:0 16px 36px -6px rgba(6,182,163,.45)}
+.cz-pill-primary{background:linear-gradient(120deg,var(--orange),var(--teal));background-size:200% 200%;color:#fff;box-shadow:0 16px 36px -6px rgba(6,182,163,.45);animation:cz-btn-sheen 3.5s ease-in-out infinite,cz-btn-pulse 2.8s ease-out infinite}
+@keyframes cz-btn-sheen{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes cz-btn-pulse{0%,70%,100%{box-shadow:0 16px 36px -6px rgba(6,182,163,.45),0 0 0 0 rgba(34,197,94,.45)}35%{box-shadow:0 16px 36px -6px rgba(6,182,163,.45),0 0 0 12px rgba(34,197,94,0)}}
 .cz-pill-outline{background:rgba(255,255,255,.06);color:#fff;border:1.5px solid rgba(255,255,255,.35)}
 .cz-pill-outline-dark{background:transparent;color:var(--dark);border:1.5px solid var(--border)}
 .cz-card{background:#fff;border-radius:26px;padding:34px 30px;box-shadow:0 1px 2px rgba(20,20,43,.04),0 24px 48px -12px rgba(20,20,43,.10);border:1px solid rgba(20,20,43,.05);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease}
@@ -175,11 +177,14 @@ body.has-logo #login-logo-img{display:block!important}
 @keyframes cz-glow-pulse{0%,100%{opacity:.32;transform:scale(1)}50%{opacity:.5;transform:scale(1.06)}}
 .cz-mock-stack{position:absolute;inset:14px -14px -14px 14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:22px;transform:rotate(4deg);z-index:1}
 .cz-mock-card{position:relative;z-index:1;background:#fff;border-radius:22px;box-shadow:0 40px 90px -20px rgba(0,0,0,.55);padding:24px 26px;text-align:left;color:#252530}
-.cz-badge-pop{animation:cz-badge-pop 2.6s ease-in-out infinite}
-@keyframes cz-badge-pop{0%,80%,100%{transform:scale(1)}88%{transform:scale(1.12)}}
 @keyframes cz-fade-up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 .cz-fade-up{opacity:0;animation:cz-fade-up .8s cubic-bezier(.2,.7,.2,1) forwards}
-@media(prefers-reduced-motion:reduce){.cz-mock-float,.cz-blob-a,.cz-blob-b,.cz-mock-glow,.cz-badge-pop{animation:none}.cz-fade-up{opacity:1;animation:none}}
+.hero-item{opacity:0;transform:translateX(-10px);transition:opacity .5s ease,transform .5s ease}
+.hero-item.show{opacity:1;transform:translateX(0)}
+.hero-badge{font-size:11px;background:#eaf7f1;color:#0fa06a;padding:3px 8px;border-radius:6px;font-weight:700;display:inline-flex;align-items:center;gap:4px;opacity:0;transform:scale(.4);transition:opacity .4s ease,transform .5s cubic-bezier(.34,1.56,.64,1)}
+.hero-badge.show{opacity:1;transform:scale(1)}
+.cz-blob-c{animation:cz-blob-drift 9s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.cz-mock-float,.cz-blob-a,.cz-blob-b,.cz-blob-c,.cz-mock-glow,.cz-pill-primary{animation:none}.cz-fade-up{opacity:1;animation:none}.hero-item,.hero-badge{transition:none;opacity:1;transform:none}}
 .chip-clock{color:rgba(255,255,255,.6);font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
 .btn-new{background:var(--teal);color:#fff;border:none;padding:7px 15px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.2px;text-decoration:none;transition:background .15s}
 .btn-new:hover{background:var(--teal2)}
@@ -1516,6 +1521,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
   <div class="landing-marketing-section" style="position:relative;overflow:hidden;background:linear-gradient(160deg,var(--dark) 0%,var(--dark) 55%,var(--teal) 145%);color:#fff;padding:96px 24px 130px;text-align:center;">
     <div class="cz-blob cz-blob-a" style="width:420px;height:420px;top:-160px;left:-120px;background:var(--orange);opacity:.35"></div>
     <div class="cz-blob cz-blob-b" style="width:360px;height:360px;bottom:-140px;right:-100px;background:var(--teal);opacity:.45"></div>
+    <div class="cz-blob cz-blob-c" style="width:220px;height:220px;top:120px;right:60px;background:var(--orange);opacity:.25"></div>
     <div style="max-width:680px;margin:0 auto;position:relative;z-index:1;">
       <div class="cz-fade-up" style="display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);padding:7px 16px;border-radius:999px;font-size:12.5px;font-weight:700;letter-spacing:.3px;margin-bottom:22px;">✨ Gratis · Sin tarjeta · Envía cotizaciones reales</div>
       <h1 class="cz-fade-up" style="animation-delay:.08s;font-size:46px;font-weight:800;line-height:1.12;letter-spacing:-1.2px;margin:0 0 18px;">Cotiza como una empresa grande, en minutos, con <span style="color:var(--orange)">IA</span></h1>
@@ -1533,14 +1539,14 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
         <div class="cz-mock-card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <div style="font-weight:800;font-size:14px;">Cotización #DEMO-4821</div>
-            <div class="cz-badge-pop" style="font-size:11px;background:#eaf7f1;color:#0fa06a;padding:3px 8px;border-radius:6px;font-weight:700;display:inline-flex;align-items:center;gap:4px;">✓ Enviada</div>
+            <div id="hero-badge" class="hero-badge">✓ Enviada</div>
           </div>
           <div style="font-size:12.5px;color:#8a8698;margin-bottom:10px;">Para: cliente@empresa.cl</div>
           <div style="border-top:1px dashed #e2e0ea;padding-top:10px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;"><span>Mantención preventiva HVAC</span><span>$180.000</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;"><span>Revisión de ductos</span><span>$65.000</span></div>
+            <div id="hero-item-1" class="hero-item" style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;"><span>Mantención preventiva HVAC</span><span>$180.000</span></div>
+            <div id="hero-item-2" class="hero-item" style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;"><span>Revisión de ductos</span><span>$65.000</span></div>
           </div>
-          <div style="display:flex;justify-content:space-between;font-weight:800;font-size:15px;border-top:1px solid #e2e0ea;margin-top:8px;padding-top:10px;"><span>Total</span><span>$245.000</span></div>
+          <div style="display:flex;justify-content:space-between;font-weight:800;font-size:15px;border-top:1px solid #e2e0ea;margin-top:8px;padding-top:10px;"><span>Total</span><span id="hero-total">$0</span></div>
         </div>
       </div>
     </div>
@@ -3127,6 +3133,7 @@ else if(_CLIENT_ID === 'cotizar'){
     var _ss2 = document.getElementById('signup-screen'); if(_ss2) _ss2.style.display='none';
     var _lp = document.getElementById('landing-screen'); if(_lp) _lp.style.display='block';
     setTimeout(function(){ try{ _trialRefreshUI(); _trInitItems(); }catch(e){} }, 0);
+    setTimeout(function(){ try{ _heroDemoLoop(); }catch(e){} }, 0);
   }catch(e){}
 }
 
@@ -5132,6 +5139,39 @@ async function _trHandleLogoFile(input){
     statusEl.style.color = '#c94b4b';
     _trUploadedLogoUrl = '';
   }
+}
+
+function _heroDemoLoop(){
+  var it1 = document.getElementById('hero-item-1');
+  var it2 = document.getElementById('hero-item-2');
+  var tot = document.getElementById('hero-total');
+  var badge = document.getElementById('hero-badge');
+  if(!it1 || !it2 || !tot || !badge) return;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduced){ it1.classList.add('show'); it2.classList.add('show'); badge.classList.add('show'); tot.textContent = '$245.000'; return; }
+  var timers = [];
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+  function countTo(el, target, dur){
+    var start = null;
+    function step(ts){
+      if(start===null) start = ts;
+      var p = Math.min(1, (ts-start)/dur);
+      el.textContent = '$' + Math.round(target*p).toLocaleString('es-CL');
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  function cycle(){
+    it1.classList.remove('show'); it2.classList.remove('show'); badge.classList.remove('show');
+    tot.textContent = '$0';
+    timers.push(setTimeout(function(){ it1.classList.add('show'); }, 500));
+    timers.push(setTimeout(function(){ it2.classList.add('show'); }, 1300));
+    timers.push(setTimeout(function(){ countTo(tot, 245000, 700); }, 2100));
+    timers.push(setTimeout(function(){ badge.classList.add('show'); }, 3000));
+    timers.push(setTimeout(cycle, 6800));
+  }
+  clearTimers();
+  cycle();
 }
 
 function _trShowWizard(){
