@@ -152,7 +152,7 @@ body.has-logo #login-logo-img{display:block!important}
 .cz-blob{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0}
 .cz-pill-btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:16px 32px;font-size:15.5px;font-weight:800;text-decoration:none;cursor:pointer;border:none;transition:transform .2s ease,box-shadow .2s ease;font-family:inherit}
 .cz-pill-btn:hover{transform:translateY(-2px)}
-.cz-pill-primary{background:var(--orange);color:#fff;box-shadow:0 16px 36px -6px rgba(124,119,185,.55)}
+.cz-pill-primary{background:linear-gradient(120deg,var(--orange),var(--teal));color:#fff;box-shadow:0 16px 36px -6px rgba(6,182,163,.45)}
 .cz-pill-outline{background:rgba(255,255,255,.06);color:#fff;border:1.5px solid rgba(255,255,255,.35)}
 .cz-pill-outline-dark{background:transparent;color:var(--dark);border:1.5px solid var(--border)}
 .cz-card{background:#fff;border-radius:26px;padding:34px 30px;box-shadow:0 1px 2px rgba(20,20,43,.04),0 24px 48px -12px rgba(20,20,43,.10);border:1px solid rgba(20,20,43,.05);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease}
@@ -1448,7 +1448,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 
 <div id="signup-screen" style="display:none;position:fixed;inset:0;z-index:99999;background:#f0f3f6;flex-direction:column;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.95);backdrop-filter:blur(6px);">
-    <a href="/cotizar/" style="display:inline-flex;align-items:center;"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:26px;width:auto;display:block;"></a>
+    <a href="/cotizar/" style="display:inline-flex;align-items:center;"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:36px;width:auto;display:block;"></a>
     <div style="display:flex;gap:18px;align-items:center;">
       <a href="/cotizar/" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Inicio</a>
       <a href="/" style="font-size:13.5px;font-weight:600;color:var(--teal);text-decoration:none;">Iniciar sesión</a>
@@ -1458,7 +1458,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
   <div class="login-card">
     <div class="login-header">
       <div class="login-logo">
-        <span style="display:inline-block;background:#fff;border-radius:12px;padding:10px 16px;"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:26px;width:auto;display:block;"></span>
+        <span style="display:inline-block;background:#fff;border-radius:14px;padding:13px 20px;"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:36px;width:auto;display:block;"></span>
       </div>
       <div class="login-bar"></div>
       <div class="login-sub">Crea tu cuenta gratis</div>
@@ -1495,7 +1495,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 
 <div id="landing-screen" style="display:none;position:fixed;inset:0;z-index:99998;background:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);z-index:2;">
-    <div style="display:inline-flex;align-items:center;cursor:pointer" onclick="_trShowMarketing()"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:26px;width:auto;display:block;"></div>
+    <div style="display:inline-flex;align-items:center;cursor:pointer" onclick="_trShowMarketing()"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:36px;width:auto;display:block;"></div>
     <div style="display:flex;gap:18px;align-items:center;">
       <a href="javascript:void(0)" onclick="_trShowMarketing()" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Inicio</a>
       <a href="javascript:void(0)" onclick="_trShowWizard()" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Cotizar</a>
@@ -1588,14 +1588,14 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
     </div>
     <div class="cz-section-inner cz-grid-3">
       <div class="cz-card">
-        <div class="tr-feat-icon" style="background:#f0e9f8;color:var(--teal);margin:0 0 16px">
+        <div class="tr-feat-icon" style="background:#e3f7f4;color:var(--teal);margin:0 0 16px">
           <svg viewBox="0 0 24 24"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" stroke="none"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" stroke="none"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" stroke="none"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" stroke="none"/></svg>
         </div>
         <div style="font-weight:800;font-size:16px;margin-bottom:6px;">Tu marca, siempre</div>
         <div style="font-size:14px;color:#6b6b7a;line-height:1.6;">Tu logo, tus colores y tu nombre en cada cotización que envías.</div>
       </div>
       <div class="cz-card">
-        <div class="tr-feat-icon" style="background:#fdece2;color:var(--orange);margin:0 0 16px">
+        <div class="tr-feat-icon" style="background:#e6fbef;color:var(--orange);margin:0 0 16px">
           <svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="m3 6.5 9 6.5 9-6.5"/></svg>
         </div>
         <div style="font-weight:800;font-size:16px;margin-bottom:6px;">Desde tu correo</div>
@@ -1623,7 +1623,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
         <div style="font-size:14px;color:#6b6b7a;line-height:1.6;">Revisa el estado de todas tus cotizaciones enviadas, en un solo lugar.</div>
       </div>
       <div class="cz-card">
-        <div class="tr-feat-icon" style="background:#f0e9f8;color:var(--teal);margin:0 0 16px">
+        <div class="tr-feat-icon" style="background:#e3f7f4;color:var(--teal);margin:0 0 16px">
           <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <div style="font-weight:800;font-size:16px;margin-bottom:6px;">Trabaja en equipo</div>
@@ -1666,10 +1666,10 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
         <div style="position:absolute;top:-13px;right:28px;background:var(--teal);color:#fff;font-size:11px;font-weight:800;padding:4px 12px;border-radius:999px;">Para crecer</div>
         <div style="font-weight:800;font-size:18px;margin-bottom:4px;">Pro</div>
         <div style="font-size:20px;font-weight:800;color:var(--dark);margin-bottom:18px;">Próximamente</div>
-        <div class="cz-list-row" style="padding:7px 0"><span class="cz-check-ic" style="background:#f0e9f8;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Todo lo de Free</div>
-        <div class="cz-list-row" style="padding:7px 0"><span class="cz-check-ic" style="background:#f0e9f8;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Asistente de IA en cotizaciones</div>
-        <div class="cz-list-row" style="padding:7px 0"><span class="cz-check-ic" style="background:#f0e9f8;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Marca propia (logo y colores)</div>
-        <div class="cz-list-row" style="padding:7px 0 18px"><span class="cz-check-ic" style="background:#f0e9f8;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Hasta 3 usuarios</div>
+        <div class="cz-list-row" style="padding:7px 0"><span class="cz-check-ic" style="background:#e3f7f4;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Todo lo de Free</div>
+        <div class="cz-list-row" style="padding:7px 0"><span class="cz-check-ic" style="background:#e3f7f4;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Asistente de IA en cotizaciones</div>
+        <div class="cz-list-row" style="padding:7px 0"><span class="cz-check-ic" style="background:#e3f7f4;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Marca propia (logo y colores)</div>
+        <div class="cz-list-row" style="padding:7px 0 18px"><span class="cz-check-ic" style="background:#e3f7f4;color:var(--teal)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Hasta 3 usuarios</div>
         <a href="/registro/" class="cz-pill-btn" style="width:100%;justify-content:center;box-sizing:border-box;background:var(--teal);color:#fff;">Empezar gratis</a>
       </div>
     </div>
@@ -1677,14 +1677,14 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 
   <div id="landing-features" style="display:none;max-width:1000px;margin:0 auto;padding:60px 24px 20px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:26px;">
     <div style="text-align:center;">
-      <div class="tr-feat-icon" style="background:#f0e9f8;color:var(--teal);">
+      <div class="tr-feat-icon" style="background:#e3f7f4;color:var(--teal);">
         <svg class="tr-ic-wiggle" viewBox="0 0 24 24"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" stroke="none"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" stroke="none"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" stroke="none"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" stroke="none"/></svg>
       </div>
       <div style="font-weight:700;font-size:15px;margin-bottom:6px;">Con tu marca</div>
       <div style="font-size:13px;color:#8a8698;">Tu logo, tus colores y tu nombre en cada cotización que envías.</div>
     </div>
     <div style="text-align:center;">
-      <div class="tr-feat-icon" style="background:#fdece2;color:var(--orange);">
+      <div class="tr-feat-icon" style="background:#e6fbef;color:var(--orange);">
         <svg class="tr-ic-float" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="m3 6.5 9 6.5 9-6.5"/></svg>
       </div>
       <div style="font-weight:700;font-size:15px;margin-bottom:6px;">Desde tu correo</div>
@@ -1814,7 +1814,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
 <div class="modal-overlay" id="trAlertOverlay" style="z-index:99999" onclick="if(event.target===this)_trAlertClose()">
   <div class="modal" style="max-width:360px;margin-top:-20vh">
     <div class="modal-hdr" style="border-bottom:none;padding-bottom:8px">
-      <div style="width:36px;height:36px;border-radius:50%;background:var(--abg,#fdece2);color:var(--orange);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <div style="width:36px;height:36px;border-radius:50%;background:#fdf3e2;color:#c98a1c;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.2" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </div>
       <button class="modal-close" onclick="_trAlertClose()">✕</button>
@@ -3094,7 +3094,7 @@ else if(_CLIENT_ID === 'registro'){
   CONFIG.nameA = 'Cotizadía';
   CONFIG.nameB = '';
   CONFIG.tagline = 'Regístrate gratis';
-  CONFIG.colors = {teal:'2D3250', orange:'7C77B9', dark:'14142B'};
+  CONFIG.colors = {teal:'06B6A3', orange:'22C55E', dark:'0F1724'};
   document.body.classList.add('is-public-signup');
   try{ var _lsl = document.getElementById('login-signup-link'); if(_lsl) _lsl.style.display='none'; }catch(e){}
   try{
@@ -3105,7 +3105,7 @@ else if(_CLIENT_ID === 'registro'){
 else if(_CLIENT_ID === 'cotizar'){
   CONFIG.nameA = 'Cotizadía';
   CONFIG.nameB = '';
-  CONFIG.colors = {teal:'2D3250', orange:'7C77B9', dark:'14142B'};
+  CONFIG.colors = {teal:'06B6A3', orange:'22C55E', dark:'0F1724'};
   document.body.classList.add('is-public-landing');
   try{
     document.getElementById('login-screen').style.display='none';
