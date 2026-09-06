@@ -168,14 +168,14 @@ body.has-logo #login-logo-img{display:block!important}
 .cz-check-ic svg{width:13px;height:13px;stroke-width:3}
 .cz-list-row{display:flex;align-items:flex-start;gap:12px;padding:11px 0;font-size:14.5px;line-height:1.5}
 @keyframes cz-float{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-16px) rotate(-.5deg)}}
-.cz-mock-float{position:relative;z-index:2;animation:cz-float 7s ease-in-out infinite}
+.cz-mock-float{position:relative;z-index:2}
 @keyframes cz-blob-drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-18px) scale(1.08)}}
 .cz-blob-a{animation:cz-blob-drift 11s ease-in-out infinite}
 .cz-blob-b{animation:cz-blob-drift 13s ease-in-out infinite reverse}
 .cz-mock-wrap{position:relative;max-width:440px;margin:70px auto 0}
 .cz-mock-glow{position:absolute;inset:-40px;background:linear-gradient(120deg,var(--orange),var(--teal));filter:blur(50px);opacity:.4;border-radius:40%;z-index:0;animation:cz-glow-pulse 5s ease-in-out infinite}
 @keyframes cz-glow-pulse{0%,100%{opacity:.32;transform:scale(1)}50%{opacity:.5;transform:scale(1.06)}}
-.cz-mock-stack{position:absolute;inset:14px -14px -14px 14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:22px;transform:rotate(4deg);z-index:1}
+.cz-mock-stack{position:absolute;inset:14px -14px -14px 14px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:22px;z-index:1}
 .cz-mock-card{position:relative;z-index:1;background:#fff;border-radius:22px;box-shadow:0 40px 90px -20px rgba(0,0,0,.55);padding:24px 26px;text-align:left;color:#252530}
 @keyframes cz-fade-up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 .cz-fade-up{opacity:0;animation:cz-fade-up .8s cubic-bezier(.2,.7,.2,1) forwards}
@@ -184,7 +184,14 @@ body.has-logo #login-logo-img{display:block!important}
 .hero-badge{font-size:11px;background:#eaf7f1;color:#0fa06a;padding:3px 8px;border-radius:6px;font-weight:700;display:inline-flex;align-items:center;gap:4px;opacity:0;transform:scale(.4);transition:opacity .4s ease,transform .5s cubic-bezier(.34,1.56,.64,1)}
 .hero-badge.show{opacity:1;transform:scale(1)}
 .cz-blob-c{animation:cz-blob-drift 9s ease-in-out infinite}
-@media(prefers-reduced-motion:reduce){.cz-mock-float,.cz-blob-a,.cz-blob-b,.cz-blob-c,.cz-mock-glow,.cz-pill-primary{animation:none}.cz-fade-up{opacity:1;animation:none}.hero-item,.hero-badge{transition:none;opacity:1;transform:none}}
+.cz-perk{position:absolute;z-index:1;background:rgba(255,255,255,.95);color:var(--dark);font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:999px;box-shadow:0 10px 26px -6px rgba(0,0,0,.35);white-space:nowrap}
+.cz-perk-a{top:-46px;left:10px;animation:cz-perk-bob 4.5s ease-in-out infinite}
+.cz-perk-b{top:36%;left:calc(100% + 26px);animation:cz-perk-bob 5.2s ease-in-out infinite .6s}
+.cz-perk-c{bottom:-46px;left:30px;animation:cz-perk-bob 4.8s ease-in-out infinite 1.2s}
+@media(max-width:1180px){.cz-perk-b{display:none}}
+@keyframes cz-perk-bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(1deg)}}
+@media(max-width:560px){.cz-perk{display:none}}
+@media(prefers-reduced-motion:reduce){.cz-mock-float,.cz-blob-a,.cz-blob-b,.cz-blob-c,.cz-mock-glow,.cz-pill-primary,.cz-perk-a,.cz-perk-b,.cz-perk-c{animation:none}.cz-fade-up{opacity:1;animation:none}.hero-item,.hero-badge{transition:none;opacity:1;transform:none}}
 .chip-clock{color:rgba(255,255,255,.6);font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
 .btn-new{background:var(--teal);color:#fff;border:none;padding:7px 15px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.2px;text-decoration:none;transition:background .15s}
 .btn-new:hover{background:var(--teal2)}
@@ -1535,6 +1542,9 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
     <div class="cz-mock-wrap cz-fade-up" style="animation-delay:.36s">
       <div class="cz-mock-glow"></div>
       <div class="cz-mock-stack"></div>
+      <div class="cz-perk cz-perk-a">⏱ Lista en 2 minutos</div>
+      <div class="cz-perk cz-perk-b">✓ 100% gratis para probar</div>
+      <div class="cz-perk cz-perk-c">🔒 Sin tarjeta de crédito</div>
       <div class="cz-mock-float">
         <div class="cz-mock-card">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
