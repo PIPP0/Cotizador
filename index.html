@@ -7,8 +7,7 @@
   var p=new URLSearchParams(location.search).get('c');
   if(p==='cliente4') window.location.replace('./concurso.html?_src=cliente4');
 
-  if(!p || p===''){ window.location.replace('./landing.html'); return; }
-  try{ history.replaceState(null,'','/'+encodeURIComponent(p)+'/'); }catch(e){}
+  if(p){ try{ history.replaceState(null,'','/'+encodeURIComponent(p)+'/'); }catch(e){} }
 })();
 </script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -2943,7 +2942,7 @@ const _selfScript = document.currentScript;
 // ══════════════════════════════════════════════════
 //  MULTI-TENANT — cliente por URL (?c=nombre)
 // ══════════════════════════════════════════════════
-const _CLIENT_ID    = (function(){ var q=new URLSearchParams(window.location.search).get('c'); if(q) return q; var seg=(window.location.pathname.split('/').filter(Boolean)[0]||''); if(seg) return seg; return (location.hostname === 'cotizadia.cl' ? 'nexenergy' : 'default'); })().toLowerCase().replace(/[^a-z0-9_-]/g,'');
+const _CLIENT_ID    = (function(){ var q=new URLSearchParams(window.location.search).get('c'); if(q) return q; var seg=(window.location.pathname.split('/').filter(Boolean)[0]||''); if(seg) return seg; return (location.hostname === 'cotizadia.cl' ? 'cotizar' : 'default'); })().toLowerCase().replace(/[^a-z0-9_-]/g,'');
 const _spcKey       = 'spc_'      + _CLIENT_ID;
 const _spcLogoKey   = 'spc_logo_' + _CLIENT_ID;
 const _spcLlmKey    = 'spc_llmkey_' + _CLIENT_ID; // clave separada — nunca sobrescrita por Firebase
