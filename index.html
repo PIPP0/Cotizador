@@ -1478,7 +1478,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
     <a href="/cotizar/" style="display:inline-flex;align-items:center;"><img src="/cotizadia-logo.png" alt="Cotizadía" style="height:46px;width:auto;display:block;"></a>
     <div style="display:flex;gap:18px;align-items:center;">
       <a href="/cotizar/" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Inicio</a>
-      <a href="/" style="font-size:13.5px;font-weight:600;color:var(--teal);text-decoration:none;">Iniciar sesión</a>
+      <a href="/login/" style="font-size:13.5px;font-weight:600;color:var(--teal);text-decoration:none;">Iniciar sesión</a>
     </div>
   </div>
   <div style="flex:1;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;">
@@ -1513,8 +1513,8 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
         <input type="password" id="su-pass2" autocomplete="off" onkeydown="if(event.key==='Enter')doSignup()">
       </div>
       <button class="login-btn" id="signup-btn" onclick="doSignup()">Crear cuenta gratis →</button>
-      <button type="button" class="login-btn" style="background:transparent;color:var(--teal);border:2px solid var(--teal);box-shadow:none;margin-top:8px;" onclick="window.location.href='/'">Ingresar →</button>
-      <div style="text-align:center;margin-top:10px;font-size:12px;color:#8a8698;">¿Ya tienes cuenta? <a href="/" style="color:var(--teal);text-decoration:none;font-weight:600;">Inicia sesión</a></div>
+      <button type="button" class="login-btn" style="background:transparent;color:var(--teal);border:2px solid var(--teal);box-shadow:none;margin-top:8px;" onclick="window.location.href='/login/'">Ingresar →</button>
+      <div style="text-align:center;margin-top:10px;font-size:12px;color:#8a8698;">¿Ya tienes cuenta? <a href="/login/" style="color:var(--teal);text-decoration:none;font-weight:600;">Inicia sesión</a></div>
     </div>
   </div>
   </div>
@@ -1526,7 +1526,7 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
     <div style="display:flex;gap:18px;align-items:center;">
       <a href="javascript:void(0)" onclick="_trShowMarketing()" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Inicio</a>
       <a href="javascript:void(0)" onclick="_trShowWizard()" class="tr-nav-link" style="font-size:13.5px;font-weight:600;color:var(--dark);text-decoration:none;">Cotizar</a>
-      <a href="/" style="font-size:13.5px;font-weight:600;color:var(--teal);text-decoration:none;">Iniciar sesión</a>
+      <a href="/login/" style="font-size:13.5px;font-weight:600;color:var(--teal);text-decoration:none;">Iniciar sesión</a>
       <a href="/registro/" style="background:var(--teal);color:#fff;padding:9px 16px;border-radius:9px;font-size:13.5px;font-weight:700;text-decoration:none;">Crear cuenta gratis</a>
     </div>
   </div>
@@ -3166,12 +3166,24 @@ else if(_CLIENT_ID === 'cotizar'){
     setTimeout(function(){ try{ _heroDemoLoop(); }catch(e){} }, 0);
   }catch(e){}
 }
+else if(_CLIENT_ID === 'login'){
+  CONFIG.nameA = 'Cotizadía';
+  CONFIG.nameB = '';
+  CONFIG.tagline = 'Inicia sesión';
+  CONFIG.colors = {teal:'06B6A3', orange:'22C55E', dark:'0F1724'};
+  document.body.classList.add('is-public-login');
+  try{
+    var _ss3 = document.getElementById('signup-screen'); if(_ss3) _ss3.style.display='none';
+    var _lp2 = document.getElementById('landing-screen'); if(_lp2) _lp2.style.display='none';
+    document.getElementById('login-screen').style.display='flex';
+  }catch(e){}
+}
 
 
 
 // ─── Restauración INMEDIATA de colores + logo desde localStorage ────
 (function() {
-  if (['admin','_template','cotizar','registro'].indexOf(_CLIENT_ID) !== -1) {
+  if (['admin','_template','cotizar','registro','login'].indexOf(_CLIENT_ID) !== -1) {
     try { localStorage.removeItem(_spcKey); } catch(e) {} // autolimpia contaminación residual de antes de este fix
     return;
   }
@@ -4661,7 +4673,7 @@ function initFirebase() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function saveConfigToStorage() {
-  if (['admin','_template','cotizar','registro'].indexOf(_CLIENT_ID) !== -1) return; // rutas virtuales: nunca persisten config propia
+  if (['admin','_template','cotizar','registro','login'].indexOf(_CLIENT_ID) !== -1) return; // rutas virtuales: nunca persisten config propia
   try {
     if (CONFIG.logoSrc) { localStorage.setItem(_spcLogoKey, CONFIG.logoSrc); }
     else { localStorage.removeItem(_spcLogoKey); }
@@ -4702,7 +4714,7 @@ window.addEventListener('beforeunload', saveConfigToStorage);
 // Listener en tiempo real — aplica cambios de admin a todos los dispositivos conectados
 function _syncFromFirebase() {
   if (!_fbDb) return;
-  if (['admin','_template','cotizar','registro'].indexOf(_CLIENT_ID) !== -1) return; // rutas virtuales: nunca son un cliente real, aunque exista un config/{slug} residual con ese nombre
+  if (['admin','_template','cotizar','registro','login'].indexOf(_CLIENT_ID) !== -1) return; // rutas virtuales: nunca son un cliente real, aunque exista un config/{slug} residual con ese nombre
   _fbDb.ref('config/' + _CLIENT_ID).on('value', snapshot => {
     const r = snapshot.val();
     if (!r) return;
@@ -4735,7 +4747,7 @@ function _syncFromFirebase() {
 }
 
 function loadConfigFromStorage() {
-  if (['admin','_template','cotizar','registro'].indexOf(_CLIENT_ID) !== -1) {
+  if (['admin','_template','cotizar','registro','login'].indexOf(_CLIENT_ID) !== -1) {
     try { localStorage.removeItem(_spcKey); } catch(e) {} // autolimpia contaminación residual de antes de este fix
     return false;
   }
@@ -4918,7 +4930,7 @@ function doSignup(){
   if(!accEmail || accEmail.indexOf('@')===-1){ showErr('Ingresa un correo válido para tu cuenta.'); return; }
   if(pass.length<6){ showErr('La contraseña debe tener al menos 6 caracteres.'); return; }
   if(pass!==pass2){ showErr('Las contraseñas no coinciden.'); return; }
-  const reserved = ['admin','_template','default','cotizar','registro'];
+  const reserved = ['admin','_template','default','cotizar','registro','login'];
   let slug = _slugify(company);
   if(!slug) slug = 'empresa';
   if(reserved.indexOf(slug)!==-1) slug = slug+'-1';
@@ -5415,6 +5427,19 @@ function doLogin(){
           _finishLogin('superadmin');
           if(_CLIENT_ID==='admin'){ switchView('usuarios'); renderPlatformStats(); }
           return;
+        }
+        if(_CLIENT_ID==='login'){
+          return _fbDb.ref('userClients/'+uid).once('value').then(function(ucSnap){
+            var clients = ucSnap.val();
+            var slug = clients ? Object.keys(clients)[0] : null;
+            if(!slug){
+              err.textContent = 'No encontramos una empresa asociada a esta cuenta.';
+              err.style.color=''; err.style.background=''; err.style.borderColor='';
+              err.style.display='block';
+              return firebase.auth().signOut();
+            }
+            window.location.href = '/'+slug+'/';
+          });
         }
         return _fbDb.ref('team/'+_CLIENT_ID+'/'+uid).once('value').then(function(snap){
         const teamData = snap.val();
