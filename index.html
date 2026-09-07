@@ -2210,8 +2210,8 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
       <div class="filter-pills" id="filter-pills">
         <div class="fpill on" data-f="all">Todas</div>
         <div class="fpill" data-f="Enviada">Enviada</div>
-        <div class="fpill" data-f="En revisión">En revisión</div>
-        <div class="fpill" data-f="Negociando">Negociando</div>
+        <div class="fpill" data-f="En revisión">Vista</div>
+        <div class="fpill" data-f="Negociando">En negociación</div>
         <div class="fpill" data-f="En proceso">En proceso</div>
         <div class="fpill" data-f="Borrador">Borrador</div>
         <div class="fpill" data-f="Ganada">Ganada</div>
@@ -2284,12 +2284,12 @@ select.cfg-inp{-webkit-appearance:none;-moz-appearance:none;appearance:none;back
       <div class="filter-pills" id="filter-pills-2">
         <div class="fpill on" data-f="all">Todas</div>
         <div class="fpill" data-f="Enviada">Enviada</div>
-        <div class="fpill" data-f="En revisión">En revisión</div>
-        <div class="fpill" data-f="Negociando">Negociando</div>
+        <div class="fpill" data-f="En revisión">Vista</div>
+        <div class="fpill" data-f="Negociando">En negociación</div>
         <div class="fpill" data-f="En proceso">En proceso</div>
         <div class="fpill" data-f="Borrador">Borrador</div>
         <div class="fpill" data-f="Ganada">Ganada</div>
-        <div class="fpill" data-f="Perdida">Perdida</div>
+        <div class="fpill" data-f="Perdida">Rechazada</div>
       </div>
     </div>
     <div style="overflow-x:auto"><table id="pipeline-table-2"></table></div>
@@ -6111,6 +6111,13 @@ const STATUS_BADGE = {
   'Enviada':'bg-blue','En revisión':'bg-green','Negociando':'bg-gold','En proceso':'bg-amber',
   'Borrador':'bg-gray','Ganada':'bg-green','Perdida':'bg-red'
 };
+// Nombres visibles para el usuario — las claves internas (arriba) no cambian
+// para no romper las plantillas de IA ni la lógica que ya depende de ellas.
+const STATUS_LABELS = {
+  'Borrador':'Borrador','Enviada':'Enviada','En revisión':'Vista','Negociando':'En negociación',
+  'En proceso':'En proceso','Ganada':'Ganada','Perdida':'Rechazada'
+};
+function _statusLabel(s){ return STATUS_LABELS[s] || s; }
 
 const _D=Date.now(), _DAY=86400000;
 // Los IDs de demo se generan dinámicamente para respetar el prefijo de la marca actual
@@ -6888,7 +6895,7 @@ function renderTableInto(tableId, rows){
     const _svcNames = {}; (CONFIG.services||[]).forEach(s=>{ _svcNames[s.id]=s.name; _svcNames[s.name]=s.name; });
     tbody=rows.map(r=>{
       const liveProb = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 0 : getConvProb(r.svc, r.seg);
-      const probLabel = r.estado==='Ganada' ? '✓ Ganada' : r.estado==='Perdida' ? '✗ Perdida' : liveProb+'%';
+      const probLabel = r.estado==='Ganada' ? '✓ Ganada' : r.estado==='Perdida' ? '✗ Rechazada' : liveProb+'%';
       const probFill  = r.estado==='Ganada' ? 100 : r.estado==='Perdida' ? 100 : liveProb;
       const probClr   = r.estado==='Ganada' ? 'var(--green)' : r.estado==='Perdida' ? 'var(--red)' : probColor(liveProb);
       const _svcDisplay = _svcNames[r.svc] || r.svc || '';
@@ -6904,7 +6911,7 @@ function renderTableInto(tableId, rows){
             <span class="prob-val" style="color:${probClr}">${probLabel}</span>
           </div>
         </td>
-        <td><span class="badge ${STATUS_BADGE[r.estado]||'bg-gray'}" onclick="event.stopPropagation();cycleStatus('${r.id}')">${r.estado}</span></td>
+        <td><span class="badge ${STATUS_BADGE[r.estado]||'bg-gray'}" onclick="event.stopPropagation();cycleStatus('${r.id}')">${_statusLabel(r.estado)}</span></td>
         <td style="color:var(--t3);font-size:12px">${_fmtShort(r.created)}</td>
         <td style="color:var(--t3);font-size:12px">${r.vence}</td>
         <td><div class="row-acts" onclick="event.stopPropagation()">
@@ -6993,7 +7000,7 @@ function openModal(id){
   document.getElementById('modal-title').textContent=_displayId(r.id);
   const _svcNamesM = {}; (CONFIG.services||[]).forEach(s=>{ _svcNamesM[s.id]=s.name; _svcNamesM[s.name]=s.name; });
   document.getElementById('modal-sub').textContent=`${r.cliente} · ${_svcNamesM[r.svc]||r.svc||''}`;
-  const statusOpts=STATUSES.map(s=>`<option${s===r.estado?' selected':''}>${s}</option>`).join('');
+  const statusOpts=STATUSES.map(s=>`<option value="${s}"${s===r.estado?' selected':''}>${_statusLabel(s)}</option>`).join('');
   const _ivaPctM=CONFIG.cotizacion?.iva??19;
   const ivaAmt=Math.round(r.monto*(_ivaPctM/100));
   const fechaEmision=r.created?_fmtDate(r.created):(r.fecha||'—');
