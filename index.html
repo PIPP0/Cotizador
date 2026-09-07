@@ -2939,6 +2939,7 @@ const _spcKey       = 'spc_'      + _CLIENT_ID;
 const _spcLogoKey   = 'spc_logo_' + _CLIENT_ID;
 const _DEFAULT_LOGO_URL = 'https://cotizadia.cl/default-logo.svg'; // logo genérico usado en correos cuando el cliente no subió el suyo
 const AI_WORKER_URL = 'https://ai-cotizadia.futuroiadesarrollo.workers.dev'; // Worker de Cloudflare (worker-ai/ai-worker.js)
+const MAINTENANCE_MODE = true; // true = la vista inicial (cotizadia.cl) muestra "estamos trabajando" en vez de la herramienta de prueba. Cambiar a false y publicar para reabrir.
 
 // ══════════════════════════════════════════════════
 //  CONFIG — personalización SaaS
@@ -3180,13 +3181,27 @@ else if(_CLIENT_ID === 'cotizar'){
   CONFIG.nameB = '';
   CONFIG.colors = {teal:'06B6A3', orange:'22C55E', dark:'0F1724'};
   document.body.classList.add('is-public-landing');
-  try{
-    document.getElementById('login-screen').style.display='none';
-    var _ss2 = document.getElementById('signup-screen'); if(_ss2) _ss2.style.display='none';
-    var _lp = document.getElementById('landing-screen'); if(_lp) _lp.style.display='block';
-    setTimeout(function(){ try{ _trialRefreshUI(); _trInitItems(); }catch(e){} }, 0);
-    setTimeout(function(){ try{ _heroDemoLoop(); }catch(e){} }, 0);
-  }catch(e){}
+  if (MAINTENANCE_MODE) {
+    try{
+      document.getElementById('login-screen').style.display='none';
+      var _ss2m = document.getElementById('signup-screen'); if(_ss2m) _ss2m.style.display='none';
+      var _mw = document.createElement('div');
+      _mw.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#0F1724;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;font-family:inherit';
+      _mw.innerHTML =
+        '<div style="background:#fff;border-radius:12px;padding:10px 16px;margin-bottom:28px"><img src="/cotizadia-logo.png" style="height:28px;display:block" alt="Cotizadía"></div>'+
+        '<h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 10px">Estamos trabajando en Cotizadía</h1>'+
+        '<p style="color:rgba(255,255,255,.65);font-size:14px;max-width:360px;margin:0;line-height:1.5">Estamos afinando algunos detalles antes de abrir al público. Vuelve pronto.</p>';
+      document.body.appendChild(_mw);
+    }catch(e){}
+  } else {
+    try{
+      document.getElementById('login-screen').style.display='none';
+      var _ss2 = document.getElementById('signup-screen'); if(_ss2) _ss2.style.display='none';
+      var _lp = document.getElementById('landing-screen'); if(_lp) _lp.style.display='block';
+      setTimeout(function(){ try{ _trialRefreshUI(); _trInitItems(); }catch(e){} }, 0);
+      setTimeout(function(){ try{ _heroDemoLoop(); }catch(e){} }, 0);
+    }catch(e){}
+  }
 }
 else if(_CLIENT_ID === 'login'){
   CONFIG.nameA = 'Cotizadía';
