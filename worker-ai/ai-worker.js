@@ -74,8 +74,14 @@ async function handleGenerar(request, env) {
   const clientId = (body && body.clientId || '').toString();
   if (!clientId) return jsonResponse({ error: 'falta clientId' }, 400);
 
-  const tier = await fbGet(env, '/config/' + clientId + '/plan/tier');
-  if (!tier || tier === 'free') {
+  // el cliente debe existir de verdad — evita que cualquiera consuma OpenAI con un clientId inventado
+  const clientConfig = await fbGet(env, '/config/' + clientId);
+  if (!clientConfig) return jsonResponse({ error: 'cliente no encontrado' }, 404);
+
+  // clientes sin 'plan' explícito en Firebase son cuentas antiguas con acceso completo
+  // (el front también asume 'team' por defecto — ver DEFAULT_CONFIG en index.html)
+  const tier = (clientConfig.plan && clientConfig.plan.tier) || 'team';
+  if (tier === 'free') {
     return jsonResponse({ error: 'plan_required', message: 'La IA está disponible desde el plan Pro.' }, 402);
   }
 
