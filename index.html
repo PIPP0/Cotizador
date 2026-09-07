@@ -2937,8 +2937,8 @@ const _selfScript = document.currentScript;
 const _CLIENT_ID    = (function(){ var q=new URLSearchParams(window.location.search).get('c'); if(q) return q; var seg=(window.location.pathname.split('/').filter(Boolean)[0]||''); if(seg) return seg; return (location.hostname === 'cotizadia.cl' ? 'cotizar' : 'default'); })().toLowerCase().replace(/[^a-z0-9_-]/g,'');
 const _spcKey       = 'spc_'      + _CLIENT_ID;
 const _spcLogoKey   = 'spc_logo_' + _CLIENT_ID;
-const _spcLlmKey    = 'spc_llmkey_' + _CLIENT_ID; // clave separada — nunca sobrescrita por Firebase
 const _DEFAULT_LOGO_URL = 'https://cotizadia.cl/default-logo.svg'; // logo genérico usado en correos cuando el cliente no subió el suyo
+const AI_WORKER_URL = ''; // TODO: pegar la URL del Worker de Cloudflare (worker-ai/ai-worker.js) una vez desplegado
 
 // ══════════════════════════════════════════════════
 //  CONFIG — personalización SaaS
@@ -3038,8 +3038,7 @@ const DEFAULT_CONFIG = {
     {key:'uvC',          label:'Sistema UV-C bactericida',               valor:220000},
     {key:'robotbas',     label:'ROBOTBAS RoomControl (unid.)',           valor:210000},
     {key:'diagnosticoIA',label:'Reporte diagnóstico IA',                 valor:85000}
-  ],
-  llm: { apiKey: '', model: 'gpt-4o-mini' }
+  ]
 };
 // @@CONFIG-END
 // ─── NexEnergy — Inteligencia Energética (?c=nexenergy) ───────────────────────
@@ -3738,7 +3737,6 @@ function renderEdicion() {
   const cot = CONFIG.cotizacion || {};
   const steps = CONFIG.motorIA || [];
   const precios = CONFIG.precios || [];
-  const llm = CONFIG.llm || {};
 
   const precioRows = precios.map((p, i) =>
     `<div class="ev-price-row" id="ev-pr-${i}">
@@ -3822,47 +3820,17 @@ function renderEdicion() {
       </div>
     </div>
 
-    <!-- LLM / IA — solo Admin -->
+    <!-- IA — solo Admin -->
     <div class="ev-card" style="margin-top:20px;${(currentUser&&currentUser.id==='admin')?'':'display:none'}">
       <div class="ev-card-title">
         <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        Integración IA — OpenAI GPT-4o mini
-        <span style="margin-left:auto;font-size:10.5px;font-weight:500;color:var(--t4);text-transform:none;letter-spacing:0">Recomendado</span>
+        Integración IA
+        <span style="margin-left:auto;font-size:10.5px;font-weight:500;color:${_aiEnabled()?'var(--teal)':'var(--t4)'};text-transform:none;letter-spacing:0">${_aiEnabled()?'Activa':'Disponible desde Pro'}</span>
       </div>
-      <div style="font-size:12px;color:var(--t3);margin-bottom:14px;line-height:1.6">
-        Ingresa tu API key de OpenAI para activar: auto-generación de tips, análisis de pipeline, redacción de emails, auto-completado en lenguaje natural y chat interno.
-        Obtén tu key en <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--teal)">platform.openai.com/api-keys</a>.
-      </div>
-      <div class="ev-field" style="max-width:520px">
-        <label>API Key OpenAI</label>
-        <div style="position:relative">
-          <input type="password" id="ev-llm-key" placeholder="sk-proj-…" value="${llm.apiKey||''}"
-            style="width:100%;padding-right:38px"
-            oninput="CONFIG.llm=CONFIG.llm||{};CONFIG.llm.apiKey=this.value;if(this.value)localStorage.setItem(_spcLlmKey,this.value);else localStorage.removeItem(_spcLlmKey)"
-            onfocus="this.style.borderColor='var(--teal)'"
-            onblur="this.style.borderColor=''">
-          <button title="Mostrar / ocultar" onclick="var i=document.getElementById('ev-llm-key');i.type=i.type==='password'?'text':'password'"
-            style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:2px;color:var(--t3)">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="ev-3col" style="max-width:400px;margin-top:10px">
-        <div class="ev-field">
-          <label>Modelo</label>
-          <select id="ev-llm-model" style="width:100%;padding:9px 12px;border:1.5px solid #d0d5dd;border-radius:8px;font-size:13px;font-family:inherit;background:#fff;cursor:pointer"
-            onchange="CONFIG.llm=CONFIG.llm||{};CONFIG.llm.model=this.value">
-            <option value="gpt-4o-mini" ${(llm.model||'gpt-4o-mini')==='gpt-4o-mini'?'selected':''}>gpt-4o-mini (recomendado)</option>
-            <option value="gpt-4o" ${llm.model==='gpt-4o'?'selected':''}>gpt-4o</option>
-            <option value="gpt-3.5-turbo" ${llm.model==='gpt-3.5-turbo'?'selected':''}>gpt-3.5-turbo</option>
-          </select>
-        </div>
-      </div>
-      <div style="margin-top:14px">
-        <button onclick="testLlmKey()" style="background:var(--bbg);border:1px solid var(--bbr);color:var(--teal);font-size:12px;font-weight:700;padding:8px 16px;border-radius:7px;cursor:pointer;font-family:inherit">
-          ✦ Probar conexión
-        </button>
-        <span id="ev-llm-test-result" style="margin-left:12px;font-size:12px;color:var(--t3)"></span>
+      <div style="font-size:12px;color:var(--t3);line-height:1.6">
+        ${_aiEnabled()
+          ? 'La IA de Cotizadía ya está activa en tu plan: auto-generación de tips, análisis de pipeline, redacción de emails y chat interno funcionan sin configuración adicional.'
+          : 'La IA de Cotizadía (tips automáticos, análisis de pipeline, redacción de emails y chat interno) se activa al pasar al plan Pro — no requiere que ingreses ninguna API key.'}
       </div>
     </div>
 
@@ -4073,7 +4041,7 @@ async function generateEmailPreview() {
   stat.textContent = ''; prev.style.display = 'none';
   if(cpBtn) cpBtn.style.display = 'none';
   let texto = '';
-  if (CONFIG.llm && CONFIG.llm.apiKey) {
+  if (_aiEnabled()) {
     const objetivos = {
       'Enviada':     'Hacer seguimiento suave 2-3 días después del envío. Objetivo: confirmar recepción, despertar interés, proponer una llamada corta. Tono amigable, sin presión.',
       'En revisión': 'El cliente está evaluando. Objetivo: ofrecer ayuda para la revisión técnica, proponer demo o reunión aclaratoria, reducir fricción. Tono consultivo.',
@@ -4262,10 +4230,6 @@ function saveEdicionValores() {
   const cond = document.getElementById('ev-cond'); if(cond && cond.value) CONFIG.cotizacion.condiciones = cond.value;
   // Motor IA (live-updated via oninput, apply to DOM)
   applyMotorIA();
-  // LLM config
-  CONFIG.llm = CONFIG.llm || {};
-  const llmKey = document.getElementById('ev-llm-key'); if(llmKey) CONFIG.llm.apiKey = llmKey.value.trim();
-  const llmModel = document.getElementById('ev-llm-model'); if(llmModel) CONFIG.llm.model = llmModel.value;
   // Precios y convTable (live-updated via oninput)
   saveConfigToStorage();
   // Reusar el modal de confirmación existente (adapta colores automáticamente)
@@ -4276,20 +4240,23 @@ function saveEdicionValores() {
 }
 
 // ─── LLM Core ────────────────────────────────────────────────────────
+function _aiEnabled() {
+  const tier = (CONFIG.plan && CONFIG.plan.tier) || 'free';
+  return tier !== 'free';
+}
+
 async function _llmCall(system, user, onChunk, maxTokens) {
-  const key = (CONFIG.llm && CONFIG.llm.apiKey) ? CONFIG.llm.apiKey.trim() : '';
-  if (!key) { toast('Configura tu API key de OpenAI en Edición Valores → IA', 'red'); return null; }
-  const model = (CONFIG.llm && CONFIG.llm.model) ? CONFIG.llm.model : 'gpt-4o-mini';
+  if (!AI_WORKER_URL) { toast('IA todavía no está activa en este entorno', 'red'); return null; }
+  if (!_aiEnabled()) { toast('La IA está disponible desde el plan Pro', 'red'); return null; }
   const _mt = maxTokens || 700;
   try {
+    const res = await fetch(AI_WORKER_URL + '/generar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId: _CLIENT_ID, system, user, maxTokens: _mt, stream: !!onChunk })
+    });
     if (onChunk) {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Authorization': 'Bearer '+key, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model, stream: true, max_tokens: _mt,
-          messages: [{role:'system',content:system},{role:'user',content:user}] })
-      });
-      if (!res.ok) { const e=await res.json(); throw new Error(e.error?.message||'API error '+res.status); }
+      if (!res.ok) { const e=await res.json(); throw new Error(e.message||e.error||'API error '+res.status); }
       const reader = res.body.getReader(); const dec = new TextDecoder(); let full = '';
       while(true) {
         const {done,value} = await reader.read(); if(done) break;
@@ -4301,15 +4268,9 @@ async function _llmCall(system, user, onChunk, maxTokens) {
       }
       return full;
     } else {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Authorization': 'Bearer '+key, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model, max_tokens: _mt,
-          messages: [{role:'system',content:system},{role:'user',content:user}] })
-      });
       const data = await res.json();
-      if (data.error) throw new Error(data.error.message);
-      return data.choices[0].message.content.trim();
+      if (data.error) throw new Error(data.message||data.error);
+      return (data.text||'').trim();
     }
   } catch(e) { toast('Error IA: '+e.message, 'red'); return null; }
 }
@@ -4348,26 +4309,7 @@ ${pipeline_summary||'Pipeline vacío'}`;
     result.innerHTML = full.replace(/•/g,'<br>•').replace(/\n/g,'<br>');
   }, 1200);
   btn.disabled = false; btn.style.opacity = '1';
-  if (!r2) { result.innerHTML = '<span style="color:var(--red)">Error — revisa tu API key en Edición Valores → IA</span>'; }
-}
-
-async function testLlmKey() {
-  const el = document.getElementById('ev-llm-test-result');
-  if(el) el.textContent = 'Probando…';
-  // Save key first
-  CONFIG.llm = CONFIG.llm || {};
-  const k = document.getElementById('ev-llm-key'); if(k) CONFIG.llm.apiKey = k.value.trim();
-  const m = document.getElementById('ev-llm-model'); if(m) CONFIG.llm.model = m.value;
-  const result = await _llmCall('Eres un asistente.','Responde exactamente: OK');
-  if(el) {
-    if(result && result.includes('OK')) { el.textContent = '✓ Conexión exitosa'; el.style.color='var(--green)'; }
-    else if(result) { el.textContent = '✓ Conectado'; el.style.color='var(--green)'; }
-    else {
-      const k2 = document.getElementById('ev-llm-key');
-      el.textContent = (k2 && k2.value.trim()) ? '✗ API key inválida o sin créditos' : '✗ Ingresa una API key primero';
-      el.style.color='var(--red)';
-    }
-  }
+  if (!r2) { result.innerHTML = '<span style="color:var(--red)">Error al generar el análisis — intenta de nuevo</span>'; }
 }
 
 // ─── Panel functions ─────────────────────────────────────────────────
@@ -4715,14 +4657,11 @@ function saveConfigToStorage() {
       cotizacion: CONFIG.cotizacion,
       motorIA: CONFIG.motorIA,
       precios: CONFIG.precios,
-      llm: CONFIG.llm,
       convRef: CONFIG.convRef,
       convOverride: CONFIG.convOverride
     };
     try {
       if(!_ADMIN_EDIT_TARGET) localStorage.setItem(_spcKey,JSON.stringify(slim));
-      // API key en clave dedicada — nunca sobrescrita por Firebase ni por resetConfig
-      if (!_ADMIN_EDIT_TARGET && CONFIG.llm && CONFIG.llm.apiKey) localStorage.setItem(_spcLlmKey, CONFIG.llm.apiKey);
     } catch(qe) {
       if (qe.name === 'QuotaExceededError' || qe.code === 22) {
         toast('Almacenamiento lleno — algunos cambios no se guardaron localmente', 'warn');
@@ -4760,9 +4699,6 @@ function _syncFromFirebase() {
     if (r.cotizacion) CONFIG.cotizacion = {...(CONFIG.cotizacion||{}), ...r.cotizacion};
     if (r.motorIA) CONFIG.motorIA = r.motorIA;
     if (r.precios) CONFIG.precios = r.precios;
-    if (r.llm) CONFIG.llm = {...(CONFIG.llm||{}), ...r.llm};
-    // API key: siempre restaurar desde clave dedicada — Firebase nunca la sobrescribe
-    { const _savedKey = localStorage.getItem(_spcLlmKey); if (_savedKey) { CONFIG.llm = CONFIG.llm||{}; CONFIG.llm.apiKey = _savedKey; } }
     try { const _ls=JSON.parse(localStorage.getItem(_spcKey)||'{}'); const _merged={...r,..._ls}; localStorage.setItem(_spcKey,JSON.stringify(_merged)); try{loadConfigFromStorage();}catch(_e){} } catch(e){ localStorage.setItem(_spcKey,JSON.stringify(r)); }
     _applyDynamicColors();
     try { applyConfig(); } catch(e) {}
@@ -4805,9 +4741,6 @@ if (sv.features) CONFIG.features = sv.features;
     if (sv.cotizacion) CONFIG.cotizacion = {...(CONFIG.cotizacion||{}), ...sv.cotizacion};
     if (sv.motorIA) CONFIG.motorIA = sv.motorIA;
     if (sv.precios) CONFIG.precios = sv.precios;
-    if (sv.llm) CONFIG.llm = {...(CONFIG.llm||{}), ...sv.llm};
-    // API key: clave dedicada tiene prioridad absoluta sobre cualquier valor en el config principal
-    { const _savedKey = localStorage.getItem(_spcLlmKey); if (_savedKey) { CONFIG.llm = CONFIG.llm||{}; CONFIG.llm.apiKey = _savedKey; } }
     if ('convRef' in sv) CONFIG.convRef = sv.convRef;
     if ('convOverride' in sv) CONFIG.convOverride = sv.convOverride || {};
     // Migración: si hay datos del antiguo convTable, promoverlos a convOverride
@@ -7728,7 +7661,7 @@ async function _handleFbFile(file) {
         'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     }
     const text = await _extractFbPdfText(file);
-    const hasKey = CONFIG.llm && CONFIG.llm.apiKey && CONFIG.llm.apiKey.trim();
+    const hasKey = _aiEnabled();
     let data = null;
     if (hasKey) {
       body.innerHTML = '<div style="text-align:center;padding:32px;color:var(--t3);font-size:13px">✨ Extrayendo datos con IA…</div>';
@@ -8087,7 +8020,7 @@ async function _prUse(id) {
   body.innerHTML = '<div style="text-align:center;padding:32px;color:var(--t3);font-size:13px">Procesando informe...</div>';
   try {
     const text = r.rawText || '';
-    const hasKey = CONFIG.llm && CONFIG.llm.apiKey && CONFIG.llm.apiKey.trim();
+    const hasKey = _aiEnabled();
     let data = null;
     if (hasKey) data = await _parseFbWithLlm(text);
     if (!data) data = _parseFbText(text);
@@ -8455,7 +8388,7 @@ function buildQ(){
     if (tipEl) {
       // Usar svc (variable global) como clave del tip — fix de _svcKey undefined
       tipEl.textContent = tips[svc] || tips.mant;
-      if (CONFIG.llm && CONFIG.llm.apiKey) {
+      if (_aiEnabled()) {
         const totalStr = (document.getElementById('tt') || {}).textContent || '';
         const clientName = (document.getElementById('cn') || {}).value || 'Cliente';
         const descr = (document.getElementById('rd') || {}).value || '';
@@ -8614,7 +8547,7 @@ async function go4(){
 
   // Feature 3: Mensaje personalizado — LLM si hay API key, template dinámico si no
   let emailIntro = '';
-  if (CONFIG.llm && CONFIG.llm.apiKey) {
+  if (_aiEnabled()) {
     btn.textContent = 'Redactando email…';
     const eSys = `Eres el redactor de emails comerciales de ${company}.
 Escribe UN párrafo corto (máximo 200 caracteres) DIRIGIDO AL CLIENTE para acompañar una cotización.
@@ -9280,12 +9213,11 @@ Fecha hoy: ${todayStr}
 Empresa: ${_chatCo}`;
 
   const historyMsgs = _chatHistory.slice(-8);
-  const body = { model: (CONFIG.llm&&CONFIG.llm.model)||'gpt-4o-mini', max_tokens:900, stream:true,
+  const body = { clientId: _CLIENT_ID, maxTokens:900, stream:true,
     messages: [{role:'system',content:systemPrompt}, ...historyMsgs] };
-  const key = (CONFIG.llm&&CONFIG.llm.apiKey)||'';
-  if (!key) {
+  if (!AI_WORKER_URL || !_aiEnabled()) {
     typing.remove();
-    const errBubble = _chatBubble('assistant','⚠ Configura tu API key en Edición Valores → IA para usar el chat.');
+    const errBubble = _chatBubble('assistant','⚠ El chat con IA está disponible desde el plan Pro.');
     msgs.appendChild(errBubble);
     msgs.scrollTop = msgs.scrollHeight;
     return;
@@ -9296,11 +9228,11 @@ Empresa: ${_chatCo}`;
   typing.replaceWith(aiBubble);
 
   try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions',{
-      method:'POST', headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},
+    const res = await fetch(AI_WORKER_URL + '/generar',{
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify(body)
     });
-    if (!res.ok) { const e=await res.json(); throw new Error(e.error?.message||'Error '+res.status); }
+    if (!res.ok) { const e=await res.json(); throw new Error(e.message||e.error||'Error '+res.status); }
     const reader=res.body.getReader(); const dec=new TextDecoder();
     while(true){
       const {done,value}=await reader.read(); if(done) break;
