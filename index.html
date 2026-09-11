@@ -4930,7 +4930,8 @@ function _provisionTenant(uid, authEmail, company, contactEmail){
   }
   return tryCreate(slug, 0).then(function(finalSlug){
     const nc = Object.assign(JSON.parse(JSON.stringify(DEFAULT_CONFIG)), {
-      nameA: company, nameB: '', email: contactEmail, _createdAt: Date.now()
+      nameA: company, nameB: '', email: contactEmail, _createdAt: Date.now(),
+      plan: { tier: 'free', status: 'active' } // cuentas nuevas parten en Free — el default 'team' del resto de la app es solo para cuentas antiguas sin plan explícito
     });
     return _fbDb.ref('config/'+finalSlug).set(nc).then(function(){
       return _fbDb.ref('team/'+finalSlug+'/'+uid).set({ role:'admin', name: company, email: authEmail });
@@ -6223,9 +6224,9 @@ function closeSidebar(){
 // ══════════════════════════════════════════════════
 const MP_WORKER_URL = ''; // TODO: pegar la URL del Worker de Cloudflare (mp-worker.js) una vez desplegado
 const PLAN_TIERS = {
-  free: { label:'Free', price:0, features:['Cotizaciones manuales ilimitadas','Cotizaciones en PDF','Marca propia (logo y colores)'] },
-  pro:  { label:'Pro',  price:null, features:['Todo lo de Free','Asistente de IA en cotizaciones','Envío directo a tus clientes'] },
-  team: { label:'Team', price:null, features:['Todo lo de Pro','Hasta 10 usuarios','Soporte prioritario'] },
+  free:    { label:'Free',    price:0,    features:['Cotizaciones manuales ilimitadas','Cotizaciones en PDF','Marca propia (logo y colores)'] },
+  pro:     { label:'Pro',     price:null, features:['Todo lo de Free','Asistente de IA en cotizaciones','Envío directo a tus clientes'] },
+  premium: { label:'Premium', price:null, features:['Todo lo de Pro','Envío por WhatsApp (opcional)','Recomendaciones de IA'] },
 };
 function renderPlanView(){
   const body = document.getElementById('plan-body');
@@ -6235,7 +6236,7 @@ function renderPlanView(){
   function priceFmt(p){ return p===0 ? 'Gratis' : (p===null || p===undefined ? 'Precio a definir' : ('$'+p.toLocaleString('es-CL')+'/mes')); }
   function cardHtml(id, t){
     const isCurrent = id===tier;
-    const canUpgrade = !isCurrent && (tier==='free' || (tier==='pro' && id==='team'));
+    const canUpgrade = !isCurrent && (tier==='free' || (tier==='pro' && id==='premium'));
     return '<div style="border:2px solid '+(isCurrent?'var(--teal)':'var(--bbr)')+';border-radius:14px;padding:20px;flex:1;min-width:220px;background:var(--bbg)">'+
       '<div style="font-weight:800;font-size:15px;margin-bottom:4px">'+t.label+(isCurrent?' <span style="font-size:10px;background:var(--teal);color:#fff;border-radius:6px;padding:2px 8px;vertical-align:middle">Tu plan</span>':'')+'</div>'+
       '<div style="color:var(--t2);font-size:13px;margin-bottom:12px">'+priceFmt(t.price)+'</div>'+
@@ -6244,7 +6245,7 @@ function renderPlanView(){
     '</div>';
   }
   body.innerHTML = '<div style="display:flex;gap:16px;flex-wrap:wrap">'+
-    ['free','pro','team'].map(function(id){ return cardHtml(id, PLAN_TIERS[id]); }).join('')+
+    ['free','pro','premium'].map(function(id){ return cardHtml(id, PLAN_TIERS[id]); }).join('')+
   '</div>'+
   (status!=='active' ? '<div style="margin-top:16px;padding:12px 16px;background:#fdf0f0;border:1px solid #f5c6c6;border-radius:10px;font-size:13px;color:#a33">Tu suscripción no está activa (estado: '+status+'). Revisa tu método de pago en Mercado Pago para no perder acceso.</div>' : '');
 }

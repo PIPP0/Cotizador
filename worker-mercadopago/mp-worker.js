@@ -22,7 +22,7 @@ const ALLOWED_ORIGIN = 'https://cotizadia.cl';
 // TODO: definir precios reales (CLP/mes) antes de activar el cobro
 const PLAN_PRECIOS = {
   pro: 9990,
-  team: 19990,
+  premium: 19990,
 };
 
 function withCors(resp) {
