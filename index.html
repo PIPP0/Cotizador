@@ -3146,6 +3146,93 @@ if(_CLIENT_ID === 'nexenergy'){
     {key:'retrofit',     label:'Actualización / retrofit planta solar existente',        valor:320000}
   ];
 }
+// ─── Cristián Donoso Atelier — Mobiliario y Objetos en Madera (?c=cristiandonoso) ──
+if(_CLIENT_ID === 'cristiandonoso'){
+  DEFAULT_CONFIG.nameA    = 'Cristián';
+  DEFAULT_CONFIG.nameB    = ' Donoso';
+  DEFAULT_CONFIG.module   = 'Dashboard IA · Mobiliario y Objetos en Madera';
+  DEFAULT_CONFIG.tagline  = 'Manufactura artesanal en madera noble';
+  DEFAULT_CONFIG.dashsub  = 'Piezas a medida · Restauración · Diseño · Plataforma IA';
+  DEFAULT_CONFIG.email    = 'muebleria@cristiandonoso.com';
+  DEFAULT_CONFIG.location = 'Alonso de Córdova 2860, local 4, Vitacura · +56 2 2342 1790';
+  DEFAULT_CONFIG.since    = 'Atelier Cristián Donoso · muebleria@cristiandonoso.com';
+  DEFAULT_CONFIG.colors   = { teal:'6b4423', orange:'f4a6c1', dark:'1a1512' };
+  DEFAULT_CONFIG.users    = {
+    admin:    { pass:'atelier',  name:'Administrador' },
+    ejecutivo:{ pass:'atelier2', name:'Ejecutivo'    }
+  };
+  DEFAULT_CONFIG.services = [
+    { id:'dis', name:'Diseño y Desarrollo a Medida',  desc:'Boceto, diseño 3D y desarrollo de la pieza junto al cliente',           icon:'<path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/>', active:true },
+    { id:'fab', name:'Fabricación en Madera Maciza',  desc:'Manufactura artesanal en maderas nobles y nativas',                     icon:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>' },
+    { id:'res', name:'Restauración de Muebles',       desc:'Recuperación y puesta en valor de piezas antiguas o de familia',        icon:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>' },
+    { id:'tap', name:'Tapizado y Terminaciones',      desc:'Tapicería en tela o cuero natural, barnices y lacas artesanales',       icon:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>' },
+    { id:'ase', name:'Asesoría y Curaduría',          desc:'Selección de piezas y objetos para proyectos de decoración',           icon:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>' },
+    { id:'des', name:'Despacho e Instalación',        desc:'Entrega, montaje e instalación en el lugar de destino',                icon:'<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>' }
+  ];
+  DEFAULT_CONFIG.segments = [
+    { id:'resi', name:'Residencial', active:true },
+    { id:'hot',  name:'Hotelería y Hospitality' },
+    { id:'ofi',  name:'Oficinas y Corporativo' },
+    { id:'ret',  name:'Retail y Showrooms' },
+    { id:'arq',  name:'Arquitectura y Diseño Interior' },
+    { id:'col',  name:'Coleccionistas y Arte' }
+  ];
+  DEFAULT_CONFIG.sidebarServices = ['Mobiliario a Medida','Restauración','Diseño de Interiores'];
+  DEFAULT_CONFIG.systemTypes = [
+    {id:'silla',      name:'Silla / Asiento'},
+    {id:'mesa',       name:'Mesa'},
+    {id:'estanteria', name:'Estantería / Repisa'},
+    {id:'cama',       name:'Cama / Velador'},
+    {id:'escritorio', name:'Escritorio / Mueble de Trabajo'},
+    {id:'objeto',     name:'Objeto Escultórico / Decorativo'}
+  ];
+  DEFAULT_CONFIG.clientFields = [
+    {id:'cn', label:'Nombre completo',    placeholder:'Nombre del cliente'},
+    {id:'cr', label:'RUT (opcional)',     placeholder:'12.345.678-9'},
+    {id:'ce', label:'Email de contacto',  placeholder:'correo@cliente.cl'},
+    {id:'cp', label:'Teléfono',           placeholder:'+56 9 xxxx xxxx'}
+  ];
+  DEFAULT_CONFIG.cotizacion = {
+    iva:19, validezDias:30, convProb:65,
+    condiciones:'Validez 30 días · 50% de anticipo, saldo contra entrega · Plazo de fabricación según la pieza · Atelier Cristián Donoso · muebleria@cristiandonoso.com'
+  };
+  DEFAULT_CONFIG.convRef = {
+    'dis_resi':78,'dis_hot':70,'dis_ofi':66,'dis_ret':64,'dis_arq':85,'dis_col':74,
+    'fab_resi':72,'fab_hot':68,'fab_ofi':63,'fab_ret':60,'fab_arq':80,'fab_col':70,
+    'res_resi':75,'res_hot':58,'res_ofi':52,'res_ret':50,'res_arq':66,'res_col':82,
+    'tap_resi':70,'tap_hot':64,'tap_ofi':56,'tap_ret':54,'tap_arq':68,'tap_col':62,
+    'ase_resi':60,'ase_hot':66,'ase_ofi':58,'ase_ret':62,'ase_arq':84,'ase_col':76,
+    'des_resi':88,'des_hot':80,'des_ofi':78,'des_ret':76,'des_arq':82,'des_col':79
+  };
+  DEFAULT_CONFIG.convOverride = {};
+  DEFAULT_CONFIG.motorIA = [
+    'Levantando el perfil de la pieza y las preferencias del cliente',
+    'Consultando catálogo de maderas, terminaciones y piezas similares',
+    'Seleccionando materiales nobles y técnicas de manufactura — catálogo real',
+    'Calculando horas de taller, materiales e insumos',
+    'Generando cotización personalizada con propuesta de diseño'
+  ];
+  DEFAULT_CONFIG.precios = [
+    {key:'sillaMedida',   label:'Silla a medida (unidad)',                          valor:280000},
+    {key:'mesaComedor',   label:'Mesa de comedor a medida (m² superficie)',         valor:420000},
+    {key:'mesaCentro',    label:'Mesa de centro / auxiliar',                        valor:220000},
+    {key:'estanteria',    label:'Estantería / repisa a medida (metro lineal)',      valor:180000},
+    {key:'velador',       label:'Velador / mesa de noche',                          valor:165000},
+    {key:'escritorio',    label:'Escritorio a medida',                              valor:350000},
+    {key:'estructCama',   label:'Estructura de cama (Queen/King)',                  valor:480000},
+    {key:'restauracion',  label:'Restauración de mueble antiguo (según estado)',    valor:250000},
+    {key:'tapizTela',     label:'Tapizado en tela (metro lineal)',                  valor:85000},
+    {key:'tapizCuero',    label:'Tapizado en cuero natural (metro lineal)',         valor:145000},
+    {key:'termBarniz',    label:'Terminación en barniz natural / cera de abeja',    valor:60000},
+    {key:'termLaca',      label:'Terminación en laca de poliuretano',               valor:90000},
+    {key:'tallaOrnam',    label:'Talla y ornamento artesanal (hora taller)',        valor:45000},
+    {key:'diseno3D',      label:'Diseño y desarrollo 3D de pieza',                  valor:150000},
+    {key:'maderaNoble',   label:'Selección y compra de madera noble (m³)',          valor:890000},
+    {key:'despachoRM',    label:'Despacho e instalación Región Metropolitana',      valor:45000},
+    {key:'despachoReg',   label:'Despacho e instalación regiones',                  valor:120000},
+    {key:'curaduria',     label:'Asesoría de curaduría / decoración (visita + informe)', valor:180000}
+  ];
+}
 // ─────────────────────────────────────────────────────────────────────────────
 let CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 let _ADMIN_EDIT_TARGET = null;
