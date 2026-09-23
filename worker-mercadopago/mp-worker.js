@@ -13,6 +13,15 @@
  *   4. En el panel de MercadoPago, no hace falta configurar el webhook a mano: se le indica
  *      la notification_url en cada preapproval creado (ver handleCrearSuscripcion).
  *
+ * VALIDADO EN SANDBOX (2026-09-10): la lógica de handleCrearSuscripcion + handleWebhook
+ * fue probada de punta a punta — crear suscripción, aprobar el pago con un comprador de
+ * prueba, simular la notificación → el plan del cliente se actualiza correctamente en
+ * Firebase. Lo único que no se pudo confirmar en sandbox es la ENTREGA automática del
+ * webhook por parte de Mercado Pago (limitación conocida del entorno de prueba, no del
+ * código). Al pasar a producción, verificar con una suscripción real de bajo valor que
+ * el webhook llegue solo — si no llega, revisar la notification_url configurada aquí y
+ * los logs de notificaciones en el panel de Mercado Pago.
+ *
  * PRECIOS: PLAN_PRECIOS abajo son placeholders — actualízalos cuando estén definidos.
  */
 
