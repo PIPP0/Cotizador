@@ -626,7 +626,7 @@ mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}
 /* =========================================================
    Versión de venta: portada en la identidad del Atelier
    ========================================================= */
-.v-home{--must:#E5AD4C;--burg:#8E2433;--ink:#1D1D1B;--paper:#FFFFFF;--grey:#F2F1EE;--muted:#5F5B55;background:var(--paper);color:var(--ink);font-family:'Montserrat',Arial,sans-serif;min-height:100%}
+.v-home{--must:#E5AD4C;--burg:#8E2433;--ink:#1D1D1B;--paper:#FFFFFF;--grey:#F2F1EE;--muted:#5F5B55;--bg:#FFFFFF;--fg:#1D1D1B;--line:#E2E1DE;--card:#FFFFFF;--soft:#F6F2E8;--accent:#1D1D1B;--accentFg:#FFFFFF;--r:0px;--rs:2px;--font:'Montserrat',Arial,sans-serif;background:var(--paper);color:var(--ink);font-family:'Montserrat',Arial,sans-serif;min-height:100%}
 .v-in{max-width:1180px;margin:0 auto;padding-inline:24px}
 .v-top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid #E6E4E0;display:flex;justify-content:space-between;align-items:center;padding:14px 24px}
 .v-word{font-size:15px;font-weight:600;letter-spacing:.32em;text-transform:uppercase;line-height:1.2}
@@ -669,6 +669,8 @@ mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}
 .v-close .v-btn.pri{background:var(--must);border-color:var(--must);color:var(--ink)}
 .v-foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:22px 24px calc(22px + env(safe-area-inset-bottom,0px));font-size:13px;color:var(--muted);border-top:1px solid #E6E4E0}
 .v-foot a{color:var(--ink);font-weight:600}
+.v-start{color:#1D1D1B;font-family:'Montserrat',Arial,sans-serif}
+.v-start h2{letter-spacing:.04em}
 .v-steps{margin:20px 0;padding-left:22px;display:flex;flex-direction:column;gap:14px}
 .v-steps b{display:block}.v-steps span{color:var(--muted);font-size:14px}
 @media (max-width:860px){.v-cards,.v-two{grid-template-columns:1fr}.v-two{gap:40px}.v-hero .v-in{padding-block:44px 28px}.v-ph{width:170px}}
@@ -1382,7 +1384,7 @@ function startModal(){
    <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0;font-size:26px">Cómo empezamos</h2><button class="x" data-act="closestart" aria-label="Cerrar">×</button></div>
    <ol class="v-steps"><li><b>Aprobamos el alcance de la primera etapa</b><span>Qué incluye y qué queda para después, por escrito.</span></li><li><b>Nos comparten la información</b><span>Lista de precios completa, planilla de inventario y acceso a las fotos de Dropbox.</span></li><li><b>Cargamos y ordenamos el catálogo</b><span>Revisamos juntos los casos que no calzan entre archivos.</span></li><li><b>El equipo lo usa en el showroom</b><span>Con acceso para cada persona y los ajustes que pidan.</span></li></ol>
    <div class="callout">El siguiente paso es conversar estos puntos en la próxima reunión.</div>
-   <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="pn-btn pri" data-act="closestart">Entendido</button></div>
+   <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="pn-btn pri" data-act="starttour">Ver el recorrido guiado</button></div>
   </div></div>`;
 }
 
@@ -1622,6 +1624,7 @@ document.addEventListener('click', e=>{
     case 'tournext': if(TOUR<TOUR_STEPS.length-1) tourGo(TOUR+1); else tourEnd(true); return;
     case 'tourend': tourEnd(false); return;
     case 'start': S_START=true; break;
+    case 'starttour': S_START=false; tourGo(0); return;
     case 'closestart': case 'closestart-bg': if(act==='closestart-bg'&&e.target!==t) return; S_START=false; break;
     case 'quote': st.quote=true; break;
     case 'closequote': case 'closequote-bg': if(act==='closequote-bg'&&e.target!==t) return; st.quote=false; if(TOUR===4) tourEnd(false); break;
