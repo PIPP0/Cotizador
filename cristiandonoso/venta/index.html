@@ -1393,6 +1393,7 @@ const TOUR_STEPS = [
   {t:'La cotización, lista en un toque', d:'Así se verá la cotización en PDF con la foto del mueble y su marca. Llega en una próxima etapa.', hl:'.q-paper'},
   {t:'Muéstrelo al cliente', d:'Pantalla completa en la tablet, sin información interna. Se desliza para ver otros muebles.', hl:'.pres-stage'}
 ];
+const wait = ms => new Promise(r=>setTimeout(r,ms));
 function tourCard(){ return ''; }
 let tourEl=null, ringEl=null, tourShown=-1, ringRaf=null;
 function tourInner(n){
