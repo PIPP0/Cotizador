@@ -734,6 +734,11 @@ body.r-home .demo-flag{display:none}
 @media (max-width:560px){.pb-nav-in{gap:8px;padding-inline:12px}.pb-nav-in>.logo-btn{min-width:0;overflow:hidden}.pb-word{font-size:11px;letter-spacing:.16em;white-space:nowrap}.pb-word small{display:none}.pb-links button{font-size:11px;letter-spacing:.06em;padding:10px 6px}}
 @media (max-width:1180px){.pb-tag{font-size:12px;letter-spacing:.04em;padding:7px 9px 6px}.pb-tags{gap:5px}}
 @media (max-width:420px){.pb-word{font-size:10px;letter-spacing:.08em}.pb-links button{font-size:10.5px;letter-spacing:.03em;padding:10px 5px}.pb-nav-in{gap:6px;padding-inline:10px}.pb .um-btn{padding:3px}}
+/* iPhone: sin zoom por doble toque ni al enfocar campos */
+html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,a,label,input,select,textarea,[data-act]{touch-action:manipulation}
+@media (max-width:1180px){input,select,textarea{font-size:16px!important}.cfg-dim input{font-size:20px!important}}
+.pres-body{touch-action:pan-y pinch-zoom}
 /* tablet tuning */
 @media (min-width:701px) and (max-width:1180px){
   .pa-sheet{width:min(700px,86vw)}
