@@ -143,7 +143,7 @@ mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}
 .f label{font-size:13px;font-weight:600;color:var(--muted)}
 .f input,.f select,.f textarea{padding:11px 13px;border:1px solid var(--line);border-radius:var(--rs);background:var(--card);width:100%}
 .f-row{display:grid;grid-template-columns:minmax(0,1fr) 160px 40px;gap:8px;margin-bottom:8px;align-items:center}
-.f-row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 150px;gap:8px;margin-bottom:8px}
+.f-row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 200px;gap:8px;margin-bottom:8px}
 @media (max-width:560px){.f-row{grid-template-columns:minmax(0,1fr) 110px 36px}.f-row2{grid-template-columns:1fr 1fr}.f-row2 select{grid-column:span 2}}
 .f-row input,.f-row2 input,.f-row2 select{padding:10px 12px;border:1px solid var(--line);border-radius:var(--rs);background:var(--card);width:100%;min-width:0}
 .x{border:none;background:none;font-size:20px;color:var(--muted);width:40px;height:40px;border-radius:10px}
@@ -623,6 +623,9 @@ html,body{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adju
 button,a,label,input,select,textarea,[data-act]{touch-action:manipulation}
 @media (max-width:1180px){input,select,textarea{font-size:16px!important}.cfg-dim input{font-size:20px!important}}
 .pres-body{touch-action:pan-y pinch-zoom}
+/* selectores con flecha propia y margen */
+select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%235F5B55' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 16px center!important;background-size:12px 8px!important;padding-right:44px!important;cursor:pointer;text-overflow:ellipsis}
+select::-ms-expand{display:none}
 /* tablet tuning */
 @media (min-width:701px) and (max-width:1180px){
   .pa-sheet{width:min(700px,86vw)}
@@ -989,7 +992,7 @@ function editor(k){
    </div>
    <div class="f"><label for="e-desc">Descripción</label><textarea id="e-desc" rows="2">${esc(p.desc)}</textarea></div>
    <div class="f"><label>Personalización</label><div class="perm"><div><b>Permite medidas a pedido</b><span>El vendedor puede cambiar ancho, profundidad o alto.</span></div><label class="tg"><input type="checkbox" id="e-med" ${p.medidaPedido!==false?'checked':''} aria-label="Permite medidas a pedido"><span></span></label></div><div class="perm"><div><b>Permite cambiar acabado</b><span>Muestra los grupos de acabado y sus tonos.</span></div><label class="tg"><input type="checkbox" id="e-acb" ${p.cambiaAcabado!==false?'checked':''} aria-label="Permite cambiar acabado"><span></span></label></div></div>
-   <div class="f"><label>Medidas y precio de lista</label>${p.vars.map((x,i)=>`<div class="f-row"><input data-v="m" data-i="${i}" value="${esc(x.m)}" aria-label="Medida"><input data-v="precio" data-i="${i}" inputmode="numeric" value="${x.precio}" aria-label="Precio"><button class="x" data-act="delv" data-i="${i}" aria-label="Quitar medida">×</button></div>`).join('')}<button class="pn-btn" data-act="addv" style="align-self:flex-start">+ Agregar medida</button></div>
+   <div class="f"><label>Medidas y precio de lista</label>${p.vars.map((x,i)=>`<div class="f-row"><input data-v="m" data-i="${i}" value="${esc(x.m)}" aria-label="Medida"><input data-v="precio" data-i="${i}" inputmode="numeric" value="${Number(x.precio).toLocaleString('es-CL')}" aria-label="Precio"><button class="x" data-act="delv" data-i="${i}" aria-label="Quitar medida">×</button></div>`).join('')}<button class="pn-btn" data-act="addv" style="align-self:flex-start">+ Agregar medida</button></div>
    <div class="f"><label>Piezas físicas y ubicación</label>${p.pcs.map((x,i)=>`<div class="f-row2"><input data-pc="acabado" data-i="${i}" value="${esc(x.acabado)}" aria-label="Acabado"><input data-pc="m" data-i="${i}" value="${esc(x.m)}" aria-label="Medida"><select data-pc="ub" data-i="${i}" aria-label="Ubicación">${Object.keys(UB).map(u=>`<option value="${u}" ${u===x.ub?'selected':''}>${UB[u]}</option>`).join('')}</select></div>`).join('')}<button class="pn-btn" data-act="addpc" style="align-self:flex-start">+ Agregar pieza</button></div>
    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px"><button class="pn-btn" data-act="closeedit">Cancelar</button><button class="pn-btn pri" data-act="save">Guardar cambios</button></div>
   </div></div>`;
