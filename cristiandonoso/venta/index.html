@@ -733,6 +733,7 @@ body.r-home .demo-flag{display:none}
 
 @media (max-width:560px){.pb-nav-in{gap:8px;padding-inline:12px}.pb-nav-in>.logo-btn{min-width:0;overflow:hidden}.pb-word{font-size:11px;letter-spacing:.16em;white-space:nowrap}.pb-word small{display:none}.pb-links button{font-size:11px;letter-spacing:.06em;padding:10px 6px}}
 @media (max-width:1180px){.pb-tag{font-size:12px;letter-spacing:.04em;padding:7px 9px 6px}.pb-tags{gap:5px}}
+@media (max-width:420px){.pb-word{font-size:10px;letter-spacing:.08em}.pb-links button{font-size:10.5px;letter-spacing:.03em;padding:10px 5px}.pb-nav-in{gap:6px;padding-inline:10px}.pb .um-btn{padding:3px}}
 /* tablet tuning */
 @media (min-width:701px) and (max-width:1180px){
   .pa-sheet{width:min(700px,86vw)}
@@ -1355,7 +1356,7 @@ function home(){
     <p>Con su lista de precios completa y el acceso a las fotos, la primera etapa queda lista para que el equipo la use en el showroom.</p>
     <div class="v-cta"><button class="v-btn pri" data-act="start">Ver cómo empezamos</button><button class="v-btn ghost" data-act="enter">Probar el catálogo</button></div>
   </div></section>
-  <footer class="v-foot"><a href="../atelier/">Ver otras alternativas de diseño</a><span>En la tablet: Compartir → Agregar a inicio, y se abre como una app.</span></footer>
+  <footer class="v-foot"><span>En la tablet: Compartir → Agregar a inicio, y se abre como una app.</span></footer>
   ${S_START?startModal():''}
   </div>`;
 }
@@ -1507,7 +1508,7 @@ function protoB(){
   const st=ST.b, k='b';
   const word = `<div class="pb-word">Cristián Donoso<small>Atelier · Equipo</small></div>`;
   if(!me(k)) return `<div class="root pb">${login(k,word,'Catálogo interno del showroom. Ingresa con tu correo.')}</div>`;
-  const nav = `<nav class="pb-nav"><div class="pb-nav-in"><button class="logo-btn" data-act="logo" aria-label="Ir al inicio de la colección">${word}</button><div style="display:flex;align-items:center;gap:8px"><div class="pb-links">${hasPanel(k)?`<button data-act="view" data-v="catalogo" ${st.view==='catalogo'?'aria-current="page"':''}>Colección</button><button data-act="view" data-v="panel" ${st.view==='panel'?'aria-current="page"':''}>Panel</button>`:''}</div>${userMenu(k)}</div></div></nav>`;
+  const nav = `<nav class="pb-nav"><div class="pb-nav-in"><button class="logo-btn" data-act="logo" aria-label="Ir al inicio de la colección">${word}</button><div style="display:flex;align-items:center;gap:8px"><div class="pb-links"><button data-act="home">Inicio</button>${hasPanel(k)?`<button data-act="view" data-v="catalogo" ${st.view==='catalogo'?'aria-current="page"':''}>Colección</button><button data-act="view" data-v="panel" ${st.view==='panel'?'aria-current="page"':''}>Panel</button>`:''}</div>${userMenu(k)}</div></div></nav>`;
   if(st.view==='panel') return `<div class="root pb">${nav}${panel(k)}</div>`;
   const sel = st.sel && PRODUCTS.find(p=>p.id===st.sel);
   if(sel) return `<div class="root pb">${nav}<div class="pb-detail"><button class="pb-back" data-act="close">← Volver a la colección</button>${detail(sel,st,k)}</div>${st.pres?presView(k,BRAND.b):''}</div>`;
@@ -1578,7 +1579,7 @@ function render(){
   const app = document.getElementById('app');
   let html='';
   if(route==='home') html = home();
-  else html = ({a:protoA,b:protoB,c:protoC,d:protoD})[route]() + (ST[route].quote?quoteView(route):'') + `<button class="back-pill" data-act="home">← Inicio</button><span class="demo-flag">DEMO</span>`;
+  else html = ({a:protoA,b:protoB,c:protoC,d:protoD})[route]() + (ST[route].quote?quoteView(route):'') + (me(route)?'':`<button class="back-pill" data-act="home">← Inicio</button>`) + `<span class="demo-flag">DEMO</span>`;
   app.innerHTML = html;
   document.body.className = 'r-'+route;
   document.body.style.overflow = (route!=='home' && (ST[route].pres || (route==='a'&&ST.a.sel) || ST[route].edit || ST[route].inv || ST[route].quote)) || S_START ? 'hidden' : '';
