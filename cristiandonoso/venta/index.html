@@ -727,7 +727,8 @@ mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}
 .tour-b button{border:1px solid #57524B;background:none;color:#fff;border-radius:999px;padding:10px 16px 9px;font-weight:600;font-size:14px;min-height:44px;transition:background .2s,transform .15s}
 .tour-b button:active{transform:scale(.97)}
 .tour-b button.pri{background:#E5AD4C;border-color:#E5AD4C;color:#1D1D1B}
-.tour-ring{position:fixed;left:0;top:0;z-index:95;pointer-events:none;border:3px solid #E5AD4C;border-radius:12px;box-shadow:0 0 0 6px rgba(229,173,76,.22);opacity:0;transition:transform .55s cubic-bezier(.2,.8,.2,1),width .55s cubic-bezier(.2,.8,.2,1),height .55s cubic-bezier(.2,.8,.2,1),opacity .3s ease;view-transition-name:tour-ring}
+.tour-ring{position:fixed;left:0;top:0;z-index:95;pointer-events:none;border:3px solid #E5AD4C;border-radius:12px;box-shadow:0 0 0 6px rgba(229,173,76,.22);opacity:0;transition:opacity .3s ease;view-transition-name:tour-ring;will-change:transform}
+.tour-ring.glide{transition:transform .55s cubic-bezier(.2,.8,.2,1),width .55s cubic-bezier(.2,.8,.2,1),height .55s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
 .tour-ring.on{opacity:1}
 ::view-transition-group(tour-card),::view-transition-group(tour-ring){animation-duration:0s}
 @media (prefers-reduced-motion:reduce){.tour,.tour-c,.tour-ring,.tour-dots i{transition:none}}
@@ -1464,7 +1465,7 @@ function tourUI(){
     tourEl=document.createElement('div'); tourEl.className='tour hide'; tourEl.setAttribute('role','dialog'); tourEl.setAttribute('aria-label','Recorrido guiado');
     tourEl.innerHTML=`<div class="tour-c">${tourInner(TOUR)}</div>`; document.body.appendChild(tourEl); tourShown=TOUR;
     requestAnimationFrame(()=>requestAnimationFrame(()=>tourEl&&tourEl.classList.remove('hide')));
-    ringEl=document.createElement('div'); ringEl.className='tour-ring'; document.body.appendChild(ringEl);
+    ringEl=document.createElement('div'); ringEl.className='tour-ring'; document.body.appendChild(ringEl); ringStep=TOUR;
     ringLoop();
   } else if(tourShown!==TOUR){
     const c=tourEl.querySelector('.tour-c'), n=TOUR; tourShown=n;
@@ -1472,8 +1473,10 @@ function tourUI(){
     else { c.classList.add('swap'); setTimeout(()=>{ if(!tourEl) return; c.innerHTML=tourInner(n); c.classList.remove('swap'); },200); }
   }
 }
+let ringStep=-1, glideT=null;
 function ringLoop(){
   if(!ringEl || TOUR===null) return;
+  if(ringStep!==TOUR){ ringStep=TOUR; ringEl.classList.add('glide'); clearTimeout(glideT); glideT=setTimeout(()=>ringEl&&ringEl.classList.remove('glide'),600); }
   const el=document.querySelector(TOUR_STEPS[TOUR].hl);
   if(el){ const r=el.getBoundingClientRect(), p=8;
     if(r.width>0){ ringEl.style.transform=`translate(${Math.round(r.left-p)}px,${Math.round(r.top-p)}px)`; ringEl.style.width=Math.round(r.width+p*2)+'px'; ringEl.style.height=Math.round(r.height+p*2)+'px'; ringEl.classList.add('on'); }
