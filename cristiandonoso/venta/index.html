@@ -752,6 +752,10 @@ button,a,label,input,select,textarea,[data-act]{touch-action:manipulation}
 /* selectores con flecha propia y margen */
 select{-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%235F5B55' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 16px center!important;background-size:12px 8px!important;padding-right:44px!important;cursor:pointer;text-overflow:ellipsis}
 select::-ms-expand{display:none}
+/* pestañas del panel: una sola fila que se desliza en pantallas angostas */
+.pn-tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pn-tabs::-webkit-scrollbar{display:none}
+.pn-tab{flex:none;white-space:nowrap}
 /* tablet tuning */
 @media (min-width:701px) and (max-width:1180px){
   .pa-sheet{width:min(700px,86vw)}
@@ -1360,7 +1364,7 @@ function home(){
   <header class="v-top"><div class="v-word">Cristián Donoso<small>Atelier</small></div><span class="v-demo">DEMO</span></header>
   <section class="v-hero"><div class="v-in">
     <p class="v-eb">Preparado para el Atelier</p>
-    <h1>Hola, Cristián Donoso.<br>Así se vería su catálogo.</h1>
+    <h1>Hola, Cristián.<br>Así se vería su catálogo.</h1>
     <p class="v-lead">Su colección completa, ${PRODUCTS.length} muebles con fotos y medidas, en una sola pantalla. Búsquelos en segundos, configure el precio con el cliente y muéstrelos en la tablet.</p>
     <div class="v-cta"><button class="v-btn pri" data-act="enter">Entrar al catálogo</button><button class="v-btn" data-act="tour">Recorrido guiado · 2 minutos</button></div>
     <p class="v-small">Demo: lo que edite no se guarda.</p>
