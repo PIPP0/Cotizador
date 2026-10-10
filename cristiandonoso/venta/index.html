@@ -980,15 +980,26 @@ const WEB_MATCH = {12:'axel',13:'dupont',14:'equis',15:'fargo',17:'kanal',19:'ma
 CATS.splice(0, CATS.length, 'Arrimos','Bibliotecas','Alacenas','Armarios','Bares','Buffets','Cómodas','Escritorios','Estanterías','Mesas de comedor','Mesas de centro','Mesas auxiliares','Sillones','Sofás','Sillas','Banquetas','Bergeres','Ottoman','Taburetes','Veladores','Camas','Respaldos de cama','Espejos','Islas','Puertas','Cocina','Piezas únicas','Objetos');
 const normM = m => cleanMx(m).replace(/\s+/g,'').toLowerCase();
 function cleanMx(m){ return (m||'').replace(/^.*·\s*/,''); }
+/* Medidas de la web en lenguaje claro: "73 h" → "Alto 73", "90 diam x 73" → "Ø 90 × alto 73", "115 x 135 h" → "115 ancho × 135 alto" */
+function prettyM(raw){
+  let m=(raw||'').replace(/\s+/g,' ').replace(/^DAYBED:/i,'Daybed:').trim(); if(!m) return '';
+  let note=''; const sl=m.match(/^(.*?)(\s*\/\s*[^\d].*|\s*\(.*\))$/); if(sl && !/^\s*\/\s*\d/.test(sl[2])){ m=sl[1].trim(); note=' '+sl[2].trim(); }
+  let r;
+  if((r=m.match(/^(\d+(?:[.,]\d+)?)\s*h$/i))) return 'Alto '+r[1]+note;
+  if((r=m.match(/^d\s*(\d+)\s*x\s*(\d+)$/i)) || (r=m.match(/^(\d+)\s*diam\s*x\s*(\d+)$/i))) return 'Ø '+r[1]+' × alto '+r[2]+note;
+  if((r=m.match(/^(\d+)\s*diam$/i))) return 'Ø '+r[1]+note;
+  if((r=m.match(/^(\d+)\s*x\s*(\d+)\s*h$/i))) return r[1]+' ancho × '+r[2]+' alto'+note;
+  return m.replace(/\s*[xX]\s*/g,' × ')+note;
+}
 (function mergeWeb(){
   const byId = Object.fromEntries(PRODUCTS.map(p=>[p.id,p]));
   WEBCAT.forEach(([wid,name,img,cats,dims])=>{
     const url = 'https://cristiandonoso.com/files/product/imagen/'+img;
-    const ms = (dims||'').split(';').map(s=>s.replace(/\s+/g,' ').replace(/\s*[xX]\s*/g,' × ').trim()).filter(Boolean);
+    const ms = (dims||'').split(';').map(prettyM).filter(Boolean);
     const mine = byId[WEB_MATCH[wid]];
     if(mine){
       mine.web = url; mine.webId = wid;
-      ms.forEach(m=>{ if(!mine.vars.some(x=>normM(x.m)===normM(m))) mine.vars.push(v(m,null)); });
+      ms.forEach(m=>{ if(parts(m) && !mine.vars.some(x=>normM(x.m)===normM(m))) mine.vars.push(v(m,null)); });
       mine.vars.sort((a,b)=>(a.precio==null)-(b.precio==null) || (parseFloat(cleanMx(a.m))||0)-(parseFloat(cleanMx(b.m))||0));
       return;
     }
