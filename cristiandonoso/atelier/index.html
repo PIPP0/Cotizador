@@ -862,7 +862,7 @@ function tabsFor(k){ const t=[]; if(can(k,'editar')) t.push(['muebles','Muebles'
 function addLog(k,what){ const u=me(k); LOG.unshift({t:now(),who:u?u.n:'Sistema',what}); }
 function readHash(){ const h=(location.hash||'').replace('#',''); route = ['a','b','c','d'].includes(h)?h:'home'; }
 const reduced = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-function vt(fn){ if(document.startViewTransition && !reduced()){ document.startViewTransition(()=>{ fn(); render(); }); } else { fn(); render(); } }
+function vt(fn){ if(document.startViewTransition && !reduced()){ try{ const t=document.startViewTransition(()=>{ fn(); render(); }); t.ready.catch(()=>{}); t.finished.catch(()=>{}); t.updateCallbackDone.catch(()=>{}); }catch(e){ fn(); render(); } } else { fn(); render(); } }
 function go(r){ vt(()=>{ route=r; try{ history.replaceState(null,'', r==='home' ? location.pathname : '#'+r); }catch(e){} window.scrollTo(0,0); }); }
 let toastT; function toast(msg){ clearTimeout(toastT); let t=document.querySelector('.toast'); if(!t){t=document.createElement('div');t.className='toast';t.setAttribute('role','status');document.body.appendChild(t);} t.textContent=msg; toastT=setTimeout(()=>t.remove(),2400); }
 

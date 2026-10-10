@@ -709,15 +709,26 @@ mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}
 }
 
 /* recorrido */
-.tour{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:96;width:min(440px,calc(100% - 32px));background:#1D1D1B;color:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 20px 50px rgba(0,0,0,.35);animation:slideUp .3s cubic-bezier(.2,.8,.2,1);font-family:'Montserrat',Arial,sans-serif}
-.tour-n{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#E5AD4C;font-weight:700;margin-bottom:6px}
-.tour b{font-size:18px}
+.tour{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:96;width:min(440px,calc(100% - 32px));background:#1D1D1B;color:#fff;border-radius:18px;padding:18px 20px;box-shadow:0 20px 50px rgba(0,0,0,.35);font-family:'Montserrat',Arial,sans-serif;transform:translate(-50%,0);opacity:1;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .35s ease;view-transition-name:tour-card;will-change:transform,opacity}
+.tour.hide{transform:translate(-50%,24px);opacity:0;pointer-events:none}
+.tour-c{transition:opacity .22s ease,transform .22s ease}
+.tour-c.swap{opacity:0;transform:translateY(6px)}
+.tour-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.tour-n{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#E5AD4C;font-weight:700}
+.tour-dots{display:flex;gap:5px}
+.tour-dots i{width:6px;height:6px;border-radius:999px;background:#57524B;transition:width .35s cubic-bezier(.2,.8,.2,1),background .35s}
+.tour-dots i.on{width:18px;background:#E5AD4C}
+.tour-dots i.done{background:#A88A52}
+.tour b{font-size:18px;display:block}
 .tour p{margin:6px 0 14px;font-size:14px;line-height:1.5;color:#D8D3CB}
 .tour-b{display:flex;justify-content:space-between;gap:10px}
-.tour-b button{border:1px solid #57524B;background:none;color:#fff;border-radius:999px;padding:10px 16px 9px;font-weight:600;font-size:14px;min-height:44px}
+.tour-b button{border:1px solid #57524B;background:none;color:#fff;border-radius:999px;padding:10px 16px 9px;font-weight:600;font-size:14px;min-height:44px;transition:background .2s,transform .15s}
+.tour-b button:active{transform:scale(.97)}
 .tour-b button.pri{background:#E5AD4C;border-color:#E5AD4C;color:#1D1D1B}
-.tour-hl{outline:3px solid #E5AD4C!important;outline-offset:4px;border-radius:6px;box-shadow:0 0 0 9999px rgba(29,29,27,.0);animation:tourPulse 1.6s ease-in-out infinite}
-@keyframes tourPulse{0%,100%{outline-color:#E5AD4C}50%{outline-color:rgba(229,173,76,.35)}}
+.tour-ring{position:fixed;left:0;top:0;z-index:95;pointer-events:none;border:3px solid #E5AD4C;border-radius:12px;box-shadow:0 0 0 6px rgba(229,173,76,.22);opacity:0;transition:transform .55s cubic-bezier(.2,.8,.2,1),width .55s cubic-bezier(.2,.8,.2,1),height .55s cubic-bezier(.2,.8,.2,1),opacity .3s ease;view-transition-name:tour-ring}
+.tour-ring.on{opacity:1}
+::view-transition-group(tour-card),::view-transition-group(tour-ring){animation-duration:0s}
+@media (prefers-reduced-motion:reduce){.tour,.tour-c,.tour-ring,.tour-dots i{transition:none}}
 body.r-home .demo-flag{display:none}
 
 @media (max-width:560px){.pb-nav-in{gap:8px;padding-inline:12px}.pb-nav-in>.logo-btn{min-width:0;overflow:hidden}.pb-word{font-size:11px;letter-spacing:.16em;white-space:nowrap}.pb-word small{display:none}.pb-links button{font-size:11px;letter-spacing:.06em;padding:10px 6px}}
@@ -995,7 +1006,7 @@ function tabsFor(k){ const t=[]; if(can(k,'editar')) t.push(['muebles','Muebles'
 function addLog(k,what){ const u=me(k); LOG.unshift({t:now(),who:u?u.n:'Sistema',what}); }
 function readHash(){ const h=(location.hash||'').replace('#',''); route = ['a','b','c','d'].includes(h)?h:'home'; }
 const reduced = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-function vt(fn){ if(document.startViewTransition && !reduced()){ document.startViewTransition(()=>{ fn(); render(); }); } else { fn(); render(); } }
+function vt(fn){ if(document.startViewTransition && !reduced()){ try{ const t=document.startViewTransition(()=>{ fn(); render(); }); t.ready.catch(()=>{}); t.finished.catch(()=>{}); t.updateCallbackDone.catch(()=>{}); }catch(e){ fn(); render(); } } else { fn(); render(); } }
 function go(r){ vt(()=>{ route=r; try{ history.replaceState(null,'', r==='home' ? location.pathname : '#'+r); }catch(e){} window.scrollTo(0,0); }); }
 let toastT; function toast(msg){ clearTimeout(toastT); let t=document.querySelector('.toast'); if(!t){t=document.createElement('div');t.className='toast';t.setAttribute('role','status');document.body.appendChild(t);} t.textContent=msg; toastT=setTimeout(()=>t.remove(),2400); }
 
@@ -1382,19 +1393,45 @@ const TOUR_STEPS = [
   {t:'La cotización, lista en un toque', d:'Así se verá la cotización en PDF con la foto del mueble y su marca. Llega en una próxima etapa.', hl:'.q-paper'},
   {t:'Muéstrelo al cliente', d:'Pantalla completa en la tablet, sin información interna. Se desliza para ver otros muebles.', hl:'.pres-stage'}
 ];
-function tourCard(){
-  if(TOUR===null) return '';
-  const s=TOUR_STEPS[TOUR], last=TOUR===TOUR_STEPS.length-1;
-  return `<div class="tour" role="dialog" aria-label="Recorrido guiado"><div class="tour-n">${TOUR+1} de ${TOUR_STEPS.length}</div><b>${s.t}</b><p>${s.d}</p><div class="tour-b"><button data-act="tourend">Salir</button><button class="pri" data-act="tournext">${last?'Terminar y probar yo':'Siguiente →'}</button></div></div>`;
+function tourCard(){ return ''; }
+let tourEl=null, ringEl=null, tourShown=-1, ringRaf=null;
+function tourInner(n){
+  const st=TOUR_STEPS[n], last=n===TOUR_STEPS.length-1;
+  return `<div class="tour-top"><span class="tour-n">${n+1} de ${TOUR_STEPS.length}</span><span class="tour-dots" aria-hidden="true">${TOUR_STEPS.map((_,i)=>`<i class="${i===n?'on':i<n?'done':''}"></i>`).join('')}</span></div><b>${st.t}</b><p>${st.d}</p><div class="tour-b"><button data-act="tourend">Salir</button><button class="pri" data-act="tournext">${last?'Terminar y probar yo':'Siguiente →'}</button></div>`;
 }
-const wait = ms => new Promise(r=>setTimeout(r,ms));
+function tourUI(){
+  if(TOUR===null){
+    if(tourEl){ const el=tourEl; el.classList.add('hide'); tourEl=null; tourShown=-1; setTimeout(()=>el.remove(),450); }
+    if(ringEl){ const r=ringEl; r.classList.remove('on'); ringEl=null; setTimeout(()=>r.remove(),350); }
+    cancelAnimationFrame(ringRaf); return;
+  }
+  if(!tourEl){
+    tourEl=document.createElement('div'); tourEl.className='tour hide'; tourEl.setAttribute('role','dialog'); tourEl.setAttribute('aria-label','Recorrido guiado');
+    tourEl.innerHTML=`<div class="tour-c">${tourInner(TOUR)}</div>`; document.body.appendChild(tourEl); tourShown=TOUR;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>tourEl&&tourEl.classList.remove('hide')));
+    ringEl=document.createElement('div'); ringEl.className='tour-ring'; document.body.appendChild(ringEl);
+    ringLoop();
+  } else if(tourShown!==TOUR){
+    const c=tourEl.querySelector('.tour-c'), n=TOUR; tourShown=n;
+    if(reduced()){ c.innerHTML=tourInner(n); }
+    else { c.classList.add('swap'); setTimeout(()=>{ if(!tourEl) return; c.innerHTML=tourInner(n); c.classList.remove('swap'); },200); }
+  }
+}
+function ringLoop(){
+  if(!ringEl || TOUR===null) return;
+  const el=document.querySelector(TOUR_STEPS[TOUR].hl);
+  if(el){ const r=el.getBoundingClientRect(), p=8;
+    if(r.width>0){ ringEl.style.transform=`translate(${Math.round(r.left-p)}px,${Math.round(r.top-p)}px)`; ringEl.style.width=Math.round(r.width+p*2)+'px'; ringEl.style.height=Math.round(r.height+p*2)+'px'; ringEl.classList.add('on'); }
+  } else ringEl.classList.remove('on');
+  ringRaf=requestAnimationFrame(ringLoop);
+}
 async function tourGo(n){
   const st=ST.b; TOUR=n;
   if(n===0){
-    route='b'; st.uid='u1'; st.view='catalogo'; st.sel=null; st.cfg=null; st.pres=false; st.quote=false; st.q=''; st.cat='Todas'; st.disp='todas'; render(); window.scrollTo({top:0,behavior:'smooth'});
+    route='b'; st.uid='u1'; st.view='catalogo'; st.sel=null; st.cfg=null; st.pres=false; st.quote=false; st.q=''; st.cat='Todas'; st.disp='todas'; try{ history.replaceState(null,'','#b'); }catch(e){} render(); window.scrollTo(0,0); highlight(); await wait(500);
     for(const ch of 'cannes'){ await wait(140); if(TOUR!==0) return; st.q+=ch; render(); }
   }
-  if(n===1){ st.q='cannes'; openP('b','cannes'); await wait(450); }
+  if(n===1){ st.q='cannes'; st.scrollY=window.scrollY; st.sel='cannes'; st.cfg=null; st.vi=0; st.fi=0; st.msel=true; render(); window.scrollTo({top:0,behavior:reduced()?'auto':'smooth'}); await wait(350); }
   if(n===2){ const p=PRODUCTS.find(x=>x.id==='cannes'); const c=cfgOf('b',p); c.modo='pedido'; c.grupo='ef'; c.tono='Efraín azul'; c.custom=false; render(); }
   if(n===3){ const p=PRODUCTS.find(x=>x.id==='cannes'); const c=cfgOf('b',p); c.custom=true; c.dims=parts(p.vars[c.vi].m).slice(); c.dims[0]='260'; render(); }
   if(n===4){ st.quote=true; render(); }
@@ -1402,12 +1439,9 @@ async function tourGo(n){
   render(); highlight();
 }
 function highlight(){
-  document.querySelectorAll('.tour-hl').forEach(e=>e.classList.remove('tour-hl'));
-  if(TOUR===null) return;
-  const el=document.querySelector(TOUR_STEPS[TOUR].hl); if(!el) return;
-  el.classList.add('tour-hl');
-  const box=el.closest('.q-box,.pres');
-  if(!box) el.scrollIntoView({behavior: reduced()?'auto':'smooth', block:'center'});
+  tourUI(); if(TOUR===null) return;
+  setTimeout(()=>{ const el=document.querySelector(TOUR_STEPS[TOUR].hl); if(!el || el.closest('.q-box,.pres')) return;
+    const r=el.getBoundingClientRect(); if(r.top<80 || r.bottom>innerHeight-220) el.scrollIntoView({behavior: reduced()?'auto':'smooth', block:'center'}); },60);
 }
 function tourEnd(final){
   TOUR=null; const st=ST.b; st.pres=false; st.quote=false;
@@ -1509,10 +1543,8 @@ function render(){
   let html='';
   if(route==='home') html = home();
   else html = ({a:protoA,b:protoB,c:protoC,d:protoD})[route]() + (ST[route].quote?quoteView(route):'') + `<button class="back-pill" data-act="home">← Inicio</button><span class="demo-flag">DEMO</span>`;
-  html += tourCard();
   app.innerHTML = html;
   document.body.className = 'r-'+route;
-  if(TOUR!==null) setTimeout(()=>{ const el=document.querySelector(TOUR_STEPS[TOUR].hl); document.querySelectorAll('.tour-hl').forEach(e=>e!==el&&e.classList.remove('tour-hl')); if(el) el.classList.add('tour-hl'); },0);
   document.body.style.overflow = (route!=='home' && (ST[route].pres || (route==='a'&&ST.a.sel) || ST[route].edit || ST[route].inv || ST[route].quote)) || S_START ? 'hidden' : '';
   document.title = route==='home' ? 'Catálogo Atelier · Demo' : ({a:'Atelier',b:'Colección',c:'Galería',d:'Mostrador'})[route] + ' · Prototipo';
   document.querySelectorAll('[data-ks]').forEach(el=>{ const s=keep[el.dataset.ks]; if(s){ el.scrollTop=s.t; el.scrollLeft=s.l; } });
