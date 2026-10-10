@@ -727,7 +727,14 @@ mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}
 .tour-b button{border:1px solid #57524B;background:none;color:#fff;border-radius:999px;padding:10px 16px 9px;font-weight:600;font-size:14px;min-height:44px;transition:background .2s,transform .15s}
 .tour-b button:active{transform:scale(.97)}
 .tour-b button.pri{background:#E5AD4C;border-color:#E5AD4C;color:#1D1D1B}
-.tour-ring{position:fixed;left:0;top:0;z-index:95;pointer-events:none;border:3px solid #E5AD4C;border-radius:12px;box-shadow:0 0 0 6px rgba(229,173,76,.22);opacity:0;transition:opacity .3s ease;view-transition-name:tour-ring;will-change:transform}
+.tour-b .tback{display:none;border-color:#E5AD4C;color:#E5AD4C}
+.tour.lost .tback{display:inline-flex}
+.tour.lost .tour-b{flex-wrap:wrap}
+.tour-ring{position:fixed;left:0;top:0;z-index:95;pointer-events:none;border:3px solid #E5AD4C;border-radius:12px;box-shadow:0 0 0 6px rgba(229,173,76,.22),0 0 0 9999px rgba(20,18,16,.46);opacity:0;transition:opacity .35s ease;view-transition-name:tour-ring;will-change:transform}
+.tour-block{position:fixed;inset:0;z-index:94;background:rgba(20,18,16,0);transition:background .35s ease;cursor:default}
+.tour-block.dim{background:rgba(20,18,16,.46)}
+.tour.nudge{animation:tourNudge .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes tourNudge{0%,100%{transform:translate(-50%,0)}30%{transform:translate(-50%,-8px)}60%{transform:translate(-50%,2px)}}
 .tour-ring.glide{transition:transform .55s cubic-bezier(.2,.8,.2,1),width .55s cubic-bezier(.2,.8,.2,1),height .55s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
 .tour-ring.on{opacity:1}
 ::view-transition-group(tour-card),::view-transition-group(tour-ring){animation-duration:0s}
@@ -1450,21 +1457,23 @@ const TOUR_STEPS = [
 ];
 const wait = ms => new Promise(r=>setTimeout(r,ms));
 function tourCard(){ return ''; }
-let tourEl=null, ringEl=null, tourShown=-1, ringRaf=null;
+let blockEl=null, tourEl=null, ringEl=null, tourShown=-1, ringRaf=null;
 function tourInner(n){
   const st=TOUR_STEPS[n], last=n===TOUR_STEPS.length-1;
-  return `<div class="tour-top"><span class="tour-n">${n+1} de ${TOUR_STEPS.length}</span><span class="tour-dots" aria-hidden="true">${TOUR_STEPS.map((_,i)=>`<i class="${i===n?'on':i<n?'done':''}"></i>`).join('')}</span></div><b>${st.t}</b><p>${st.d}</p><div class="tour-b"><button data-act="tourend">Salir</button><button class="pri" data-act="tournext">${last?'Terminar y probar yo':'Siguiente →'}</button></div>`;
+  return `<div class="tour-top"><span class="tour-n">${n+1} de ${TOUR_STEPS.length}</span><span class="tour-dots" aria-hidden="true">${TOUR_STEPS.map((_,i)=>`<i class="${i===n?'on':i<n?'done':''}"></i>`).join('')}</span></div><b>${st.t}</b><p>${st.d}</p><div class="tour-b"><button data-act="tourend">Salir</button><button class="tback" data-act="tourback">Volver a este paso</button><button class="pri" data-act="tournext">${last?'Terminar y probar yo':'Siguiente →'}</button></div>`;
 }
 function tourUI(){
   if(TOUR===null){
     if(tourEl){ const el=tourEl; el.classList.add('hide'); tourEl=null; tourShown=-1; setTimeout(()=>el.remove(),450); }
     if(ringEl){ const r=ringEl; r.classList.remove('on'); ringEl=null; setTimeout(()=>r.remove(),350); }
+    if(blockEl){ const b=blockEl; b.classList.remove('dim'); blockEl=null; setTimeout(()=>b.remove(),350); }
     cancelAnimationFrame(ringRaf); return;
   }
   if(!tourEl){
     tourEl=document.createElement('div'); tourEl.className='tour hide'; tourEl.setAttribute('role','dialog'); tourEl.setAttribute('aria-label','Recorrido guiado');
     tourEl.innerHTML=`<div class="tour-c">${tourInner(TOUR)}</div>`; document.body.appendChild(tourEl); tourShown=TOUR;
     requestAnimationFrame(()=>requestAnimationFrame(()=>tourEl&&tourEl.classList.remove('hide')));
+    blockEl=document.createElement('div'); blockEl.className='tour-block'; blockEl.setAttribute('aria-hidden','true'); blockEl.addEventListener('click',e=>{ e.stopPropagation(); e.preventDefault(); if(tourEl){ tourEl.classList.remove('nudge'); void tourEl.offsetWidth; tourEl.classList.add('nudge'); } }, true); document.body.appendChild(blockEl);
     ringEl=document.createElement('div'); ringEl.className='tour-ring'; document.body.appendChild(ringEl); ringStep=TOUR;
     ringLoop();
   } else if(tourShown!==TOUR){
@@ -1481,19 +1490,31 @@ function ringLoop(){
   if(el){ const r=el.getBoundingClientRect(), p=8;
     if(r.width>0){ ringEl.style.transform=`translate(${Math.round(r.left-p)}px,${Math.round(r.top-p)}px)`; ringEl.style.width=Math.round(r.width+p*2)+'px'; ringEl.style.height=Math.round(r.height+p*2)+'px'; ringEl.classList.add('on'); }
   } else ringEl.classList.remove('on');
+  if(tourEl){ const lost=!el || !(el.getBoundingClientRect().width>0); tourEl.classList.toggle('lost', lost); if(blockEl) blockEl.classList.toggle('dim', lost); }
   ringRaf=requestAnimationFrame(ringLoop);
+}
+/* Cada paso arma su propia pantalla, así "Siguiente" funciona aunque se haya navegado entremedio */
+function tourState(n){
+  const st=ST.b, p=PRODUCTS.find(x=>x.id==='cannes');
+  route='b'; st.uid=st.uid||'u1'; st.view='catalogo'; st.pres=false; st.quote=false; st.edit=null; st.inv=null; st.menu=false; st.drawer=false; S_START=false;
+  try{ history.replaceState(null,'','#b'); }catch(e){}
+  if(n===0){ st.sel=null; st.cfg=null; st.cat='Todas'; st.disp='todas'; return; }
+  st.q='cannes'; st.cat='Todas'; st.disp='todas';
+  if(st.sel!=='cannes'){ st.sel='cannes'; st.cfg=null; st.vi=0; st.fi=0; }
+  st.msel=true;
+  if(n>=2){ const c=cfgOf('b',p); c.modo='pedido'; c.grupo='ef'; c.tono='Efraín azul'; c.vi=0;
+    if(n===2){ c.custom=false; c.dims=null; }
+    else { c.custom=true; c.dims=parts(p.vars[0].m).slice(); c.dims[0]='260'; } }
+  if(n===4) st.quote=true;
+  if(n===5){ st.pres=true; ANIM.add('pres'); }
 }
 async function tourGo(n){
   const st=ST.b; TOUR=n;
+  tourState(n);
   if(n===0){
-    route='b'; st.uid='u1'; st.view='catalogo'; st.sel=null; st.cfg=null; st.pres=false; st.quote=false; st.q=''; st.cat='Todas'; st.disp='todas'; try{ history.replaceState(null,'','#b'); }catch(e){} render(); window.scrollTo(0,0); highlight(); await wait(500);
+    st.q=''; render(); window.scrollTo(0,0); highlight(); await wait(500);
     for(const ch of 'cannes'){ await wait(140); if(TOUR!==0) return; st.q+=ch; render(); }
-  }
-  if(n===1){ st.q='cannes'; st.scrollY=window.scrollY; st.sel='cannes'; st.cfg=null; st.vi=0; st.fi=0; st.msel=true; render(); window.scrollTo({top:0,behavior:reduced()?'auto':'smooth'}); await wait(350); }
-  if(n===2){ const p=PRODUCTS.find(x=>x.id==='cannes'); const c=cfgOf('b',p); c.modo='pedido'; c.grupo='ef'; c.tono='Efraín azul'; c.custom=false; render(); }
-  if(n===3){ const p=PRODUCTS.find(x=>x.id==='cannes'); const c=cfgOf('b',p); c.custom=true; c.dims=parts(p.vars[c.vi].m).slice(); c.dims[0]='260'; render(); }
-  if(n===4){ st.quote=true; render(); }
-  if(n===5){ st.quote=false; st.pres=true; ANIM.add('pres'); render(); }
+  } else if(n===1){ render(); window.scrollTo({top:0,behavior:reduced()?'auto':'smooth'}); await wait(350); }
   render(); highlight();
 }
 function highlight(){
@@ -1626,6 +1647,7 @@ document.addEventListener('click', e=>{
     case 'tour': tourGo(0); return;
     case 'tournext': if(TOUR<TOUR_STEPS.length-1) tourGo(TOUR+1); else tourEnd(true); return;
     case 'tourend': tourEnd(false); return;
+    case 'tourback': tourState(TOUR); render(); highlight(); return;
     case 'start': S_START=true; break;
     case 'starttour': S_START=false; tourGo(0); return;
     case 'closestart': case 'closestart-bg': if(act==='closestart-bg'&&e.target!==t) return; S_START=false; break;
@@ -1765,6 +1787,7 @@ document.addEventListener('keydown', e=>{
   if(route==='home') return; const k=route, st=ST[k]; const inField = /INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'');
   if(st.pres){ if(e.key==='ArrowRight') presMove(k,1); if(e.key==='ArrowLeft') presMove(k,-1); if(e.key==='Escape'){ st.pres=false; render(); } return; }
   if(e.key==='/' && !inField){ const q=document.getElementById('q-'+k); if(q){ e.preventDefault(); q.focus(); } }
+  if(e.key==='Escape' && TOUR!==null){ tourEnd(false); return; }
   if(e.key==='Escape' && st.quote){ st.quote=false; render(); return; }
   if(e.key==='Escape'){ if(st.menu){ st.menu=false; render(); } else if(st.edit){ st.edit=null; render(); } else if(st.inv){ st.inv=null; render(); } else if(st.drawer){ st.drawer=false; render(); } else if(st.sel && k!=='d'){ closeP(k); } }
   if(k==='d' && st.view==='catalogo' && (e.key==='ArrowDown'||e.key==='ArrowUp') && !st.edit && !inField){
